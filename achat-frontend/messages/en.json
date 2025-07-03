@@ -1,0 +1,948 @@
+{
+  "navbar": {
+    "login": "Login",
+    "menu": "Menu",
+    "publicRequests": "Public Requests"
+  },
+  "publicRequests": {
+    "title": "Public Purchase Requests",
+    "search": "Search requests...",
+    "category": "Select Category",
+    "status": "Select Status",
+    "allCategories": "All Categories",
+    "allStatuses": "All Statuses",
+    "viewDetails": "View Details"
+  },
+  "hero": {
+    "title": "Connect with OCP Foundation Opportunities",
+    "description": "Your gateway to procurement opportunities. Join our platform to discover new business possibilities with OCP Foundation.",
+    "registerButton": "Register as Supplier",
+    "browseButton": "Browse Opportunities"
+  },
+  "features": {
+    "title": "Procurement Process",
+    "registration": {
+      "title": "Registration",
+      "description": "Complete your company profile and submit required documentation for supplier registration."
+    },
+    "verification": {
+      "title": "Verification",
+      "description": "Our team reviews your application and verifies your company credentials."
+    },
+    "platformAccess": {
+      "title": "Platform Access",
+      "description": "Gain access to our procurement platform and browse available opportunities."
+    },
+    "bidSubmission": {
+      "title": "Bid Submission",
+      "description": "Participate in tenders and submit competitive proposals for projects."
+    },
+    "contractAward": {
+      "title": "Contract Award",
+      "description": "Successfully awarded suppliers begin collaboration with OCP Foundation."
+    }
+  },
+  "footer": {
+    "contact": {
+      "title": "Contact Us",
+      "email": "claim@ocpfoundation.org",
+      "address": "Fondation OCP 2-4, rue Al Abtal - Hay Erraha - 20200 Casablanca – Maroc"
+    },
+    "quickLinks": {
+      "title": "Quick Links",
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Service",
+      "faq": "FAQ"
+    },
+    "social": {
+      "title": "Connect With Us",
+      "linkedin": "LinkedIn",
+      "twitter": "Twitter",
+      "facebook": "Facebook"
+    },
+    "copyright": " OCP Foundation. All rights reserved."
+  },
+  "error": {
+    "404": {
+      "title": "Page not found",
+      "description": "Sorry, we couldn't find the page you're looking for.",
+      "buttonHome": "Go back home",
+      "buttonBack": "Go back"
+    }
+  },
+  "profile": {
+    "entered_service": "Entered Service"
+  },
+  "companies": {
+    "title": "Companies",
+    "description": "Here's a list of all approved Companies",
+    "pending_verification_title": "Pending Verification",
+    "pending_verification_description": "Here's a list of companies waiting for verification",
+    "approval_status": {
+      "WAITING_APPROVAL": "Waiting Approval",
+      "APPROVED": "Approved",
+      "REJECTED": "Rejected"
+    },
+    "error_fetching_companies": "Error loading companies data",
+    "company_not_found": "Company not found",
+    "invalid_company_id": "Invalid company ID",
+    "error_fetching_company": "Error loading company data",
+    "company_page": {
+      "about": "About Company",
+      "statistics": "Company Statistics",
+      "documents": "Company Documents",
+      "members": "Company Members",
+      "statistics_summary": "Statistics Summary",
+      "total_value": "Total Value",
+      "view_more_stats": "View More Stats",
+      "total_members": "Total Members",
+      "no_members_title": "No Members Found",
+      "no_members_description": "This company currently has no members registered in the system.",
+      "members_title": "Company Members",
+      "business_scopes": "Business Scope",
+      "approval_status": "Approval Status"
+    },
+    "headers": {
+      "company_name": "Company Name",
+      "RC": "RC",
+      "company_phone": "Company Phone",
+      "email": "Email",
+      "city": "City",
+      "website": "Website",
+      "status": "Status",
+      "business_scopes": "Business Scope",
+      "approval_status": "Approval Status"
+    },
+    "status": {
+      "active": "Active",
+      "pending": "Pending",
+      "suspended": "Suspended",
+      "blacklisted": "Blacklisted"
+    },
+    "actions": {
+      "view": "View Profile",
+      "edit": "Edit",
+      "delete": "Delete",
+      "suspend": "Suspend",
+      "activate": "Activate",
+      "blacklist": "Blacklist"
+    },
+    "call_member": "Call member",
+    "email_member": "Email member",
+    "chat_with_member": "Chat",
+    "online": "Online"
+  },
+  "operators": {
+    "title": "Operators",
+    "description": "Here's a list of Operators",
+    "error_fetching_operator": "Error loading operator data",
+    "operator_not_found": "Operator not found",
+    "invalid_operator_id": "Invalid operator ID",
+    "no_company": "No company",
+    "operator_page": {
+      "about": "About Operator",
+      "statistics": "Operator Statistics",
+      "documents": "Operator Documents",
+      "members": "Operator Members"
+    },
+    "headers": {
+      "company_name": "Operator Name",
+      "phone": "Phone",
+      "email": "Email",
+      "status": "Status",
+      "website": "Website",
+      "title": "Position",
+      "entity_type": "Entity Type",
+      "address": "Address",
+      "supplier_name": "Supplier Name",
+      "belonging_company": "Company",
+      "business_scopes": "Business Scopes"
+    },
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive",
+      "online": "Online",
+      "offline": "Offline"
+    },
+    "entity_types": {
+      "SUPPLIER": "Supplier",
+      "OPERATOR": "Operator",
+      "AGENT": "Agent"
+    }
+  },
+  "dataTable": {
+    "search": "Search by",
+    "noResults": "No results found",
+    "tryAdjustingSearchOrFilters": "Try adjusting your search or filters",
+    "rowsPerPage": "Rows per page",
+    "of": "of",
+    "showing": "Showing",
+    "to": "to",
+    "entries": "entries",
+    "previous": "Previous",
+    "next": "Next",
+    "loading": "Loading data...",
+    "error": "Error loading data",
+    "allCategories": "All Categories",
+    "allOrganizations": "All Organizations",
+    "filters": "Filters",
+    "searchForSpecificPurchaseRequestOrCategory": "Search for a specific purchase request or category",
+    "view": "View",
+    "approve": "Approve",
+    "deny": "Deny",
+    "approveRequest": "Approve Request",
+    "denyRequest": "Deny Request",
+    "approveRequestDescription": "Please provide a comment for approving this purchase request",
+    "denyRequestDescription": "Please provide a reason for denying this purchase request",
+    "commentPlaceholder": "Enter your comment...",
+    "cancel": "Cancel",
+    "pendingRequests": {
+      "description": "Review and manage pending purchase requests",
+      "reference": "Reference",
+      "title": "Pending Purchase Requests",
+      "department": "Department",
+      "category": "Category",
+      "status": "Status",
+      "submittedAt": "Submitted At",
+      "actions": "Actions"
+    }
+  },
+  "agents": {
+    "title": "OCP Agents",
+    "description": "Here's a list of OCP Agents",
+    "headers": {
+      "full_name": "Full name",
+      "title": "Title",
+      "phone": "Phone",
+      "email": "Email",
+      "entity": "Entity",
+      "status": "Status",
+      "last_name": "Last name",
+      "first_name": "First name",
+      "birth_date": "Birth date",
+      "companyId": "Company",
+      "department": "Department",
+      "privilege_level": "Privilege Level",
+      "business_scopes": "Business Scope"
+    },
+    "actions": {
+      "view": "View Profile",
+      "edit": "Edit",
+      "delete": "Delete",
+      "deactivate": "Deactivate",
+      "activate": "Activate"
+    },
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive",
+      "pending": "Pending"
+    }
+  },
+  "sidebar": {
+    "pages": {
+      "dashboard": "Dashboard",
+      "companies": "Companies",
+      "operators": "Operators",
+      "pending_verification": "Pending Verification",
+      "suppliers": "Suppliers",
+      "logs": "Logs",
+      "agents": "Agents",
+      "bids": "Bids",
+      "chat": "Chat",
+      "purchase_request": "Purchase Request",
+      "purchase_request_create": "Create",
+      "purchase_request_drafts": "Drafts",
+      "purchase_request_ongoing": "On Going",
+      "purchase_request_pending": "Pending For Approval",
+      "purchase_request_history": "History",
+      "register_company": "Register Company",
+      "forms": "Forms Control",
+      "paperwork": "Paperwork",
+      "reports": "Reports",
+      "keycloak": "Keycloak",
+      "settings": "Settings"
+    }
+  },
+  "fileUploadWrapper": {
+    "acceptedFiles": "Accepted Files",
+    "allFiles": "All files",
+    "clickToUpload": "Click to upload",
+    "orDragAndDrop": "or drag and drop",
+    "selectAFileToUpload": "Select a file to upload."
+  },
+  "historyComponent": {
+    "bids": {
+      "title": "Bids History"
+    },
+    "feedback": {
+      "title": "Feedback History"
+    },
+    "purchaseRequest": {
+      "title": "Purchase Requests History"
+    }
+  },
+  "chat": {
+    "no_chat_selected": "Choose a chat from the left sidebar to start messaging..",
+    "no_messages_found": "No messages found",
+    "error_fetching_chats": "Error fetching chats",
+    "direct": "Direct",
+    "group": "Group",
+    "all": "All",
+    "search": "Type to search",
+    "last_message": "Last message",
+    "error_loading_messages": "Error loading messages",
+    "loading_more_messages": "Loading more messages...",
+    "message_copied": "Message copied to clipboard",
+    "user_is_typing": "{{username}} is typing...",
+    "users_are_typing": "{{count}} users are typing...",
+    "type_message": "Type your message here..."
+  },
+  "CreateBid": {
+    "title": "Create Bid",
+    "description": "Fill in the details below to create a new bid",
+    "cards": {
+      "bidAttachmentsTitle": "Bid Attachments",
+      "bidDetailsTitle": "Bid Details",
+      "budget": "Budget",
+      "dueDate": "Due Date",
+      "description": "Description",
+      "pickADate": "Pick a date",
+      "descriptionPlaceholder": "Enter description",
+      "attachments": {
+        "technical": "Technical Documents",
+        "financial": "Financial Documents",
+        "administrative": "Administrative Documents"
+      },
+      "buttons": {
+        "cancel": "Cancel",
+        "publish": "Publish"
+      }
+    }
+  },
+  "purchaseRequests": {
+    "title": "Purchase Requests",
+    "subtitle": "Manage and track purchase requests",
+    "newRequest": "New Request",
+    "description": "Description",
+    "deliveryInformation": "Delivery Information",
+    "biddingInformation": "Bidding Information",
+    "date": "Date",
+    "address": "Address",
+    "dataTable": {
+      "reference": "Reference",
+      "title": "Title",
+      "department": "Department",
+      "category": "Category",
+      "status": "Status",
+      "deadline": "Deadline",
+      "publishedAt": "Published At",
+      "actions": "Actions",
+      "view": "View"
+    }
+  },
+  "PurchaseRequest": {
+    "Create": {
+      "itemTypes": {
+        "materials": "Materials",
+        "services": "Services"
+      },
+      "requestTypes": {
+        "CONSULTATION_PAR_DEVIS_CONTRADICTOIRE": "Consultation par devis contradictoire",
+        "PETITS_ACHATS_INFERIEUR_A_5000": "Petits achats inférieurs à 5000",
+        "CONSULTATION_EN_GRE_A_GRE": "Consultation en GRE à GRE",
+        "CONTRACT_GROUPE": "Contract groupe",
+        "ACHAT_AFRIQUE": "Achat Afrique",
+        "APPEL_DOFFERS_OUVERT": "Open Call for Offers",
+        "APPEL_DOFFERS_RESTRINGU": "Restricted Call for Offers"
+      },
+      "title": "Create Purchase Request",
+      "saving": "Saving...",
+      "saveAsDraft": "Save as Draft",
+      "submitting": "Submitting...",
+      "submitRequest": "Submit Request",
+      "buttons": {
+        "addItem": "Add Item"
+      },
+      "cards": {
+        "bidAttachmentsTitle": "Bid Attachments",
+        "requestDetails": "Request Details",
+        "bidDetailsTitle": "Bid Details",
+        "erpReference": "ERP Reference",
+        "erpReferencePlaceholder": "Enter ERP Reference (e.g., ERP-001)",
+        "erpReferenceHelp": "Enter a valid ERP reference to automatically populate the details",
+        "items": "Items",
+        "additionalInfo": "Additional Information",
+        "attachments": "Attachments",
+        "erpDetails": "ERP Details",
+        "settings": "Purchase Request Settings",
+        "buttons": {
+          "cancel": "Cancel",
+          "publish": "Publish"
+        }
+      },
+      "fields": {
+        "requestTitle": "Request Title",
+        "requestTitlePlaceholder": "Enter request title",
+        "department": "Department",
+        "departmentPlaceholder": "Enter department",
+        "deliveryDate": "Required Delivery Date",
+        "deliveryDatePlaceholder": "Enter required delivery date",
+        "deliveryAddress": "Delivery Address",
+        "deliveryAddressPlaceholder": "Enter delivery address",
+        "priority": "Priority Level",
+        "priorityPlaceholder": "Select priority level",
+        "erpReference": "ERP Reference",
+        "erpReferencePlaceholder": "Enter ERP Reference (e.g., ERP-001)",
+        "erpReferenceHelp": "Enter a valid ERP reference to automatically populate the details",
+        "notes": "Notes",
+        "notesPlaceholder": "Enter notes",
+        "glAccount": "GL Account",
+        "glAccountPlaceholder": "Enter GL Account",
+        "costObject": "Cost Object",
+        "costObjectPlaceholder": "Enter Cost Object",
+        "description": "Description",
+        "descriptionPlaceholder": "Enter description",
+        "quantity": "Quantity",
+        "estimatedPrice": "Estimated Price",
+        "currency": "Currency",
+        "unit": "Unit",
+        "unitPlaceholder": "Enter unit",
+        "dueDate": "Bidding Deadline",
+        "publishmentDate": "Publishment Date",
+        "requestType": "Request Type",
+        "itemType": "Item Type"
+      },
+      "attachments": {
+        "technical": "Technical Documents",
+        "financial": "Financial Documents",
+        "administrative": "Administrative Documents"
+      },
+      "confirmation": {
+        "title": "Confirm Purchase Request",
+        "description": "Please review the details before submitting",
+        "cancel": "Cancel",
+        "confirm": "Confirm & Submit"
+      },
+      "errors": {
+        "noErpDetails": "No ERP details found for the provided reference.",
+        "invalidReference": "Invalid Reference"
+      }
+    },
+    "Details": {
+      "purchaseRequest": "Purchase Request",
+      "due": "Due",
+      "closing": "Closing",
+      "publish": "Publish",
+      "viewBids": "View Bids",
+      "submitBid": "Submit Bid",
+      "title": "Title",
+      "description": "Description",
+      "department": "Department",
+      "category": "Category",
+      "visibility": "Visibility",
+      "deliveryDate": "Delivery Date",
+      "deliveryAddress": "Delivery Address",
+      "biddingDate": "Bidding Date",
+      "biddingAddress": "Bidding Address",
+      "biddingDeadline": "Bidding Deadline",
+      "notSpecified": "Not Specified"
+    }
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "view": "View",
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive",
+      "pending": "Pending",
+      "rejected": "Rejected",
+      "approved": "Approved"
+    }
+  },
+  "companyRegistration": {
+    "title": "Company Registration",
+    "buttons": {
+      "previous": "Previous",
+      "next": "Next",
+      "submit": "Submit"
+    },
+    "validation": {
+      "fillRequired": "Please fill in all required fields correctly",
+      "ensureRequirements": "Please ensure all validation requirements are met",
+      "error": "An error occurred during validation"
+    },
+    "submission": {
+      "success": "Form submitted successfully!",
+      "error": "Failed to submit form"
+    },
+    "basicInfo": {
+      "title": "Company Information",
+      "legalName": "Legal Name",
+      "commercialName": "Commercial Name",
+      "legalForm": "Legal Form",
+      "iceNumber": "ICE Number",
+      "siretNumber": "SIRET Number",
+      "vatNumber": "VAT Number"
+    },
+    "contact": {
+      "title": "Contact Information",
+      "primaryContact": "Primary Contact",
+      "primaryContactPlaceholder": "Enter primary contact name",
+      "email": "Email",
+      "emailPlaceholder": "Enter contact email",
+      "primaryPhone": "Primary Phone",
+      "primaryPhonePlaceholder": "Enter phone number",
+      "secondaryPhone": "Secondary Phone",
+      "secondaryPhonePlaceholder": "Enter secondary phone number"
+    },
+    "address": {
+      "title": "Address Details",
+      "registeredOffice": "Registered Office",
+      "registeredOfficePlaceholder": "Enter registered office address",
+      "headquarters": "Headquarters",
+      "headquartersPlaceholder": "Enter headquarters address",
+      "branchLocations": "Branch Locations",
+      "branchLocationsPlaceholder": "Enter branch locations"
+    },
+    "legal": {
+      "businessActivities": "Business Activities",
+      "industryCode": "Industry Code",
+      "industryCodePlaceholder": "Enter industry code",
+      "certifications": "Certifications",
+      "otherCertifications": "Other Certifications",
+      "otherCertificationsPlaceholder": "Enter any additional certifications"
+    },
+    "documents": {
+      "companyStatutes": "Company Statutes",
+      "termsOfUse": "Terms of use and access",
+      "commercialRegistry": "RC copy or equivalent",
+      "financialStatements": "Balance sheet and Financial Statements",
+      "clientReferences": "Customer references certificates"
+    },
+    "additional": {
+      "title": "Additional Details",
+      "loading": "Loading additional details...",
+      "description": "Any additional information"
+    },
+    "steps": {
+      "basicInfo": {
+        "title": "Basic Information",
+        "description": "Enter your company's basic details"
+      },
+      "legal": {
+        "title": "Legal Information",
+        "description": "Enter legal and certification details"
+      },
+      "documents": {
+        "title": "Document Upload",
+        "description": "Upload required company documents"
+      },
+      "additional": {
+        "title": "Additional Details",
+        "description": "Any additional information"
+      }
+    }
+  },
+  "formAnswerTable": {
+    "order": "Order",
+    "question": "Question",
+    "description": "Description",
+    "answer": "Answer",
+    "clear": "Clear",
+    "cancel": "Cancel",
+    "clearAll": "Clear All",
+    "clearAllTitle": "Clear all answers?",
+    "clearAllConfirmation": "This action cannot be undone. All your answers will be cleared."
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Overview of your procurement system",
+    "titleKey": "title",
+    "subtitleKey": "subtitle",
+    "metrics": {
+      "companies": {
+        "title": "Companies",
+        "value": "1,250",
+        "subtitle": "Total registered companies"
+      },
+      "agents": {
+        "title": "Agents",
+        "value": "1,250",
+        "subtitle": "Total registered agents"
+      },
+      "bids": {
+        "title": "Bids",
+        "value": "1,250",
+        "subtitle": "Total registered bids"
+      },
+      "suppliers": {
+        "title": "Suppliers",
+        "value": "2,300",
+        "subtitle": "Total registered suppliers"
+      },
+      "totalOperators": {
+        "title": "Total Operators",
+        "value": "609",
+        "subtitle": "Active procurement agents"
+      },
+      "totalAgents": {
+        "title": "Total Agents",
+        "value": "50",
+        "subtitle": "Active procurement agents"
+      },
+      "purchaseRequests": {
+        "title": "Purchase Requests",
+        "closed": "Closed requests",
+        "won": "Won requests",
+        "pending": "Pending requests",
+        "rejected": "Rejected requests"
+      },
+      "tasks": {
+        "title": "Tasks Overview",
+        "addNewTask": "Add New Task",
+        "noTasks": "No tasks available",
+        "loadMore": "Load More Tasks"
+      }
+    },
+    "departments": {
+      "title": "Purchase Requests Distribution by Department",
+      "noData": "No data available for the selected time frame",
+      "tryDifferent": "Try selecting a different date range",
+      "requests": "Requests"
+    },
+    "ongoingPurchases": {
+      "title": "Ongoing Purchases",
+      "deadline": "Deadline",
+      "department": "Department",
+      "entity": "Entity",
+      "requester": "Requester"
+    },
+    "topCompanies": {
+      "title": "Top Companies",
+      "filterByCategory": "Filter by category",
+      "allCategories": "All Categories",
+      "bids": "bids",
+      "won": "won",
+      "noCompanies": "No companies found",
+      "noCompaniesCategory": "No companies found in the \"{category}\" category",
+      "noCompaniesRegistered": "No companies have been registered yet",
+      "loadMore": "No more companies to load"
+    },
+    "tasks": {
+      "title": "Tasks Overview",
+      "addNewTask": "Add New Task",
+      "noTasks": "No tasks available",
+      "loadMore": "Load More Tasks"
+    },
+    "export": {
+      "title": "Export Statistics",
+      "asXLSX": "Export as XLSX",
+      "asJSON": "Export as JSON",
+      "asCSV": "Export as CSV",
+      "print": "Print Statistics"
+    },
+    "timeframe": {
+      "selectRange": "Select date range",
+      "from": "From",
+      "to": "To"
+    }
+  },
+  "logs": {
+    "title": "Activity Logs",
+    "empty": {
+      "title": "No logs found",
+      "description": "There are no logs matching your search criteria. Try adjusting your filters or check back later."
+    },
+	"no_results": {
+      "title": "No matching logs",
+      "description": "Try adjusting your filters to find what you're looking for"
+    },
+    "filters": {
+	  "all": "All",
+      "action_type": "Filter by action type",
+      "start_date": "Start date",
+      "end_date": "End date",
+      "search": "Search logs..."
+    },
+    "error": {
+      "fetch": "Failed to load logs. Please check your connection and permissions.",
+      "retry": "Try again"
+    },
+    "types": {
+      "FEEDBACK": "Feedback",
+      "BID": "Bid",
+      "PURCHASE_REQUEST": "Purchase Request",
+      "PROFILE": "Profile",
+      "COMPANY": "Company",
+      "AUTH": "Authentication",
+      "CREATE_REPORT": "Report Created",
+      "ADD_REPLY": "Reply Added",
+      "UPDATE_REPORT": "Report Updated"
+    }
+  },
+  "Settings": {
+    "title": "Settings",
+    "selectLanguage": "Select Language",
+    "saving": "Saving...",
+    "saveChanges": {
+      "save": "Save Changes",
+      "updating": "Updating...",
+      "success": "Settings updated successfully"
+    },
+    "nav": {
+      "profile": "Profile",
+      "security": "Security",
+      "notifications": "Notifications",
+      "sessions": "Sessions",
+      "privacy": "Privacy"
+    },
+    "profile": {
+      "title": "Profile Settings",
+      "description": "Manage your personal information and preferences",
+      "avatar": {
+        "changePhoto": "Change Photo",
+        "removePhoto": "Remove Photo",
+        "removing": "Removing...",
+        "confirmRemove": {
+          "title": "Remove Profile Photo?",
+          "description": "This action cannot be undone. Your profile photo will be removed and reset to the default avatar.",
+          "cancel": "Cancel",
+          "confirm": "Remove Photo"
+        }
+      },
+      "personalInfo": {
+        "title": "Personal Information",
+        "firstName": "First Name",
+        "lastName": "Last Name",
+        "email": "Email",
+        "phone": "Phone"
+      },
+      "professionalInfo": {
+        "title": "Professional Information",
+        "jobTitle": "Job Title"
+      },
+      "language": {
+        "title": "Language Preferences",
+        "english": "English",
+        "french": "Français"
+      }
+    },
+    "security": {
+      "title": "Security",
+      "description": "Update your password and security settings",
+      "password": {
+        "title": "Change Password",
+        "currentPassword": "Current Password",
+        "newPassword": "New Password",
+        "confirmPassword": "Confirm Password",
+        "confirmNewPassword": "Confirm New Password",
+        "confirmNewPasswordPlaceholder": "Re-enter your new password to confirm",
+        "requirements": "Password must be at least 8 characters",
+        "updateButton": "Update Password",
+        "updating": "Updating...",
+        "clearFields": "Clear Fields",
+        "passwordPlaceholder": "Enter your current password to verify it's you"
+      },
+      "setup2FA": {
+        "title": "Setup 2FA",
+        "description": "Add an extra layer of security using an authenticator app",
+        "setupInProgress": "2FA Setup in Progress",
+        "error": "Error setting up 2FA",
+        "success": "2FA setup successful"
+      },
+      "disable2FA": {
+        "title": "Disable 2FA",
+        "description": "Disable 2FA",
+        "success": "2FA disabled",
+        "error": "Error disabling 2FA"
+      },
+      "twoFactor": {
+        "title": "Two-Factor Authentication (2FA)",
+        "description": "Add an extra layer of security using an authenticator app",
+        "setupInProgress": "2FA Setup in Progress",
+        "setup": {
+          "title": "Setup Two-Factor Authentication",
+          "steps": {
+            "1": "Download an authenticator app like Google Authenticator or Authy",
+            "2": "Scan the QR code with your authenticator app",
+            "3": "Enter the 6-digit code shown in your app"
+          },
+          "verifyCode": "Enter 6-digit code",
+          "verifyButton": "Verify and Enable 2FA",
+          "verifying": "Verifying...",
+          "success": "2FA enabled successfully",
+          "error": "Failed to setup 2FA"
+        },
+        "disable": {
+          "title": "Disable Two-Factor Authentication",
+          "isEnabled": "2FA is Enabled",
+          "disableDescription": "Please enter your authenticator code to disable 2FA",
+          "description": "Your account is protected with two-factor authentication.",
+          "description2": "You'll need to enter a verification code from your authenticator app when signing in.",
+          "disabling": "Disabling...",
+          "disableButton": "Disable 2FA",
+          "verifyCode": "Enter 6-digit code",
+          "verifyButton": "Verify and Disable 2FA",
+          "verifying": "Verifying...",
+          "success": "2FA disabled successfully",
+          "error": "Failed to disable 2FA"
+        }
+      }
+    },
+    "notifications": {
+      "title": "Notifications",
+      "description": "Configure how you receive notifications",
+      "delivery": {
+        "title": "Delivery Preferences",
+        "email": {
+          "title": "Email Notifications",
+          "description": "Receive notifications via email about important updates"
+        },
+        "push": {
+          "title": "Push Notifications",
+          "description": "Receive real-time notifications in your browser"
+        }
+      },
+      "types": {
+        "title": "Notification Types",
+        "bids": {
+          "title": "Bid Updates",
+          "description": "Get notified about new bids and bid status changes"
+        },
+        "security": {
+          "title": "Security Alerts",
+          "description": "Important alerts about your account security"
+        },
+        "news": {
+          "title": "News and Updates",
+          "description": "Stay informed about new features and platform updates"
+        }
+      }
+    },
+    "sessions": {
+      "title": "Active Sessions",
+      "description": "Manage your active sessions across different devices"
+    },
+    "privacy": {
+      "title": "Privacy Settings",
+      "description": "Control your privacy and data settings",
+      "dataCollection": {
+        "title": "Data Collection",
+        "description": "Manage how we collect and use your data"
+      },
+      "dataExport": {
+        "title": "Data Export"
+      },
+      "deleteAccount": {
+        "title": "Delete Account",
+        "description": "Permanently delete your account and all associated data",
+        "warning": {
+          "title": "Warning:",
+          "points": [
+            "All your data will be permanently deleted",
+            "Your conversations and documents will be removed",
+            "This action cannot be undone"
+          ]
+        },
+        "buttons": {
+          "cancel": "Cancel",
+          "confirm": "Yes, Delete My Account"
+        }
+      }
+    }
+  },
+  "login": {
+    "welcomeBack": "Welcome back",
+    "enterCredentials": "Please enter your credentials to access your account",
+    "username": {
+      "label": "Username",
+      "placeholder": "Enter your username",
+      "required": "Please enter your username"
+    },
+    "password": {
+      "label": "Password",
+      "placeholder": "Enter your password",
+      "required": "Password must be at least 6 characters"
+    },
+    "rememberMe": "Remember me",
+    "forgotPassword": "Forgot your password?",
+    "signIn": "Sign in",
+    "signingIn": "Signing in..."
+  },
+  "reports": {
+    "title": "Reports",
+    "empty": {
+      "title": "No reports found",
+      "description": "There are no reports to display at the moment.",
+      "create": "Create Report"
+    },
+    "no_results": {
+      "title": "No matching reports",
+      "description": "Try adjusting your filters to find what you're looking for"
+    },
+    "filters": {
+      "status": {
+        "all": "All",
+        "open": "Open",
+        "in_progress": "In Progress",
+        "resolved": "Resolved",
+        "closed": "Closed"
+      }
+    },
+    "details": {
+      "title": "View Details",
+      "created_on": "Created on",
+      "by": "by",
+      "updated": "Updated",
+	  "status": "Status",
+      "select_status": "Select status",
+      "status_update_success": "Status updated successfully",
+      "status_update_error": "Failed to update status",
+      "close_report": "Close Report",
+      "close_toast_success": "Report closed successfully",
+      "close_toast_error": "Failed to close report",
+      "go_back": "Back to Reports",
+      "replies": {
+        "title": "Replies",
+        "no_replies": "No replies yet",
+        "your_reply": "Your reply",
+        "send": "Send Reply",
+        "placeholder": "Type your reply here...",
+        "toast_error": "Failed to send reply",
+        "toast_success": "Reply sent successfully",
+        "loading_more": "Loading more...",
+        "load_more": "Load More Replies",
+        "closed_no_replies": {
+          "title": "Report Resolved",
+          "description": "This report was closed without any replies. The issue may have been resolved directly or no longer needed attention."
+        }
+      }
+    },
+    "create": {
+      "title": "Create Report",
+      "description": "Fill in the details below to create a new report",
+      "form": {
+        "title": {
+          "label": "Title",
+          "placeholder": "Enter report title"
+        },
+        "description": {
+          "label": "Description",
+          "placeholder": "Enter report description"
+        },
+        "submit": "Submit Report",
+        "cancel": "Cancel"
+      }
+    },
+    "pagination": {
+      "previous": "Previous",
+      "next": "Next"
+    }
+  }
+}

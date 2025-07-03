@@ -1,0 +1,29 @@
+{{#> layout title="Invitation à participer à une demande d'achat"}}
+    <h1 class="text-large highlight">Invitation à participer à une demande d'achat</h1>
+    <p>Bonjour {{agentName}},</p>
+
+    <p>Vous avez été ajouté à la demande d'achat suivante :</p>
+
+    <div class="message-box">
+        <p><span class="text-large">PR #{{prNumber}}</span></p>
+        <p>{{prTitle}}</p>
+        <p>Date d'échéance : <span class="highlight">{{dueDate}}</span></p>
+    </div>
+
+    <p>Vous êtes invité à participer à cette demande d'achat en :</p>
+    <ul>
+        <li>Examinant les offres soumises</li>
+        <li>Fournissant des commentaires lorsque nécessaire</li>
+        <li>Participant à l'évaluation des offres</li>
+    </ul>
+
+    <a href="{{prUrl}}" class="button">Voir la demande d'achat</a>
+
+    <div class="message-box">
+        <p class="text-large">Dates clés :</p>
+        <p>Date limite de soumission des offres : {{bidDeadline}}</p>
+        <p>Période d'évaluation : {{evaluationPeriod}}</p>
+    </div>
+
+    <p class="text-small">Si vous avez des questions concernant votre rôle ou vos responsabilités, veuillez contacter votre supérieur ou l'équipe de la gestion des achats.</p>
+{{/layout}}

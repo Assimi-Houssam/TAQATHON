@@ -1,0 +1,49 @@
+{{#> layout title="New Bid Submission"}}
+    <h2>New Bid Received</h2>
+    
+    <p>Hello {{agentName}},</p>
+    
+    <p>A new bid has been submitted for a purchase request you're participating in:</p>
+    
+    <div class="message-box">
+        <p><span class="text-large">PR #{{prNumber}}</span></p>
+        <p>{{prTitle}}</p>
+        <p>Bid Reference: <span class="highlight">BID-{{bidNumber}}</span></p>
+        <p>Submission Date: {{submissionDate}}</p>
+        <p>Supplier: {{supplierName}}</p>
+    </div>
+
+    <div class="message-box">
+        <p class="text-large">Bid Status Overview:</p>
+        <ul>
+            <li>Total Bids Received: {{totalBids}}</li>
+            <li>Days Until Deadline: {{daysUntilDeadline}}</li>
+            <li>Your Role: {{agentRole}}</li>
+        </ul>
+    </div>
+
+    {{#if requiresAction}}
+    <div class="message-box">
+        <p class="text-large">⚠️ Action Required</p>
+        <p>Please review this bid as part of your role in the evaluation process.</p>
+        <p>Review deadline: <span class="highlight">{{reviewDeadline}}</span></p>
+    </div>
+    {{/if}}
+    
+    <a href="{{bidUrl}}" class="button">Review Bid Details</a>
+    
+    <div class="message-box">
+        <p class="text-large">Next Steps:</p>
+        <ul>
+            <li>Review bid documentation</li>
+            <li>Complete evaluation form</li>
+            <li>Submit your assessment</li>
+            {{#if isTeamLead}}
+            <li>Coordinate with team members</li>
+            <li>Monitor evaluation progress</li>
+            {{/if}}
+        </ul>
+    </div>
+    
+    <p class="text-small">Remember: All bid information is confidential and should be handled according to procurement policies.</p>
+{{/layout}}

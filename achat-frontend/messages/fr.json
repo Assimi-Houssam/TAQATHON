@@ -1,0 +1,944 @@
+{
+  "navbar": {
+    "login": "Se connecter",
+    "menu": "Menu",
+    "publicRequests": "Demandes publiques"
+  },
+  "hero": {
+    "title": "Connectez-vous aux opportunités de la Fondation OCP",
+    "description": "Votre portail vers les opportunités d'approvisionnement. Rejoignez notre plateforme pour découvrir de nouvelles possibilités commerciales avec la Fondation OCP.",
+    "registerButton": "S'inscrire comme fournisseur",
+    "browseButton": "Parcourir les opportunités"
+  },
+  "features": {
+    "title": "Processus d'approvisionnement",
+    "registration": {
+      "title": "Inscription",
+      "description": "Complétez votre profil d'entreprise et soumettez les documents requis pour l'inscription des fournisseurs."
+    },
+    "verification": {
+      "title": "Vérification",
+      "description": "Notre équipe examine votre candidature et vérifie les références de votre entreprise."
+    },
+    "platformAccess": {
+      "title": "Accès à la plateforme",
+      "description": "Accédez à notre plateforme d'approvisionnement et parcourez les opportunités disponibles."
+    },
+    "bidSubmission": {
+      "title": "Soumission d'offres",
+      "description": "Participez aux appels d'offres et soumettez des propositions compétitives pour les projets."
+    },
+    "contractAward": {
+      "title": "Attribution du contrat",
+      "description": "Les fournisseurs retenus commencent leur collaboration avec la Fondation OCP."
+    }
+  },
+  "footer": {
+    "contact": {
+      "title": "Contactez-nous",
+      "email": "claim@ocpfoundation.org",
+      "address": "Fondation OCP 2-4, rue Al Abtal - Hay Erraha - 20200 Casablanca – Maroc"
+    },
+    "quickLinks": {
+      "title": "Liens rapides",
+      "privacy": "Politique de confidentialité",
+      "terms": "Conditions d'utilisation",
+      "faq": "FAQ"
+    },
+    "social": {
+      "title": "Suivez-nous",
+      "linkedin": "LinkedIn",
+      "twitter": "Twitter",
+      "facebook": "Facebook"
+    },
+    "copyright": " Fondation OCP. Tous droits réservés."
+  },
+  "error": {
+    "404": {
+      "title": "Page non trouvée",
+      "description": "Désolé, nous n'avons pas trouvé la page que vous recherchez.",
+      "buttonHome": "Retourner à l'accueil",
+      "buttonBack": "Retourner"
+    }
+  },
+  "profile": {
+    "entered_service": "Date d'entrée en service"
+  },
+  "companies": {
+    "title": "Fournisseurs",
+    "description": "Voici une liste de toutes les fournisseurs approuvés",
+    "error_fetching_companies": "Erreur lors du chargement des données des fournisseurs",
+    "company_not_found": "Fournisseur non trouvé",
+    "invalid_company_id": "ID de fournisseur invalide",
+    "error_fetching_company": "Erreur lors du chargement des données du fournisseur",
+    "company_page": {
+      "about": "À propos du fournisseur",
+      "statistics": "Statistiques du fournisseur",
+      "documents": "Documents du fournisseur",
+      "members": "Membres du fournisseur",
+      "statistics_summary": "Résumé des statistiques",
+      "total_value": "Total des valeurs",
+      "view_more_stats": "Voir plus de statistiques",
+      "no_members_title": "Aucun membre trouvé",
+      "no_members_description": "Cette entreprise n'a actuellement aucun membre enregistré dans le système.",
+      "total_members": "Total de membres",
+      "members_title": "Membres de l'entreprise",
+      "business_scopes": "Secteur d'activité",
+      "approval_status": "Statut d'approbation"
+    },
+    "headers": {
+      "company_name": "Nom de l'entreprise",
+      "RC": "RC",
+      "company_phone": "Téléphone",
+      "email": "Email",
+      "city": "Ville",
+      "website": "Site Web",
+      "status": "Statut",
+      "business_scopes": "Secteur d'activité",
+      "approval_status": "Statut d'approbation"
+    },
+    "status": {
+      "active": "Actif",
+      "pending": "En attente",
+      "suspended": "Suspendu",
+      "blacklisted": "Liste noire"
+    },
+    "actions": {
+      "view": "Voir le profil",
+      "edit": "Modifier",
+      "delete": "Supprimer",
+      "suspend": "Suspendre",
+      "activate": "Activer",
+      "blacklist": "Mettre en liste noire"
+    },
+    "call_member": "Appeler le membre",
+    "email_member": "Envoyer un email",
+    "chat_with_member": "Discuter",
+    "online": "En ligne",
+    "pending_verification_title": "En attente de vérification",
+    "pending_verification_description": "Voici une liste des entreprises en attente de vérification",
+    "approval_status": {
+      "WAITING_APPROVAL": "En attente d'approbation",
+      "APPROVED": "Approuvé",
+      "REJECTED": "Rejeté"
+    }
+  },
+  "operators": {
+    "title": "Opérateurs",
+    "description": "Voici une liste d'opérateurs",
+    "error_fetching_operator": "Erreur lors du chargement des données de l'opérateur",
+    "operator_not_found": "Opérateur non trouvé",
+    "invalid_operator_id": "ID d'opérateur invalide",
+    "no_company": "Aucune entreprise",
+    "operator_page": {
+      "about": "À propos de l'opérateur",
+      "statistics": "Statistiques de l'opérateur",
+      "documents": "Documents de l'opérateur",
+      "members": "Membres de l'opérateur"
+    },
+    "headers": {
+      "company_name": "Nom de l'opérateur",
+      "phone": "Téléphone",
+      "email": "Email",
+      "status": "Statut",
+      "website": "Site Web",
+      "title": "Poste",
+      "entity_type": "Type d'entité",
+      "address": "Adresse",
+      "supplier_name": "Nom du fournisseur",
+      "belonging_company": "Entreprise",
+      "business_scopes": "Secteur d'activité"
+    },
+    "status": {
+      "active": "Actif",
+      "inactive": "Inactif",
+      "online": "En ligne",
+      "offline": "Hors ligne"
+    },
+    "entity_types": {
+      "SUPPLIER": "Fournisseur",
+      "OPERATOR": "Opérateur",
+      "AGENT": "Agent"
+    }
+  },
+  "dataTable": {
+    "search": "Rechercher par",
+    "noResults": "Aucun résultat trouvé",
+    "tryAdjustingSearchOrFilters": "Essayez d'ajuster votre recherche ou vos filtres",
+    "rowsPerPage": "Lignes par page",
+    "of": "sur",
+    "showing": "Affichage de",
+    "to": "à",
+    "entries": "entrées",
+    "previous": "Précédent",
+    "next": "Suivant",
+    "allCategories": "Toutes les catégories",
+    "allOrganizations": "Toutes les organisations",
+    "filters": "Filtres",
+    "searchForSpecificPurchaseRequestOrCategory": "Rechercher une demande d'achat ou une catégorie spécifique",
+    "view": "Voir",
+    "approve": "Approuver",
+    "deny": "Refuser",
+    "approveRequest": "Approuver la demande",
+    "denyRequest": "Refuser la demande",
+    "approveRequestDescription": "Veuillez fournir un commentaire pour approuver cette demande d'achat",
+    "denyRequestDescription": "Veuillez fournir une raison pour refuser cette demande d'achat",
+    "commentPlaceholder": "Entrez votre commentaire...",
+    "cancel": "Annuler",
+    "pendingRequests": {
+      "description": "Examiner et gérer les demandes d'achat en attente",
+      "reference": "Référence",
+      "title": "Demandes d'achat en attente",
+      "department": "Département",
+      "category": "Catégorie",
+      "status": "Statut",
+      "submittedAt": "Soumis le",
+      "actions": "Actions"
+    }
+  },
+  "agents": {
+    "title": "Agents OCP",
+    "description": "Voici une liste d'agents",
+    "headers": {
+      "full_name": "Nom complet",
+      "title": "Titre",
+      "phone": "Téléphone",
+      "email": "Email",
+      "entity": "Entité",
+      "status": "Statut",
+      "last_name": "Nom de famille",
+      "first_name": "Prénom",
+      "birth_date": "Date de naissance",
+      "companyId": "Entreprise",
+      "department": "Département",
+      "privilege_level": "Niveau de privilège",
+      "business_scopes": "Secteur d'activité"
+    },
+    "actions": {
+      "view": "Voir le profil",
+      "edit": "Modifier",
+      "delete": "Supprimer",
+      "deactivate": "Désactiver",
+      "activate": "Activer"
+    },
+    "status": {
+      "active": "Actif",
+      "inactive": "Inactif",
+      "pending": "En attente"
+    }
+  },
+  "sidebar": {
+    "pages": {
+      "dashboard": "Tableau de bord",
+      "operators": "Opérateurs",
+      "suppliers": "Fournisseurs",
+      "pending_verification": "En attente de vérification",
+      "logs": "Journaux",
+      "agents": "Agents",
+      "bids": "Offres",
+      "chat": "Chat",
+      "purchase_request": "Demande d'achat",
+      "purchase_request_create": "Créer",
+      "purchase_request_drafts": "Brouillons",
+      "purchase_request_ongoing": "En cours",
+      "purchase_request_pending": "En attente d'approbation",
+      "purchase_request_history": "Historique",
+      "register_company": "Enregistrer l'entreprise",
+      "forms": "Contrôle des formulaires",
+      "paperwork": "Documents",
+      "reports": "Rapports",
+      "keycloak": "Keycloak",
+      "settings": "Paramètres"
+    }
+  },
+  "fileUploadWrapper": {
+    "acceptedFiles": "Fichiers acceptés",
+    "allFiles": "Tous les fichiers",
+    "clickToUpload": "Cliquez pour télécharger",
+    "orDragAndDrop": "ou glisser-déposer",
+    "selectAFileToUpload": "Sélectionnez un fichier à télécharger."
+  },
+  "historyComponent": {
+    "bids": {
+      "title": "Historique des Offres"
+    },
+    "feedback": {
+      "title": "Historique des Feedbacks"
+    },
+    "purchaseRequest": {
+      "title": "Historique des Demandes d'Achat"
+    }
+  },
+  "chat": {
+    "no_chat_selected": "Choisissez un chat dans le volet de gauche pour commencer à discuter..",
+    "no_messages_found": "Aucun message trouvé",
+    "error_fetching_chats": "Erreur lors de la récupération des chats",
+    "direct": "Directs",
+    "group": "Groupes",
+    "all": "Tous",
+    "search": "Taper pour rechercher",
+    "last_message": "Dernier message",
+    "error_loading_messages": "Erreur lors du chargement des messages",
+    "loading_more_messages": "Chargement des messages...",
+    "message_copied": "Message copié dans le presse-papiers",
+    "user_is_typing": "{{username}} est en train d'écrire...",
+    "users_are_typing": "{{count}} utilisateurs sont en train d'écrire...",
+    "type_message": "Écrivez votre message ici..."
+  },
+  "CreateBid": {
+    "title": "Créer une offre",
+    "description": "Remplissez les détails ci-dessous pour créer une nouvelle offre",
+    "cards": {
+      "bidAttachmentsTitle": "Pièces jointes",
+      "bidDetailsTitle": "Détails de l'offre",
+      "budget": "Budget",
+      "dueDate": "Date d'échéance des offres",
+      "description": "Description",
+      "pickADate": "Choisir une date",
+      "descriptionPlaceholder": "Entrez la description",
+      "attachments": {
+        "technical": "Documents techniques",
+        "financial": "Documents financiers",
+        "administrative": "Documents administratifs"
+      },
+      "buttons": {
+        "cancel": "Annuler",
+        "publish": "Publier"
+      }
+    }
+  },
+  "purchaseRequests": {
+    "title": "Demandes d'achat",
+    "subtitle": "Gérer et suivre les demandes d'achat",
+    "newRequest": "Nouvelle demande",
+    "description": "Description",
+    "deliveryInformation": "Informations de livraison",
+    "biddingInformation": "Informations sur l'appel d'offres",
+    "date": "Date",
+    "address": "Adresse",
+    "dataTable": {
+      "reference": "Référence",
+      "title": "Titre",
+      "department": "Département",
+      "category": "Catégorie",
+      "status": "Statut",
+      "deadline": "Date limite",
+      "publishedAt": "Publié le",
+      "actions": "Actions",
+      "view": "Voir"
+    }
+  },
+  "PurchaseRequest": {
+    "Create": {
+      "itemTypes": {
+        "materials": "Matériaux",
+        "services": "Services"
+      },
+      "requestTypes": {
+        "CONSULTATION_PAR_DEVIS_CONTRADICTOIRE": "Consultation par devis contradictoire",
+        "PETITS_ACHATS_INFERIEUR_A_5000": "Petits achats inférieurs à 5000",
+        "CONSULTATION_EN_GRE_A_GRE": "Consultation en GRE à GRE",
+        "CONTRACT_GROUPE": "Contract groupe",
+        "ACHAT_AFRIQUE": "Achat Afrique",
+        "APPEL_DOFFERS_OUVERT": "Appel d'offres",
+        "APPEL_DOFFERS_RESTRINGU": "Appel d'offres restreint"
+      },
+      "title": "Créer une demande d'achat",
+      "saving": "Enregistrement...",
+      "saveAsDraft": "Enregistrer comme brouillon",
+      "submitting": "Soumission...",
+      "submitRequest": "Soumettre la demande",
+      "cards": {
+        "requestDetails": "Détails de la demande",
+        "bidAttachmentsTitle": "Pièces jointes",
+        "bidDetailsTitle": "Détails de l'offre",
+        "erpReference": "Référence ERP",
+        "items": "Articles",
+        "additionalInfo": "Informations supplémentaires",
+        "attachments": "Pièces jointes",
+        "erpReferencePlaceholder": "Entrez la référence ERP (ex: ERP-001)",
+        "erpReferenceHelp": "Entrez une référence ERP valide pour remplir automatiquement les détails",
+        "erpDetails": "Détails ERP",
+        "settings": "Paramètres de la demande d'achat",
+        "buttons": {
+          "cancel": "Annuler",
+          "publish": "Publier"
+        }
+      },
+      "fields": {
+        "requestTitle": "Titre de la demande",
+        "department": "Département",
+        "deliveryDate": "Date de livraison requise",
+        "deliveryAddress": "Adresse de livraison",
+        "priority": "Niveau de priorité",
+        "erpReference": "Référence ERP",
+        "notes": "Notes",
+        "requestTitlePlaceholder": "Entrez le titre de la demande",
+        "departmentPlaceholder": "Entrez le département",
+        "deliveryDatePlaceholder": "Entrez la date de livraison requise",
+        "deliveryAddressPlaceholder": "Entrez l'adresse de livraison",
+        "priorityPlaceholder": "Sélectionnez le niveau de priorité",
+        "erpReferencePlaceholder": "Entrez la référence ERP (ex: ERP-001)",
+        "erpReferenceHelp": "Entrez une référence ERP valide pour remplir automatiquement les détails",
+        "notesPlaceholder": "Entrez les notes",
+        "glAccount": "Compte GL",
+        "glAccountPlaceholder": "Entrez le compte GL",
+        "costObject": "Centre de coût",
+        "costObjectPlaceholder": "Entrez le centre de coût",
+        "description": "Description",
+        "descriptionPlaceholder": "Entrez la description",
+        "quantity": "Quantité",
+        "estimatedPrice": "Prix estimé",
+        "currency": "Devise",
+        "unit": "Unité",
+        "unitPlaceholder": "Entrez l'unité",
+        "dueDate": "Date d'échéance",
+        "publishmentDate": "Date de publication",
+        "requestType": "Type de demande",
+        "itemType": "Type d'article"
+      },
+      "attachments": {
+        "technical": "Documents techniques",
+        "financial": "Documents financiers",
+        "administrative": "Documents administratifs"
+      },
+      "confirmation": {
+        "title": "Confirmer la demande d'achat",
+        "description": "Veuillez vérifier les détails avant de soumettre",
+        "cancel": "Annuler",
+        "confirm": "Confirmer et soumettre"
+      },
+      "errors": {
+        "noErpDetails": "Aucun détail ERP trouvé pour la référence fournie.",
+        "invalidReference": "Référence invalide"
+      },
+      "buttons": {
+        "addItem": "Ajouter un article"
+      }
+    },
+    "Details": {
+      "purchaseRequest": "Demande d'achat",
+      "due": "Date limite",
+      "closing": "Clôture",
+      "publish": "Publier",
+      "viewBids": "Voir les offres",
+      "submitBid": "Soumettre une offre",
+      "title": "Titre",
+      "description": "Description",
+      "department": "Département",
+      "category": "Catégorie",
+      "visibility": "Visibilité",
+      "deliveryDate": "Date de livraison",
+      "deliveryAddress": "Adresse de livraison",
+      "biddingDate": "Date de lancement des offres",
+      "biddingAddress": "Adresse de lancement des offres",
+      "biddingDeadline": "Date limite de soumission des offres",
+      "notSpecified": "Non spécifié"
+    }
+  },
+  "publicRequests": {
+    "title": "Demandes d'achat publiques",
+    "search": "Rechercher des demandes...",
+    "category": "Sélectionner une catégorie",
+    "status": "Sélectionner un statut",
+    "allCategories": "Toutes les catégories",
+    "allStatuses": "Tous les statuts",
+    "viewDetails": "Voir les détails"
+  },
+  "common": {
+    "loading": "Chargement...",
+    "error": "Erreur",
+    "success": "Succès",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "view": "Voir",
+    "status": {
+      "active": "Actif",
+      "inactive": "Inactif",
+      "pending": "En attente",
+      "rejected": "Rejeté",
+      "approved": "Approuvé"
+    }
+  },
+  "companyRegistration": {
+    "title": "Inscription de l'entreprise",
+    "buttons": {
+      "previous": "Précédent",
+      "next": "Suivant",
+      "submit": "Soumettre"
+    },
+    "validation": {
+      "fillRequired": "Veuillez remplir correctement tous les champs obligatoires",
+      "ensureRequirements": "Veuillez vous assurer que toutes les exigences de validation sont respectées",
+      "error": "Une erreur s'est produite lors de la validation"
+    },
+    "submission": {
+      "success": "Formulaire soumis avec succès !",
+      "error": "Échec de la soumission du formulaire"
+    },
+    "basicInfo": {
+      "title": "Informations de l'entreprise",
+      "legalName": "Nom légal",
+      "commercialName": "Nom commercial",
+      "legalForm": "Forme juridique",
+      "iceNumber": "Numéro ICE",
+      "siretNumber": "Numéro SIRET",
+      "vatNumber": "Numéro TVA"
+    },
+    "contact": {
+      "title": "Informations de contact",
+      "primaryContact": "Contact principal",
+      "primaryContactPlaceholder": "Entrez le nom du contact principal",
+      "email": "Email",
+      "emailPlaceholder": "Entrez l'email du contact",
+      "primaryPhone": "Téléphone principal",
+      "primaryPhonePlaceholder": "Entrez le numéro de téléphone",
+      "secondaryPhone": "Téléphone secondaire",
+      "secondaryPhonePlaceholder": "Entrez le numéro de téléphone secondaire"
+    },
+    "address": {
+      "title": "Détails de l'adresse",
+      "registeredOffice": "Siège social",
+      "registeredOfficePlaceholder": "Entrez l'adresse du siège social",
+      "headquarters": "Siège administratif",
+      "headquartersPlaceholder": "Entrez l'adresse du siège administratif",
+      "branchLocations": "Emplacements des succursales",
+      "branchLocationsPlaceholder": "Entrez les emplacements des succursales"
+    },
+    "legal": {
+      "businessActivities": "Activités commerciales",
+      "industryCode": "Code d'industrie",
+      "industryCodePlaceholder": "Entrez le code d'industrie",
+      "certifications": "Certifications",
+      "otherCertifications": "Autres certifications",
+      "otherCertificationsPlaceholder": "Entrez les certifications supplémentaires"
+    },
+    "documents": {
+      "companyStatutes": "Statuts de l'entreprise",
+      "termsOfUse": "Conditions d'utilisation et d'accès",
+      "commercialRegistry": "Copie RC ou équivalent",
+      "financialStatements": "Bilan et états financiers",
+      "clientReferences": "Certificats de références clients"
+    },
+    "additional": {
+      "title": "Détails supplémentaires",
+      "loading": "Chargement des détails supplémentaires..."
+    },
+    "steps": {
+      "basicInfo": {
+        "title": "Informations de base",
+        "description": "Saisissez les informations de base de votre entreprise"
+      },
+      "legal": {
+        "title": "Informations légales",
+        "description": "Saisissez les informations légales et les certifications"
+      },
+      "documents": {
+        "title": "Téléchargement de documents",
+        "description": "Téléchargez les documents requis de l'entreprise"
+      },
+      "additional": {
+        "title": "Détails supplémentaires",
+        "description": "Toute information supplémentaire"
+      }
+    }
+  },
+  "formAnswerTable": {
+    "order": "Ordre",
+    "question": "Question",
+    "description": "Description",
+    "answer": "Réponse",
+    "clear": "Vider",
+    "cancel": "Annuler",
+    "clearAll": "Vider tout",
+    "clearAllTitle": "Vider toutes les réponses ?",
+    "clearAllConfirmation": "Cette action ne peut être annulée. Toutes vos réponses seront effacées."
+  },
+  "dashboard": {
+    "title": "Tableau de bord",
+    "subtitle": "Aperçu de votre système de procurement",
+    "titleKey": "title",
+    "subtitleKey": "subtitle",
+    "metrics": {
+      "companies": {
+        "title": "Entreprises",
+        "value": "1,250",
+        "subtitle": "Total des entreprises inscrites"
+      },
+      "agents": {
+        "title": "Agents",
+        "value": "1,250",
+        "subtitle": "Total des agents inscrits"
+      },
+      "bids": {
+        "title": "Offres",
+        "value": "1,250",
+        "subtitle": "Total des offres inscrites"
+      },
+      "suppliers": {
+        "title": "Fournisseurs",
+        "value": "2,300",
+        "subtitle": "Total des fournisseurs inscrits"
+      },
+      "totalOperators": {
+        "title": "Total des Opérateurs",
+        "value": "609",
+        "subtitle": "Agents d'approvisionnement actifs"
+      },
+      "totalAgents": {
+        "title": "Total des Agents",
+        "value": "50",
+        "subtitle": "Agents d'approvisionnement actifs"
+      },
+      "purchaseRequests": {
+        "title": "Demandes d'Achat",
+        "closed": "Demandes clôturées",
+        "won": "Demandes gagnées",
+        "pending": "Demandes en attente",
+        "rejected": "Demandes rejetées"
+      },
+      "tasks": {
+        "title": "Aperçu des Tâches",
+        "addNewTask": "Ajouter une nouvelle tâche",
+        "noTasks": "Aucune tâche disponible",
+        "loadMore": "Charger plus de tâches"
+      }
+    },
+    "departments": {
+      "title": "Distribution des DA par Département",
+      "noData": "Aucune donnée disponible pour la période sélectionnée",
+      "tryDifferent": "Essayez de sélectionner une autre période",
+      "requests": "Demandes"
+    },
+    "ongoingPurchases": {
+      "title": "Achats en Cours",
+      "deadline": "Date limite",
+      "department": "Département",
+      "entity": "Entité",
+      "requester": "Demandeur"
+    },
+    "topCompanies": {
+      "title": "Meilleures Entreprises",
+      "filterByCategory": "Filtrer par catégorie",
+      "allCategories": "Toutes les catégories",
+      "bids": "offres",
+      "won": "gagnées",
+      "noCompanies": "Aucune entreprise trouvée",
+      "noCompaniesCategory": "Aucune entreprise trouvée dans la catégorie \"{category}\"",
+      "noCompaniesRegistered": "Aucune entreprise n'a encore été enregistrée",
+      "loadMore": "Plus d'entreprises à charger"
+    },
+    "tasks": {
+      "title": "Aperçu des Tâches",
+      "addNewTask": "Ajouter une nouvelle tâche",
+      "noTasks": "Aucune tâche disponible",
+      "loadMore": "Charger plus de tâches"
+    },
+    "export": {
+      "title": "Exporter les Statistiques",
+      "asXLSX": "Exporter en XLSX",
+      "asJSON": "Exporter en JSON",
+      "asCSV": "Exporter en CSV",
+      "print": "Imprimer les Statistiques"
+    },
+    "timeframe": {
+      "selectRange": "Sélectionner une période",
+      "from": "De",
+      "to": "À"
+    }
+  },
+  "Settings": {
+    "title": "Paramètres",
+    "selectLanguage": "Choisir la langue",
+    "saving": "Enregistrement...",
+    "saveChanges": {
+      "save": "Enregistrer les modifications",
+      "updating": "Mise à jour...",
+      "success": "Paramètres mis à jour avec succès"
+    },
+    "nav": {
+      "profile": "Profil",
+      "security": "Sécurité",
+      "notifications": "Notifications",
+      "sessions": "Sessions",
+      "privacy": "Confidentialité"
+    },
+    "profile": {
+      "title": "Paramètres du profil",
+      "description": "Gérez vos informations personnelles et vos préférences",
+      "avatar": {
+        "changePhoto": "Changer la photo",
+        "removePhoto": "Supprimer la photo",
+        "removing": "Suppression...",
+        "confirmRemove": {
+          "title": "Supprimer la photo de profil ?",
+          "description": "Cette action ne peut pas être annulée. Votre photo de profil sera supprimée et réinitialisée à l'avatar par défaut.",
+          "cancel": "Annuler",
+          "confirm": "Supprimer la photo"
+        }
+      },
+      "personalInfo": {
+        "title": "Informations personnelles",
+        "firstName": "Prénom",
+        "lastName": "Nom",
+        "email": "Email",
+        "phone": "Téléphone"
+      },
+      "professionalInfo": {
+        "title": "Informations professionnelles",
+        "jobTitle": "Titre du poste"
+      },
+      "language": {
+        "title": "Préférences de langue",
+        "english": "English",
+        "french": "Français"
+      }
+    },
+    "security": {
+      "title": "Sécurité",
+      "description": "Mettez à jour votre mot de passe et vos paramètres de sécurité",
+      "password": {
+        "title": "Changer le mot de passe",
+        "currentPassword": "Mot de passe actuel",
+        "newPassword": "Nouveau mot de passe",
+        "confirmPassword": "Confirmer le mot de passe",
+        "confirmNewPassword": "Confirmer le nouveau mot de passe",
+        "confirmNewPasswordPlaceholder": "Re-entrer votre nouveau mot de passe pour confirmer",
+        "requirements": "Le mot de passe doit contenir au moins 8 caractères",
+        "updateButton": "Mettre à jour le mot de passe",
+        "updating": "Mise à jour...",
+        "clearFields": "Vider les champs",
+        "passwordPlaceholder": "Entrez votre mot de passe actuel pour vérifier que c'est vous"
+      },
+      "setup2FA": {
+        "title": "Configurer 2FA",
+        "description": "Ajoutez une couche de sécurité supplémentaire en utilisant une application d'authentification",
+        "setupInProgress": "Configuration 2FA en cours",
+        "error": "Erreur lors de la configuration de 2FA",
+        "success": "Configuration de 2FA réussie"
+      },
+      "disable2FA": {
+        "title": "Désactiver 2FA",
+        "description": "Désactiver 2FA",
+        "success": "2FA désactivé",
+        "error": "Erreur lors de la désactivation de 2FA"
+      },
+      "twoFactor": {
+        "title": "Authentification à deux facteurs (2FA)",
+        "description": "Ajoutez une couche de sécurité supplémentaire en utilisant une application d'authentification",
+        "setupInProgress": "Configuration 2FA en cours",
+        "setup": {
+          "title": "Configurer l'authentification à deux facteurs",
+          "steps": {
+            "1": "Téléchargez une application d'authentification comme Google Authenticator ou Authy",
+            "2": "Scannez le code QR avec votre application d'authentification",
+            "3": "Entrez le code à 6 chiffres affiché dans votre application"
+          },
+          "verifyCode": "Entrez le code à 6 chiffres",
+          "verifyButton": "Vérifier et activer la 2FA",
+          "verifying": "Vérification...",
+          "success": "2FA activée avec succès",
+          "error": "Échec de l'activation de la 2FA"
+        },
+        "disable": {
+          "title": "Désactiver l'authentification à deux facteurs",
+          "isEnabled": "2FA est activée",
+          "disableDescription": "Veuillez entrer le code de votre application d'authentification pour désactiver la 2FA",
+          "description": "Votre compte est protégé par l'authentification à deux facteurs.",
+          "description2": "Vous devrez entrer un code de vérification à partir de votre application d'authentification lors de la connexion.",
+          "disabling": "Désactivation...",
+          "disableButton": "Désactiver la 2FA",
+          "verifyCode": "Entrez le code à 6 chiffres",
+          "verifyButton": "Vérifier et désactiver la 2FA",
+          "verifying": "Vérification...",
+          "success": "2FA désactivée avec succès",
+          "error": "Échec de la désactivation de la 2FA"
+        }
+      }
+    },
+    "notifications": {
+      "title": "Notifications",
+      "description": "Configurez la façon dont vous recevez les notifications",
+      "delivery": {
+        "title": "Préférences de livraison",
+        "email": {
+          "title": "Notifications par email",
+          "description": "Recevez des notifications par email concernant les mises à jour importantes"
+        },
+        "push": {
+          "title": "Notifications push",
+          "description": "Recevez des notifications en temps réel dans votre navigateur"
+        }
+      },
+      "types": {
+        "title": "Types de notifications",
+        "bids": {
+          "title": "Mises à jour des offres",
+          "description": "Soyez notifié des nouvelles offres et des changements de statut"
+        },
+        "security": {
+          "title": "Alertes de sécurité",
+          "description": "Alertes importantes concernant la sécurité de votre compte"
+        },
+        "news": {
+          "title": "Actualités et mises à jour",
+          "description": "Restez informé des nouvelles fonctionnalités et des mises à jour de la plateforme"
+        }
+      }
+    },
+    "sessions": {
+      "title": "Sessions actives",
+      "description": "Gérez vos sessions actives sur différents appareils"
+    },
+    "privacy": {
+      "title": "Paramètres de confidentialité",
+      "description": "Contrôlez vos paramètres de confidentialité et de données",
+      "dataCollection": {
+        "title": "Collecte de données",
+        "description": "Gérez la façon dont nous collectons et utilisons vos données"
+      },
+      "dataExport": {
+        "title": "Exportation des données"
+      },
+      "deleteAccount": {
+        "title": "Supprimer le compte",
+        "description": "Supprimez définitivement votre compte et toutes les données associées",
+        "warning": {
+          "title": "Attention :",
+          "points": [
+            "Toutes vos données seront définitivement supprimées",
+            "Vos conversations et documents seront supprimés",
+            "Cette action ne peut pas être annulée"
+          ]
+        },
+        "buttons": {
+          "cancel": "Annuler",
+          "confirm": "Oui, supprimer mon compte"
+        }
+      }
+    }
+  },
+  "login": {
+    "welcomeBack": "Bienvenue",
+    "enterCredentials": "Veuillez saisir vos identifiants pour accéder à votre compte",
+    "username": {
+      "label": "Nom d'utilisateur",
+      "placeholder": "Entrez votre nom d'utilisateur",
+      "required": "Veuillez entrer votre nom d'utilisateur"
+    },
+    "password": {
+      "label": "Mot de passe",
+      "placeholder": "Entrez votre mot de passe",
+      "required": "Le mot de passe doit contenir au moins 6 caractères"
+    },
+    "rememberMe": "Se souvenir de moi",
+    "forgotPassword": "Mot de passe oublié ?",
+    "signIn": "Se connecter",
+    "signingIn": "Connexion en cours..."
+  },
+  "reports": {
+    "title": "Rapports",
+    "empty": {
+      "title": "Aucun rapport trouvé",
+      "description": "Il n'y a aucun rapport à afficher pour le moment.",
+      "create": "Créer un Rapport"
+    },
+    "no_results": {
+      "title": "Aucun rapport correspondant",
+      "description": "Essayez d'ajuster vos filtres pour trouver ce que vous cherchez"
+    },
+    "filters": {
+      "status": {
+        "all": "Tous",
+        "open": "Ouvert",
+        "in_progress": "En Cours",
+        "resolved": "Résolu",
+        "closed": "Fermé"
+      }
+    },
+    "details": {
+      "title": "Détails du Rapport",
+      "created_on": "Créé le",
+      "by": "par",
+      "updated": "Mis à jour",
+	  "status": "Statut",
+      "select_status": "Sélectionner le statut",
+      "status_update_success": "Statut mis à jour avec succès",
+      "status_update_error": "Échec de la mise à jour du statut",
+      "close_report": "Fermer le Rapport",
+      "close_toast_success": "Rapport fermé",
+      "close_toast_error": "Echec de fermeture du Rapport",
+      "go_back": "Retour aux Rapports",
+      "replies": {
+        "title": "Réponses",
+        "no_replies": "Aucune réponse pour le moment",
+        "your_reply": "Votre réponse",
+        "send": "Envoyer la Réponse",
+        "placeholder": "Tapez votre réponse ici...",
+        "toast_error": "Echec de l'envoi de la réponse",
+        "toast_success": "Reponse envoyée",
+        "loading_more": "Chargement...",
+        "load_more": "Charger plus de réponses",
+        "closed_no_replies": {
+          "title": "Rapport Résolu",
+          "description": "Ce rapport a été clôturé sans réponses. Le problème a peut-être été résolu directement ou ne nécessitait plus d'attention."
+        }
+      }
+    },
+    "create": {
+      "title": "Créer un Rapport",
+      "description": "Remplissez les détails ci-dessous pour créer un nouveau rapport",
+      "form": {
+        "title": {
+          "label": "Titre",
+          "placeholder": "Entrez le titre du rapport"
+        },
+        "description": {
+          "label": "Description",
+          "placeholder": "Entrez la description du rapport"
+        },
+        "submit": "Soumettre le Rapport",
+        "cancel": "Annuler"
+      }
+    },
+    "pagination": {
+      "previous": "Précédent",
+      "next": "Suivant"
+    }
+  },
+  "logs": {
+    "title": "Journaux d'activité",
+    "empty": {
+      "title": "Aucun journal trouvé",
+      "description": "Il n'y a pas de journaux correspondant à vos critères de recherche. Essayez d'ajuster vos filtres ou revenez plus tard."
+    },
+	"no_results": {
+	  "title": "Aucun journal correspondant",
+	  "description": "Essayez d'ajuster vos filtres pour trouver ce que vous cherchez"
+	},
+    "filters": {
+	  "all": "Tous",
+      "action_type": "Filtrer par type d'action",
+      "start_date": "Date de début",
+      "end_date": "Date de fin",
+      "search": "Rechercher dans les journaux..."
+    },
+    "error": {
+      "fetch": "Impossible de charger les journaux. Veuillez vérifier votre connexion et vos permissions.",
+      "retry": "Réessayer"
+    },
+    "types": {
+      "FEEDBACK": "Retour",
+      "BID": "Offre",
+      "PURCHASE_REQUEST": "Demande d'achat",
+      "PROFILE": "Profil",
+      "COMPANY": "Entreprise",
+      "AUTH": "Authentification",
+      "CREATE_REPORT": "Rapport créé",
+      "ADD_REPLY": "Réponse ajoutée",
+      "UPDATE_REPORT": "Rapport mis à jour"
+    }
+  }
+}

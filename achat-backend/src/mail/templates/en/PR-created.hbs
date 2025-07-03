@@ -1,0 +1,32 @@
+{{#> layout title="New Purchase Request Available"}}
+    <h2>New Purchase Request Announcement</h2>
+    
+    <p>Hello {{supplierName}},</p>
+    
+    <p>A new purchase request has been created that matches your business category:</p>
+    
+    <div class="message-box">
+        <p><span class="text-large">PR #{{prNumber}}</span></p>
+        <p>{{prTitle}}</p>
+        <p>Category: <span class="highlight">{{category}}</span></p>
+        <p>Submission deadline: <span class="highlight">{{dueDate}}</span></p>
+    </div>
+
+    <p>Brief description:</p>
+    <div class="message-box">
+        <p>{{description}}</p>
+    </div>
+    
+    <p>If you're interested in participating in this bidding process, please click the button below:</p>
+    
+    <a href="{{expressInterestUrl}}" class="button">Express Interest</a>
+    
+    <div class="message-box">
+        <p class="text-large">Important Dates:</p>
+        <p>Expression of interest deadline: {{interestDeadline}}</p>
+        <p>Bid submission deadline: {{bidDeadline}}</p>
+        <p>Expected award date: {{awardDate}}</p>
+    </div>
+    
+    <p class="text-small">Note: You must express interest to receive the complete tender documentation and participate in the bidding process.</p>
+{{/layout}}

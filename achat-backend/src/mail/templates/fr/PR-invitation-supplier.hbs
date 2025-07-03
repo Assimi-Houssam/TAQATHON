@@ -1,0 +1,26 @@
+{{#> layout title="Invitation à soumettre une offre pour une demande d'achat"}}
+    <h1 class="text-large highlight">Invitation à soumettre une offre pour une demande d'achat</h1>
+    <p>Bonjour {{supplierName}},</p>
+
+    <p>Vous êtes invité à soumettre une offre pour la demande d'achat suivante :</p>
+
+    <div class="message-box">
+        <p><span class="text-large">PR #{{prNumber}}</span></p>
+        <p>{{prTitle}}</p>
+        <p>Date d'échéance : <span class="highlight">{{dueDate}}</span></p>
+    </div>
+
+    <p>Veuillez examiner les détails de la demande d'achat et soumettre votre offre avant la date limite. Votre participation à ce processus d'enchère est très appréciée.</p>
+    
+    <a href="{{bidUrl}}" class="button">Soumettre votre offre</a>
+    
+    <div class="message-box">
+        <p class="text-large">Informations importantes :</p>
+        <ul>
+            <li>Assurez-vous d'inclure toutes les documents requis avec votre offre</li>
+            <li>Vous ne pouvez pas soumettre une offre après la date limite</li>
+        </ul>
+    </div>
+    
+    <p class="text-small">Si vous avez des questions concernant le processus d'enchère ou les exigences, veuillez contacter l'équipe de gestion des achats.</p>
+{{/layout}}

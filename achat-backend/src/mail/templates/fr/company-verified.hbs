@@ -1,0 +1,32 @@
+{{#> layout title="Compte entreprise vérifié"}}
+    <h1 class="text-large highlight">Compte entreprise vérifié</h1>
+    <p>Bonjour {{companyName}},</p>
+
+    <p>Votre compte entreprise a été vérifié avec succès. Vous avez maintenant accès à notre plateforme de gestion des achats.</p>
+
+    <p>En tant qu'entreprise vérifiée, vous pouvez maintenant :</p>
+    <ul>
+        <li>Voir et répondre aux demandes d'achat</li>
+        <li>Soumettre des offres pour les demandes d'achat ouvertes</li>
+        <li>Accéder aux documents de gestion des achats</li>
+        <li>Recevoir des notifications pour les opportunités pertinentes</li>
+    </ul>
+
+    <div class="message-box">
+        <p class="text-large">Vos informations :</p>
+        <p>Nom de l'entreprise : {{companyName}}</p>
+        <p>Numéro de registre : {{registrationNumber}}</p>
+        <p>Date de vérification : <span class="highlight">{{verificationDate}}</span></p>
+        <p>Catégories d'activité : {{businessCategories}}</p>
+    </div>
+
+    <p>Commencez par consulter les demandes d'achat disponibles qui correspondent à votre profil d'entreprise :</p>
+    <a href="{{dashboardUrl}}" class="button">Consulter les opportunités disponibles</a>
+
+    <p class="text-small">Veuillez vous assurer que votre profil d'entreprise et vos informations de contact sont à jour pour recevoir les opportunités pertinentes.</p>
+
+    <p>Si vous avez des questions ou besoin d'assistance, veuillez contacter l'équipe de la gestion des achats.</p>
+
+    <p>Merci pour votre coopération et votre engagement !</p>
+{{/layout}}
+

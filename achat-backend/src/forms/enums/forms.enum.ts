@@ -1,0 +1,13 @@
+export enum FormFieldType {
+  TEXT = 'TEXT',
+  BOOLEAN = 'BOOLEAN',
+  NUMBER = 'NUMBER',
+  DATE = 'DATE',
+  FILE = 'FILE',
+  SELECT = 'SELECT',
+  MULTIPLE_CHOICE = 'MULTIPLE_CHOICE',
+  PHONE = 'PHONE',
+  TEXTAREA = 'TEXTAREA',
+  PASSWORD = 'PASSWORD',
+  ARRAY = 'ARRAY',
+}

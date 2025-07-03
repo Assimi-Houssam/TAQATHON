@@ -1,0 +1,21 @@
+{{#> layout title="Purchase Request Due Date Updated"}}
+    <h2>Purchase Request Due Date Updated</h2>
+    
+    <p>Hello {{recipientName}},</p>
+    
+    <p>The due date for the following purchase request has been updated:</p>
+    
+    <div class="message-box">
+        <p><span class="text-large">PR #{{prNumber}}</span></p>
+        <p>{{prTitle}}</p>
+        <p>New due date: <span class="highlight">{{newDueDate}}</span></p>
+    </div>
+
+    <p>Previous due date was: {{previousDueDate}}</p>
+    
+    <p>You can view the full details of this purchase request by clicking the button below:</p>
+    
+    <a href="{{prUrl}}" class="button">View Purchase Request</a>
+    
+    <p class="text-small">If you have any questions, please contact your supervisor or the procurement team.</p>
+{{/layout}}

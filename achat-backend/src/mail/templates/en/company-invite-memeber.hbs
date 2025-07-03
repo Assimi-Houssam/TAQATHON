@@ -1,0 +1,38 @@
+{{#> layout title="New Company Join Request"}}
+    <h2>New Employee Join Request</h2>
+    
+    <p>Hello {{managerName}},</p>
+    
+    <p>Someone has requested to join your company on the procurement platform:</p>
+    
+    <div class="message-box">
+        <p class="text-large">Join Request Details</p>
+        <p>Name: <span class="highlight">{{requesterName}}</span></p>
+        <p>Email: {{requesterEmail}}</p>
+        <p>Requested Role: {{requestedRole}}</p>
+        <p>Request Date: {{requestDate}}</p>
+        {{#if requesterMessage}}
+        <p>Message:</p>
+        <p><em>"{{requesterMessage}}"</em></p>
+        {{/if}}
+    </div>
+
+    <p>Please review this request and take appropriate action:</p>
+    
+    <div style="text-align: center; margin: 30px 0;">
+        <a href="{{approveUrl}}" class="button">Approve Request</a>
+        <p style="margin: 15px 0;">or</p>
+        <a href="{{rejectUrl}}" class="button" style="background-color: #dc2626;">Reject Request</a>
+    </div>
+    
+    <div class="message-box">
+        <p class="text-large">Important Notes:</p>
+        <ul>
+            <li>Approved users will have access based on their assigned role</li>
+            <li>You can modify user permissions after approval</li>
+            <li>The requester will be notified of your decision</li>
+        </ul>
+    </div>
+    
+    <p class="text-small">If you don't recognize this person or suspect suspicious activity, please contact our support team.</p>
+{{/layout}}

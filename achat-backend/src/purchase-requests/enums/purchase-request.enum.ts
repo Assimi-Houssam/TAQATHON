@@ -1,0 +1,46 @@
+export enum PRVisibilityType {
+  PRIVATE = 'private',
+  PUBLIC = 'public',
+  HIDDEN = 'hidden',
+}
+
+export enum IncotermsType {
+  EXW = 'exw',
+  FCA = 'fca',
+  CPT = 'cpt',
+  CIP = 'cip',
+  DAT = 'dat',
+  DAP = 'dap',
+  DDP = 'ddp',
+  FAS = 'fas',
+  FOB = 'fob',
+  CFR = 'cfr',
+  CIF = 'cif',
+}
+
+export enum PurchaseRequestStatus {
+  DRAFT = 'DRAFT',
+  SCHEDULED = 'SCHEDULED',
+  PUBLISHED = 'PUBLISHED',
+  LOCKED = 'LOCKED',
+  WAITING_FOR_SELECTION = 'WAITING_FOR_SELECTION',
+  WAITING_FOR_APPROVAL = 'WAITING_FOR_APPROVAL',
+  FINISHED = 'FINISHED',
+  REJECTED = 'REJECTED',
+  CANCELED = 'CANCELED',
+}
+
+export enum ItemType {
+  MATERIALS = 'MATERIALS',
+  SERVICES = 'SERVICES',
+}
+
+export enum RequestType {
+  CONSULTATION_PAR_DEVIS_CONTRADICTOIRE = 'CONSULTATION_PAR_DEVIS_CONTRADICTOIRE',
+  PETITS_ACHATS_INFERIEUR_A_5000 = 'PETITS_ACHATS_INFERIEUR_A_5000',
+  CONSULTATION_EN_GRE_A_GRE = 'CONSULTATION_EN_GRE_A_GRE',
+  CONTRACT_GROUPE = 'CONTRACT_GROUPE',
+  ACHAT_AFRIQUE = 'ACHAT_AFRIQUE',
+  APPEL_DOFFERS_OUVERT = 'APPEL_DOFFERS_OUVERT',
+  APPEL_DOFFERS_RESTRINGU = 'APPEL_DOFFERS_RESTRINGU',
+}

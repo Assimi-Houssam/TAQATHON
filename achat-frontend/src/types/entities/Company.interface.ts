@@ -1,0 +1,44 @@
+import { User, Bid, Feedback, Answer } from './index';
+import { CompanyApprovalStatus, CompanyStatus, LegalForms, Certifications } from './enums/index.enum';
+import { BusinessScope } from './BusinessScope.interface';
+
+export interface Company {
+  id: number;
+  name: string;
+  business_scopes: BusinessScope[];
+  legal_name: string;
+  commercial_name: string;
+  ICE: string;
+  CNSS: string;
+  RC: string;
+  active_status: CompanyStatus;
+  SIRET_number: string;
+  VAT_number: string;
+  TIN_number: string;
+  industry_code: string;
+  legal_form: LegalForms;
+  certifications: Certifications;
+  company_phone?: string;
+  company_2nd_phone?: string;
+  email: string;
+  website?: string;
+  logo?: string;
+  description?: string;
+  country: string;
+  city: string;
+  address: string;
+  postal_code: string;
+  company_creation_date: Date;
+  approval_status: CompanyApprovalStatus;
+  status: CompanyStatus;
+  timezone: string;
+  members?: User[];
+  pending_users?: User[];
+  bids?: Bid[];
+  feedbacks_received?: Feedback[];
+  answers?: Answer[];
+  approved: boolean;
+  rejection_reason?: string;
+  created_at: Date;
+  updated_at: Date;
+}

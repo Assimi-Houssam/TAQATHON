@@ -1,0 +1,19 @@
+{{#> layout title="Vérification de votre adresse e-mail"}}
+    <h1 class="text-large highlight">Vérification de votre adresse e-mail</h1>
+    <p>Bonjour {{name}},</p>
+    
+    <div class="message-box">
+        Merci pour la vérification de votre adresse e-mail. Votre compte est maintenant complètement activé !
+    </div>
+
+    <a href="{{verificationUrl}}" class="button">Vérifier votre adresse e-mail</a>
+
+    <p class="text-small">
+        Si le bouton ne fonctionne pas, copiez et collez ce lien dans votre navigateur :<br>
+        <span style="word-break: break-all;">{{verificationUrl}}</span>
+    </p>
+
+    <p class="text-small">
+        Ce lien de vérification expirera dans 2 heures.
+    </p>
+{{/layout}} 

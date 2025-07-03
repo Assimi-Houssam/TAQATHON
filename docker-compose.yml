@@ -1,0 +1,82 @@
+networks:
+  achat-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: achat-postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-achat_db}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres123}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./create-db-users.sh:/docker-entrypoint-initdb.d/create-db-users.sh
+    networks:
+      - achat-network
+
+  # Redis for Background Jobs
+  redis:
+    image: redis:7-alpine
+    container_name: achat-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - achat-network
+
+  # Backend API
+  backend:
+    build:
+      context: ./achat-backend
+      dockerfile: Dockerfile
+    container_name: achat-backend
+    environment:
+      NODE_ENV: development
+      # Database
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres123}
+      POSTGRES_DB: ${POSTGRES_DB:-achat_db}
+      # Redis
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      # Email
+      SMTP_HOST: mailhog
+      SMTP_PORT: 1025
+      SMTP_USER: ""
+      SMTP_PASS: ""
+      # JWT
+      JWT_SECRET: ${JWT_SECRET:-OCP-Achat-1337-UM6P}
+    ports:
+      - "1337:1337"  # API
+      - "4800:4800"  # WebSocket Chat
+      - "5140:5140"  # WebSocket Notifications
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - achat-network
+
+  # Frontend Application
+  frontend:
+    build:
+      context: ./achat-frontend
+      dockerfile: Dockerfile
+    container_name: achat-frontend
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:1337/api
+      NEXT_PUBLIC_API_URL_DOCKER: http://backend:1337/api
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    networks:
+      - achat-network

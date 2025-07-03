@@ -1,0 +1,30 @@
+{{#> layout title="Nouvelle demande d'achat"}}
+    <h1 class="text-large highlight">Nouvelle demande d'achat</h1>
+    <p>Bonjour {{supplierName}},</p>
+
+    <p>Une nouvelle demande d'achat a été créée qui correspond à votre catégorie de produit :</p>
+
+    <div class="message-box">
+        <p><span class="text-large">PR #{{prNumber}}</span></p>
+        <p>{{prTitle}}</p>
+        <p>Catégorie : <span class="highlight">{{category}}</span></p>
+        <p>Date d'échéance : <span class="highlight">{{dueDate}}</span></p>
+    </div>
+
+    <p>Description succincte :</p>
+    <div class="message-box">
+        <p>{{description}}</p>
+    </div>
+
+    <p>Si vous êtes intéressé à participer à ce processus d'enchère, veuillez cliquer sur le bouton ci-dessous :</p>
+    <a href="{{expressInterestUrl}}" class="button">Exprimer son intérêt</a>
+
+    <div class="message-box">
+        <p class="text-large">Dates clés :</p>
+        <p>Date limite d'expression d'intérêt : {{interestDeadline}}</p>
+        <p>Date limite de soumission des offres : {{bidDeadline}}</p>
+        <p>Date d'attribution prévue : {{awardDate}}</p>
+    </div>
+
+    <p class="text-small">Note : Vous devez exprimer votre intérêt pour recevoir les documents complets de la demande d'achat et participer à ce processus d'enchère.</p>
+{{/layout}}

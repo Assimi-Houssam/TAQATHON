@@ -1,0 +1,45 @@
+{{#> layout title="Bid Status Update"}}
+    <h2>Bid Status Update</h2>
+    
+    <p>Hello {{companyName}},</p>
+    
+    <p>Thank you for participating in the bidding process for the following purchase request:</p>
+    
+    <div class="message-box">
+        <p><span class="text-large">PR #{{prNumber}}</span></p>
+        <p>{{prTitle}}</p>
+        <p>Your Bid Amount: {{bidAmount}} {{currency}}</p>
+        <p>Decision Date: {{decisionDate}}</p>
+    </div>
+
+    <p>We regret to inform you that your bid was not selected for this purchase request. The decision was made after careful evaluation of all submitted proposals.</p>
+
+    {{#if feedbackAvailable}}
+    <div class="message-box">
+        <p class="text-large">Bid Evaluation Feedback:</p>
+        <ul>
+            {{#each feedbackPoints}}
+            <li>{{this}}</li>
+            {{/each}}
+        </ul>
+    </div>
+    {{/if}}
+    
+    <p>We encourage you to:</p>
+    <ul>
+        <li>Review any available feedback to strengthen future bids</li>
+        <li>Continue participating in future purchase requests</li>
+        <li>Update your company profile to receive relevant opportunities</li>
+    </ul>
+    
+    <a href="{{dashboardUrl}}" class="button">View Other Opportunities</a>
+    
+    {{#if debriefingAvailable}}
+    <div class="message-box">
+        <p>A debriefing session is available upon request. If you would like to schedule one, please click below:</p>
+        <a href="{{debriefingUrl}}" class="button">Request Debriefing</a>
+    </div>
+    {{/if}}
+    
+    <p class="text-small">We value your participation and look forward to your involvement in future opportunities.</p>
+{{/layout}}
