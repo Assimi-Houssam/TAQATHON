@@ -6,6 +6,8 @@ const withNextIntl = createNextIntlPlugin();
 
 const config: NextConfig = {
   reactStrictMode: false,
+  // Enable standalone output for Docker deployments
+  output: "standalone",
   images: {
     remotePatterns: [
       {

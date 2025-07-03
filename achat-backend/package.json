@@ -46,6 +46,7 @@
     "@nestjs/websockets": "^10.4.15",
     "@types/bcryptjs": "^2.4.2",
     "@types/passport-local": "^1.0.38",
+    "axios": "^1.7.2",
     "bcryptjs": "^2.4.3",
     "bull": "^4.16.5",
     "class-transformer": "^0.5.1",

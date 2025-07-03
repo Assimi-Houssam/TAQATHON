@@ -1,39 +1,60 @@
-# Use Node.js 18 LTS Alpine for smaller image
-FROM node:18-alpine
+# Multi-stage build for Next.js application
+FROM node:18-alpine AS base
 
-# Set working directory
+# Install dependencies only when needed
+FROM base AS deps
+RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
-# Install curl for health checks
-RUN apk add --no-cache curl
-
-# Copy package files and vendor directory first
+# Copy package files and vendor directory
 COPY package*.json ./
 COPY vendor/ ./vendor/
 
-# Install dependencies
-RUN npm ci --only=production && npm cache clean --force
+# Install dependencies (including dev dependencies for build)
+RUN npm ci --legacy-peer-deps
 
-# Copy source code
+# Rebuild the source code only when needed
+FROM base AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 # Build the application
 RUN npm run build
 
-# Create non-root user
-RUN addgroup -g 1001 -S nodejs && \
-    adduser -S nextjs -u 1001
+# Production image, copy all the files and run next
+FROM base AS runner
+WORKDIR /app
 
-# Change ownership
-RUN chown -R nextjs:nodejs /app
+ENV NODE_ENV=production
+# Uncomment the following line in case you want to disable telemetry during runtime.
+# ENV NEXT_TELEMETRY_DISABLED=1
+
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+
+# Copy built application
+COPY --from=builder /app/public ./public
+
+# Set the correct permission for prerender cache
+RUN mkdir .next
+RUN chown nextjs:nodejs .next
+
+# Automatically leverage output traces to reduce image size
+# https://nextjs.org/docs/advanced-features/output-file-tracing
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
 USER nextjs
 
-# Expose port
 EXPOSE 3000
+
+ENV PORT=3000
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
-  CMD curl -f http://localhost:3000 || exit 1
+  CMD wget --no-verbose --tries=1 --spider http://localhost:3000 || exit 1
 
-# Start the application
-CMD ["npm", "start"]
+# server.js is created by next build from the standalone output
+# https://nextjs.org/docs/pages/api-reference/next-config-js/output
+CMD ["node", "server.js"]
