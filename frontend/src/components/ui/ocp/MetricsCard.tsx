@@ -10,13 +10,15 @@ import { ChevronRight, ChevronLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const MetricValue = ({ value }: { value: string }) => (
-  <p className=" text-xl md:text-2xl font-semibold text-gray-900 leading-none line-clamp-1">
+  <p className="text-2xl font-semibold text-gray-900 leading-none line-clamp-1">
     {value}
   </p>
 );
 
 const MetricSubtitle = ({ subtitle }: { subtitle: string }) => (
-  <p className="text-gray-500 text-sm leading-none line-clamp-1">{subtitle}</p>
+  <p className="text-sm text-gray-500 leading-none line-clamp-1">
+    {subtitle}
+  </p>
 );
 
 const MetricIcon = ({ 
@@ -64,8 +66,8 @@ interface MetricsCardProps {
 
 export const MetricsCard = ({ item, className = "" }: MetricsCardProps) => {
   const Header = () => (
-    <div className="flex justify-between items-center mb-4">
-      <h2 className="text-gray-800 font-medium leading-none text-sm">
+    <div className="flex justify-between items-center mb-3">
+      <h2 className="font-medium text-sm text-gray-700">
         {item.title}
       </h2>
       <MetricIcon 
@@ -76,10 +78,7 @@ export const MetricsCard = ({ item, className = "" }: MetricsCardProps) => {
     </div>
   );
 
-  const cardClasses = cn(
-    "relative bg-white/90 backdrop-blur-xl rounded-xl shadow-sm border border-gray-100/50",
-    "transition-all duration-300 ease-in-out"
-  );
+  const cardClasses = "bg-white border border-gray-200 rounded-lg shadow-sm";
 
   const contentClasses = "p-4 flex flex-col h-full";
 
@@ -130,7 +129,10 @@ export const MetricsCard = ({ item, className = "" }: MetricsCardProps) => {
           <div className="flex flex-col justify-between h-full">
             <div className="mt-auto">
               {item.value && item.subtitle && (
-                <MetricContent value={item.value} subtitle={item.subtitle} />
+                <MetricContent 
+                  value={item.value} 
+                  subtitle={item.subtitle}
+                />
               )}
             </div>
           </div>

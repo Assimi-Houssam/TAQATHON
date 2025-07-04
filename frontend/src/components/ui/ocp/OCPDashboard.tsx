@@ -241,24 +241,16 @@ export const OCPDashboard = () => {
   const dashboardMetrics = useMemo(() => {
     return [
       {
-        title: "Total Anomalies",
-        value: "0",
-        subtitle: "All detected anomalies",
-        icon: <AlertTriangle className={iconSize} />,
-        color: "text-blue-600",
-        bgColor: "bg-blue-50",
-      },
-      {
-        title: "Critical Anomalies",
-        value: "0",
-        subtitle: "High priority alerts",
+        title: "Critical Alerts",
+        value: "3",
+        subtitle: "3 new anomalies detected",
         icon: <AlertOctagon className={iconSize} />,
         color: "text-red-600",
         bgColor: "bg-red-50",
       },
       {
         title: "Resolved Anomalies",
-        value: "0",
+        value: "25",
         subtitle: "Successfully resolved",
         icon: <CheckCircle className={iconSize} />,
         color: "text-green-600",
@@ -266,38 +258,22 @@ export const OCPDashboard = () => {
       },
       {
         title: "Average Resolution Time",
-        value: "0",
+        value: "4.2h",
         subtitle: "Hours to resolve",
         icon: <Clock className={iconSize} />,
-        color: "text-purple-600",
-        bgColor: "bg-purple-50",
+        color: "text-blue-600",
+        bgColor: "bg-blue-50",
       },
       {
-        title: "Anomalies in Progress",
+        title: "System Status",
+        value: "92%",
+        subtitle: "Units operating normally",
         icon: <Activity className={iconSize} />,
-        color: "text-orange-600",
-        bgColor: "bg-orange-50",
-        subMetrics: [
-          {
-            value: "0",
-            subtitle: "In Investigation",
-          },
-          {
-            value: "0",
-            subtitle: "Under Review",
-          },
-          {
-            value: "0",
-            subtitle: "Awaiting Action",
-          },
-          {
-            value: "0",
-            subtitle: "Escalated",
-          },
-        ],
+        color: "text-green-600",
+        bgColor: "bg-green-50",
       },
     ];
-  }, [t]);
+  }, [iconSize]);
 
   const cleanMonitoringSystems: MonitoringSystem[] = [];
 
@@ -423,9 +399,9 @@ export const OCPDashboard = () => {
           }
         />
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-5 gap-4 mt-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-4 mt-8">
           {isDashboardLoading
-            ? Array(5)
+            ? Array(4)
                 .fill(0)
                 .map((_, index) => (
                   <div
