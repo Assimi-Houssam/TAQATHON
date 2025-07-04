@@ -5,27 +5,31 @@ import { useTranslations } from "next-intl";
 export const Features = () => {
   const t = useTranslations("features");
 
-  const procurementSteps = [
+  const industrialFeatures = [
     {
-      title: t("registration.title"),
-      description: t("registration.description"),
+      title: "Real-time Monitoring",
+      description: "Monitor industrial systems and detect anomalies in real-time with advanced sensors and analytics"
     },
     {
-      title: t("verification.title"),
-      description: t("verification.description"),
+      title: "Predictive Analytics", 
+      description: "Use AI-powered analytics to predict potential failures and optimize maintenance schedules"
     },
     {
-      title: t("platformAccess.title"),
-      description: t("platformAccess.description"),
+      title: "Automated Alerts",
+      description: "Receive instant notifications when anomalies are detected, enabling rapid response and intervention"
     },
     {
-      title: t("bidSubmission.title"),
-      description: t("bidSubmission.description"),
+      title: "Performance Tracking",
+      description: "Track system performance metrics and generate comprehensive reports for continuous improvement"
     },
     {
-      title: t("contractAward.title"),
-      description: t("contractAward.description"),
+      title: "Integration Capabilities",
+      description: "Seamlessly integrate with existing industrial systems and third-party monitoring tools"
     },
+    {
+      title: "Compliance Management",
+      description: "Ensure regulatory compliance with automated reporting and audit trail functionality"
+    }
   ];
 
   return (
@@ -34,9 +38,9 @@ export const Features = () => {
         {t("title")}
       </h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 md:gap-8">
-        {procurementSteps.map((step, index) => (
+        {industrialFeatures.map((feature, index) => (
           <Card
-            key={step.title}
+            key={feature.title}
             className="group hover:shadow-lg transition-all duration-300 border-none bg-white/50 backdrop-blur-sm hover:-translate-y-1 hover:bg-white/80"
           >
             <CardHeader className="sm:min-h-[100px]">
@@ -45,13 +49,13 @@ export const Features = () => {
                   {index + 1}
                 </span>
                 <CardTitle className="text-custom-green-800 text-lg sm:text-xl group-hover:text-custom-green-900 transition-colors">
-                  {step.title}
+                  {feature.title}
                 </CardTitle>
               </div>
             </CardHeader>
             <CardContent>
               <p className="text-custom-green-700 text-sm sm:text-base leading-relaxed group-hover:text-custom-green-800 transition-colors">
-                {step.description}
+                {feature.description}
               </p>
             </CardContent>
           </Card>

@@ -157,7 +157,7 @@ export function CompaniesDataTable({
               [CompanyStatus.LOCKED]: {
                 color: "bg-yellow-100 text-yellow-800 border-yellow-200",
                 icon: <AlertCircle className="h-3 w-3" />,
-              },
+                              },
             };
 
             const config = statusConfig[item.status || CompanyStatus.ACTIVE];

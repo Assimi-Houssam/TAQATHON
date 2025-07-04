@@ -566,7 +566,7 @@ const DocumentViewer = ({
   <div className="p-4 border-t border-gray-200">
     {isLoading ? (
       <div className="flex items-center justify-center h-[400px] bg-gray-50">
-        <Loader2 className="h-8 w-8 animate-spin text-green-500" />
+        <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
       </div>
     ) : (
       <iframe
@@ -660,7 +660,7 @@ const BreadcrumbComponent = ({
             e.preventDefault();
             onCompanyClick();
           }}
-          className="hover:text-green-600"
+          className="hover:text-blue-600"
         >
           <div className="flex items-center gap-2">
             {company && (
@@ -686,7 +686,7 @@ const BreadcrumbComponent = ({
                 e.preventDefault();
                 onCategoryClick();
               }}
-              className="hover:text-green-600"
+              className="hover:text-blue-600"
             >
               {companyCategories.find((c) => c.id === category)?.title}
             </BreadcrumbLink>
@@ -786,7 +786,7 @@ const DocumentsView = ({ companyId }: { companyId: number }) => {
               className={`p-4 cursor-pointer transition-colors
                               ${
                                 expandedDocs[doc.id]
-                                  ? "bg-green-50 text-green-900"
+                                  ? "bg-blue-50 text-blue-900"
                                   : "hover:bg-gray-50"
                               }`}
               onClick={() => toggleDocument(doc.id)}
@@ -809,7 +809,7 @@ const CertificationsView = ({ companyId }: ViewProps) => {
   const getStatusColor = (status: Certification["status"]) => {
     switch (status) {
       case "active":
-        return "bg-green-100 text-green-800";
+        return "bg-blue-100 text-blue-800";
       case "expired":
         return "bg-red-100 text-red-800";
       case "pending":

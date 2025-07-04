@@ -830,8 +830,8 @@
     }
   },
   "login": {
-    "welcomeBack": "Bienvenue",
-    "enterCredentials": "Veuillez saisir vos identifiants pour accéder à votre compte",
+    "welcomeBack": "Bienvenue sur TAQATHON",
+    "enterCredentials": "Veuillez saisir vos identifiants pour accéder à la plateforme de surveillance industrielle",
     "username": {
       "label": "Nom d'utilisateur",
       "placeholder": "Entrez votre nom d'utilisateur",

@@ -10,7 +10,7 @@ import {
   CartesianGrid,
 } from "recharts";
 import { DateRange } from "react-day-picker";
-import { TableProperties } from "lucide-react";
+import { Factory } from "lucide-react";
 import { motion } from "framer-motion";
 import { DepartmentData } from "@/types/dashboard";
 
@@ -57,10 +57,10 @@ export const DepartmentsChart = ({
       >
         <CardContent className="pt-4 p-0 h-[350px] relative">
           {/* Background Pattern */}
-          <div className="absolute inset-0 opacity-5">
-            <div className="absolute inset-0 bg-gradient-to-r from-gray-100 via-gray-200 to-gray-100" />
-            <div className="h-full w-full bg-[linear-gradient(45deg,transparent_25%,rgba(68,68,68,.2)_50%,transparent_75%,transparent_100%)] bg-[length:20px_20px]" />
-          </div>
+          {/* <div className="absolute inset-0 opacity-5">
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-100 via-blue-200 to-blue-100" />
+            <div className="h-full w-full bg-[linear-gradient(45deg,transparent_25%,rgba(59,130,246,.1)_50%,transparent_75%,transparent_100%)] bg-[length:20px_20px]" />
+          </div> */}
 
           {/* Content Container */}
           <motion.div
@@ -84,17 +84,17 @@ export const DepartmentsChart = ({
               <div className="relative">
                 <motion.div
                   animate={{
-                    rotate: [0, 10, 0],
-                    scale: [1, 1.1, 1],
+                    rotate: [0, 5, 0, -5, 0],
+                    scale: [1, 1.05, 1],
                   }}
                   transition={{
-                    duration: 3,
+                    duration: 4,
                     repeat: Infinity,
                     ease: "easeInOut",
                   }}
                   className="relative z-10"
                 >
-                  <TableProperties className="w-12 h-12 text-blue-600/80" />
+                  <Factory className="w-12 h-12 text-blue-600/80" />
                 </motion.div>
                 <motion.div
                   className="absolute inset-0 bg-blue-500/20 rounded-full blur-xl"
@@ -103,7 +103,7 @@ export const DepartmentsChart = ({
                     opacity: [0.5, 0.8, 0.5],
                   }}
                   transition={{
-                    duration: 3,
+                    duration: 4,
                     repeat: Infinity,
                     ease: "easeInOut",
                   }}
@@ -113,27 +113,42 @@ export const DepartmentsChart = ({
 
             {/* Text Content */}
             <motion.div
-              className="text-center space-y-2 px-4"
+              className="text-center space-y-3 px-4"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3, duration: 0.5 }}
             >
               <motion.p
-                className="text-gray-600 font-medium text-lg"
+                className="text-gray-700 font-semibold text-lg"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.4 }}
               >
-                No data available for the selected time frame
+                No anomaly data available
               </motion.p>
               <motion.p
-                className="text-sm text-gray-400"
+                className="text-sm text-gray-500 max-w-xs mx-auto"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.5 }}
               >
-                Try selecting a different date range
+                Start monitoring your industrial units to track anomaly distribution across departments
               </motion.p>
+            </motion.div>
+
+            {/* Pulse Indicator */}
+            <motion.div
+              className="mt-6 flex items-center gap-2 text-xs text-blue-600"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.6 }}
+            >
+              <motion.div
+                animate={{ scale: [1, 1.2, 1] }}
+                transition={{ duration: 2, repeat: Infinity }}
+                className="w-2 h-2 bg-blue-500 rounded-full"
+              />
+              <span>Ready to receive monitoring data</span>
             </motion.div>
 
             {/* Decorative Elements */}
@@ -141,10 +156,11 @@ export const DepartmentsChart = ({
               className="absolute inset-0 pointer-events-none"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 0.6, duration: 0.8 }}
+              transition={{ delay: 0.7, duration: 0.8 }}
             >
               <div className="absolute top-0 left-0 w-32 h-32 bg-blue-500/5 rounded-full blur-3xl" />
               <div className="absolute bottom-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full blur-3xl" />
+              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-20 h-20 bg-blue-500/3 rounded-full blur-2xl" />
             </motion.div>
           </motion.div>
         </CardContent>
@@ -222,7 +238,7 @@ export const DepartmentsChart = ({
                   {formatValue(value)}
                 </span>,
                 <span key="label" className="text-sm text-gray-600">
-                  Requests
+                  Anomalies
                 </span>,
               ]}
               labelFormatter={(label) => (

@@ -69,23 +69,23 @@ function formatBuyingEntity(entity: BuyingEntityType): {
     },
     [BuyingEntityType.OCP_AFRIQUE]: {
       label: "OCP Afrique",
-      color: "text-green-600",
+      color: "text-blue-600",
     },
     [BuyingEntityType.OCP_FOUNDATION]: {
       label: "OCP Foundation",
-      color: "text-custom-green-600",
+      color: "text-blue-600",
     },
     [BuyingEntityType.OCP_SA]: {
       label: "OCP SA",
-      color: "text-orange-600",
+      color: "text-blue-600",
     },
     [BuyingEntityType.OCP_INT]: {
       label: "OCP International",
-      color: "text-red-600",
+      color: "text-blue-600",
     },
     [BuyingEntityType.UM6P]: {
       label: "UM6P",
-      color: "text-teal-600",
+      color: "text-blue-600",
     },
   };
   return config[entity];

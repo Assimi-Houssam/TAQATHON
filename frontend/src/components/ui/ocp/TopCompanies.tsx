@@ -1,20 +1,20 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import {
-  Building2,
   TrendingUp,
   Award,
   BarChart3,
   Building,
   AlertCircle,
   ChevronUp,
+  Monitor,
 } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCallback, useState, useEffect, useRef } from "react";
 
-interface Company {
+interface IndustrialSystem {
   name: string;
   bids: number;
   won: number;
@@ -22,9 +22,9 @@ interface Company {
   categories: string[];
 }
 
-const CompanyItem = ({ company }: { company: Company }) => {
-  const successRate = ((company.won / company.bids) * 100).toFixed(1);
-  const isHighPerformer = Number(successRate) > 60;
+const SystemItem = ({ company }: { company: IndustrialSystem }) => {
+  const efficiency = ((company.won / company.bids) * 100).toFixed(1);
+  const isHighPerformer = Number(efficiency) > 95;
 
   return (
     <div
@@ -37,11 +37,11 @@ const CompanyItem = ({ company }: { company: Company }) => {
         <div
           className={cn(
             "w-10 h-10 rounded-lg flex items-center justify-center shrink-0",
-                "bg-gradient-to-br from-blue-50 to-blue-100",
-    "text-blue-600"
+            "bg-gradient-to-br from-blue-50 to-blue-100",
+            "text-blue-600"
           )}
         >
-          <Building2 className="h-5 w-5" />
+          <Monitor className="h-5 w-5" />
         </div>
 
         <div className="flex-1 min-w-0">
@@ -56,11 +56,11 @@ const CompanyItem = ({ company }: { company: Company }) => {
               <div className="flex items-center gap-4 mt-1">
                 <span className="text-sm text-gray-500 flex items-center gap-1">
                   <BarChart3 className="h-3 w-3" />
-                  {company.bids} bids
+                  {company.bids} sensors
                 </span>
                 <span className="text-sm text-blue-600 flex items-center gap-1">
                   <TrendingUp className="h-3 w-3" />
-                  {company.won} won
+                  {company.won} operational
                 </span>
               </div>
             </div>
@@ -69,14 +69,16 @@ const CompanyItem = ({ company }: { company: Company }) => {
               <div
                 className={cn(
                   "text-sm font-medium rounded-full px-2.5 py-1",
-                  Number(successRate) >= 50
+                  Number(efficiency) >= 95
+                    ? "bg-green-50 text-green-700"
+                    : Number(efficiency) >= 90
                     ? "bg-blue-50 text-blue-700"
-                    : Number(successRate) >= 30
+                    : Number(efficiency) >= 85
                     ? "bg-amber-50 text-amber-700"
-                    : "bg-gray-50 text-gray-700"
+                    : "bg-red-50 text-red-700"
                 )}
               >
-                {successRate}%
+                {efficiency}%
               </div>
             </div>
           </div>
@@ -85,13 +87,15 @@ const CompanyItem = ({ company }: { company: Company }) => {
             <div
               className={cn(
                 "h-full rounded-full transition-all duration-500",
-                Number(successRate) >= 50
+                Number(efficiency) >= 95
+                  ? "bg-green-500"
+                  : Number(efficiency) >= 90
                   ? "bg-blue-500"
-                  : Number(successRate) >= 30
+                  : Number(efficiency) >= 85
                   ? "bg-amber-500"
-                  : "bg-gray-400"
+                  : "bg-red-500"
               )}
-              style={{ width: `${successRate}%` }}
+              style={{ width: `${efficiency}%` }}
             />
           </div>
         </div>
@@ -101,7 +105,7 @@ const CompanyItem = ({ company }: { company: Company }) => {
 };
 
 interface TopCompaniesProps {
-  companies: Company[];
+  companies: IndustrialSystem[];
   className?: string;
   selectedCategory?: string;
   hasMore?: boolean;
@@ -117,23 +121,112 @@ const LoadingState = () => (
     animate={{ opacity: 1, y: 0 }}
     className="flex flex-col items-center justify-center py-8"
   >
-    <p className="text-sm text-gray-500">No companies</p>
+    <p className="text-sm text-gray-500">Loading systems...</p>
   </motion.div>
 );
 
 const EmptyState = ({ selectedCategory }: { selectedCategory: string }) => (
-  <div className="flex flex-col items-center justify-center py-12 px-4 space-y-4">
-    <div className="w-16 h-16 rounded-full bg-gray-50 flex items-center justify-center">
-      <Building className="w-8 h-8 text-gray-400" />
-    </div>
-    <div className="text-center space-y-2">
-      <h3 className="text-sm font-medium text-gray-900">No companies found</h3>
-      <p className="text-sm text-gray-500">
+  <div className="flex flex-col items-center justify-center py-12 px-4 space-y-4 h-full">
+    {/* Background Pattern */}
+    {/* <div className="absolute inset-0 opacity-5">
+      <div className="absolute inset-0 bg-gradient-to-r from-blue-100 via-blue-200 to-blue-100" />
+      <div className="h-full w-full bg-[linear-gradient(45deg,transparent_25%,rgba(59,130,246,.1)_50%,transparent_75%,transparent_100%)] bg-[length:20px_20px]" />
+    </div> */}
+
+    {/* Icon */}
+    <motion.div
+      initial={{ scale: 0.5, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      transition={{
+        delay: 0.2,
+        duration: 0.5,
+        type: "spring",
+        stiffness: 100,
+      }}
+      className="mb-4 relative"
+    >
+      <div className="relative">
+        <motion.div
+          animate={{
+            rotate: [0, 5, 0, -5, 0],
+            scale: [1, 1.05, 1],
+          }}
+          transition={{
+            duration: 4,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+          className="relative z-10"
+        >
+          <Building className="w-12 h-12 text-blue-600/80" />
+        </motion.div>
+        <motion.div
+          className="absolute inset-0 bg-blue-500/20 rounded-full blur-xl"
+          animate={{
+            scale: [1, 1.2, 1],
+            opacity: [0.5, 0.8, 0.5],
+          }}
+          transition={{
+            duration: 4,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        />
+      </div>
+    </motion.div>
+
+    {/* Text Content */}
+    <motion.div
+      className="text-center space-y-2"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.3, duration: 0.5 }}
+    >
+      <motion.h3
+        className="text-lg font-semibold text-gray-900"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.4 }}
+      >
+        No industrial systems found
+      </motion.h3>
+      <motion.p
+        className="text-sm text-gray-500 max-w-sm mx-auto"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.5 }}
+      >
         {selectedCategory === "all"
-          ? "No companies have been registered yet."
-          : `No companies found in the "${selectedCategory}" category.`}
-      </p>
-    </div>
+          ? "Connect your industrial systems to start monitoring performance metrics and efficiency scores."
+          : `No systems found in the "${selectedCategory}" category. Try selecting a different category or connect more systems.`}
+      </motion.p>
+    </motion.div>
+
+    {/* System Status */}
+    <motion.div
+      className="mt-6 flex items-center gap-2 text-xs text-blue-600"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ delay: 0.6 }}
+    >
+      <motion.div
+        animate={{ scale: [1, 1.2, 1] }}
+        transition={{ duration: 2, repeat: Infinity }}
+        className="w-2 h-2 bg-blue-500 rounded-full"
+      />
+      <span>Ready to connect systems</span>
+    </motion.div>
+
+    {/* Decorative Elements */}
+    <motion.div
+      className="absolute inset-0 pointer-events-none"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ delay: 0.7, duration: 0.8 }}
+    >
+      <div className="absolute top-0 left-0 w-32 h-32 bg-blue-500/5 rounded-full blur-3xl" />
+      <div className="absolute bottom-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full blur-3xl" />
+    </motion.div>
   </div>
 );
 
@@ -144,10 +237,10 @@ const ErrorState = ({ onRetry }: { onRetry?: () => void }) => (
     </div>
     <div className="text-center space-y-2">
       <h3 className="text-sm font-medium text-gray-900">
-        Failed to load companies
+        Failed to load systems
       </h3>
       <p className="text-sm text-gray-500">
-        There was an error loading the companies. Please try again.
+        There was an error loading the system performance data. Please try again.
       </p>
       {onRetry && (
         <Button variant="outline" size="sm" onClick={onRetry} className="mt-2">
@@ -161,21 +254,21 @@ const ErrorState = ({ onRetry }: { onRetry?: () => void }) => (
 const LoadMoreIndicator = ({
   isLoading,
   hasMore,
-  companiesCount,
+  systemsCount,
 }: {
   isLoading: boolean;
   hasMore: boolean;
-  companiesCount: number;
+  systemsCount: number;
 }) => {
   if (isLoading) {
     return <LoadingState />;
   }
 
-  if (!hasMore && companiesCount > 0) {
+  if (!hasMore && systemsCount > 0) {
     return (
       <div className="flex items-center justify-center py-6">
         <div className="px-4 py-2 bg-gray-50 rounded-full">
-          <p className="text-sm text-gray-500">No more companies to load</p>
+          <p className="text-sm text-gray-500">No more systems to load</p>
         </div>
       </div>
     );
@@ -184,7 +277,7 @@ const LoadMoreIndicator = ({
   return null;
 };
 
-const AnimatedCompanyItem = motion(CompanyItem);
+const AnimatedSystemItem = motion(SystemItem);
 
 const ScrollToTop = ({
   scrollAreaRef,
@@ -251,10 +344,10 @@ export const TopCompanies = ({
   error = null,
   onRetry,
 }: TopCompaniesProps) => {
-  const filteredCompanies = companies.filter(
-    (company) =>
+  const filteredSystems = companies.filter(
+    (system) =>
       selectedCategory === "all" ||
-      company.categories.some(
+      system.categories.some(
         (category) => category.toLowerCase() === selectedCategory.toLowerCase()
       )
   );
@@ -266,16 +359,16 @@ export const TopCompanies = ({
       return <ErrorState onRetry={onRetry} />;
     }
 
-    if (filteredCompanies.length === 0 && !isLoading) {
+    if (filteredSystems.length === 0 && !isLoading) {
       return <EmptyState selectedCategory={selectedCategory} />;
     }
 
     return (
       <div className="space-y-3">
-        {filteredCompanies.map((company, index) => (
-          <AnimatedCompanyItem
-            key={company.name + index}
-            company={company}
+        {filteredSystems.map((system, index) => (
+          <AnimatedSystemItem
+            key={system.name + index}
+            company={system}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{
@@ -287,7 +380,7 @@ export const TopCompanies = ({
         <LoadMoreIndicator
           isLoading={isLoading}
           hasMore={hasMore}
-          companiesCount={filteredCompanies.length}
+          systemsCount={filteredSystems.length}
         />
         <div ref={observerRef} className="h-px w-full" />
       </div>

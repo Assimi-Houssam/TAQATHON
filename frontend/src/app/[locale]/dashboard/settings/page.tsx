@@ -100,7 +100,7 @@ export default function SettingsPage() {
             <TabsTrigger
               key={item.id}
               value={item.id}
-              className="flex items-center gap-2 px-4 py-2 data-[state=active]:bg-custom-green-500 data-[state=active]:text-white data-[state=active]:shadow-sm rounded-t-md rounded-b-none"
+              className="flex items-center gap-2 px-4 py-2 data-[state=active]:bg-blue-500 data-[state=active]:text-white data-[state=active]:shadow-sm rounded-t-md rounded-b-none"
             >
               <item.icon className="h-4 w-4" />
               {item.label}
@@ -122,7 +122,7 @@ export default function SettingsPage() {
               <div className="flex justify-end gap-4 pt-4 border-t">
                 <Button
                   type="submit"
-                  className="bg-custom-green-500 hover:bg-custom-green-600"
+                  className="bg-blue-500 hover:bg-blue-600"
                   disabled={updateSettings.isPending}
                 >
                   {updateSettings.isPending ? t('saveChanges.updating') : t('saveChanges.save')}

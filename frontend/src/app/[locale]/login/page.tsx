@@ -30,7 +30,7 @@ const LoginPage = () => {
 
       {/* Right side - Image Carousel */}
       <motion.div 
-        className="hidden lg:flex lg:w-2/3 bg-gradient-to-br from-custom-green-600 to-custom-green-500 items-center justify-center overflow-hidden relative"
+        className="hidden lg:flex lg:w-2/3 bg-gradient-to-br from-blue-600 to-blue-500 items-center justify-center overflow-hidden relative"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8 }}

@@ -139,7 +139,7 @@ export function getCompanyOperatorsColumns(
       render: (_, item) => {
         const statusConfig = {
           true: {
-            color: "bg-green-100 text-green-800 border-green-200",
+            color: "bg-blue-100 text-blue-800 border-blue-200",
             icon: <CircleCheck className="h-3 w-3" />,
             text: "Active",
           },

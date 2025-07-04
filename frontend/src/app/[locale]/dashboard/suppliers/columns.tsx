@@ -21,10 +21,10 @@ const CompanyApprovalStatusCell = ({ company }: { company: Company }) => {
       case CompanyApprovalStatus.APPROVED:
         return {
           icon: CheckCircle2,
-          bgColor: "bg-green-50",
-          textColor: "text-green-700",
-          borderColor: "border-green-200",
-          iconColor: "text-green-500",
+          bgColor: "bg-blue-50",
+          textColor: "text-blue-700",
+          borderColor: "border-blue-200",
+          iconColor: "text-blue-500",
         };
       case CompanyApprovalStatus.REJECTED:
         return {

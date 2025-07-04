@@ -14,7 +14,7 @@ const LoginPage = () => {
         </div>
       </div>
 
-      <div className="hidden lg:block lg:w-2/3 bg-custom-green-500">
+      <div className="hidden lg:block lg:w-2/3 bg-blue-500">
         <ImagesCarousel />
       </div>
     </div>

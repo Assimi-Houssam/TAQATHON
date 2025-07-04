@@ -35,7 +35,7 @@ const TableRowComponent: React.FC<{
 }> = ({ row, index, openRow, toggleRow }) => (
   <React.Fragment key={index}>
     <TableRow key={`row-${index}`}>
-      <TableCell className="font-light 2xl:text-lg text-base text-green-600">
+      <TableCell className="font-light 2xl:text-lg text-base text-blue-600">
         {row.reference}
       </TableCell>
       <TableCell>{row.title}</TableCell>
@@ -110,7 +110,7 @@ const PurchaseHistoryComponentAsList: React.FC<{ data: PurchaseRequest[] }> = ({
         <div key={index} className="rounded-md border p-4">
           <div className="flex justify-between">
             <div>
-              <h3 className="font-semibold text-lg text-green-600">
+              <h3 className="font-semibold text-lg text-blue-600">
                 {row.reference}
               </h3>
               <p className="text-sm text-muted-foreground">{row.title}</p>

@@ -24,7 +24,7 @@ interface Session {
 function LoadingSpinner() {
   return (
     <div className="flex items-center justify-center h-64">
-      <Loader2 className="w-6 h-6 animate-spin text-green-500" />
+      <Loader2 className="w-6 h-6 animate-spin text-blue-500" />
     </div>
   );
 }
@@ -75,7 +75,7 @@ function SessionCard({
           disabled={isTerminating}
         >
           {isTerminating ? (
-            <Loader2 className="w-4 h-4 animate-spin text-green-500" />
+            <Loader2 className="w-4 h-4 animate-spin text-blue-500" />
           ) : (
             <X className="w-4 h-4" />
           )}
@@ -101,7 +101,7 @@ function SessionsListHeader({
         disabled={isTerminatingAll}
       >
         {isTerminatingAll ? (
-          <Loader2 className="w-4 h-4 animate-spin mr-2 text-green-500" />
+          <Loader2 className="w-4 h-4 animate-spin mr-2 text-blue-500" />
         ) : null}
         Terminate All Sessions
       </Button>

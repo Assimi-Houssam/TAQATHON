@@ -42,13 +42,25 @@ interface DisplayCompany {
   categories: string[];
 }
 
+interface MonitoringSystem {
+  title: string;
+  description: string;
+  bidding_deadline: string;
+  type: string;
+  requesterEntity: string;
+  requesterDepartment: string;
+  requester: string;
+  status: string;
+  id: string;
+}
+
 interface ExportMetricsData {
   metrics: Array<{ Title: string; Value: string; Subtitle: string }>;
-  companies: Array<{
-    Company: string;
-    "Total Bids": number;
-    "Won Bids": number;
-    "Success Rate": string;
+  systems: Array<{
+    System: string;
+    "Total Sensors": number;
+    "Operational Sensors": number;
+    "Efficiency Rate": string;
   }>;
   tasks: Array<{
     Title: string;
@@ -136,14 +148,12 @@ const prepareDisplayCompanies = (companies: Company[] | undefined) => {
   if (!companies) return [];
 
   return companies.map((company) => {
-    const randomBids = Math.floor(Math.random() * 1000);
-    const randomWon = Math.floor(Math.random() * randomBids);
     const categories = company.business_scopes?.map((scope) => scope.name) || [];
 
     return {
       name: company.legal_name,
-      bids: randomBids,
-      won: randomWon,
+      bids: 0,
+      won: 0,
       category: categories.join(", ") || "Uncategorized",
       categories: categories,
     };
@@ -170,26 +180,26 @@ export const OCPDashboard = () => {
     return [
       {
         title: t("metrics.systems.title"),
-        value: dashboardData.metrics.companies?.total?.toString() || "1,250",
-        subtitle: `${dashboardData.metrics.companies?.active || 1150} monitored systems`,
+        value: dashboardData.metrics.companies?.total?.toString() || "0",
+        subtitle: `${dashboardData.metrics.companies?.active || 0} monitored systems`,
         icon: <Factory className={iconSize} />,
       },
       {
         title: t("metrics.sensors.title"),
-        value: dashboardData.metrics.suppliers?.total?.toString() || "2,300",
-        subtitle: `${dashboardData.metrics.suppliers?.active || 2100} active sensors`,
+        value: dashboardData.metrics.suppliers?.total?.toString() || "0",
+        subtitle: `${dashboardData.metrics.suppliers?.active || 0} active sensors`,
         icon: <Users className={iconSize} />,
       },
       {
         title: t("metrics.anomalies.title"),
-        value: dashboardData.metrics.bids?.total?.toString() || "147",
-        subtitle: `${dashboardData.metrics.bids?.closed || 23} resolved today`,
+        value: dashboardData.metrics.bids?.total?.toString() || "0",
+        subtitle: `${dashboardData.metrics.bids?.closed || 0} resolved today`,
         icon: <TableOfContents className={iconSize} />,
       },
       {
         title: t("metrics.alerts.title"),
-        value: dashboardData.metrics.agents?.total?.toString() || "42",
-        subtitle: `${dashboardData.metrics.agents?.active || 8} critical alerts`,
+        value: dashboardData.metrics.agents?.total?.toString() || "0",
+        subtitle: `${dashboardData.metrics.agents?.active || 0} critical alerts`,
         icon: <Users className={iconSize} />,
       },
       {
@@ -197,19 +207,19 @@ export const OCPDashboard = () => {
         icon: <TableOfContents className={iconSize} />,
         subMetrics: [
           {
-            value: dashboardData.metrics.purchaseRequests?.closed?.toString() || "156",
+            value: dashboardData.metrics.purchaseRequests?.closed?.toString() || "0",
             subtitle: t("metrics.inspections.closed"),
           },
           {
-            value: dashboardData.metrics.purchaseRequests?.won?.toString() || "134",
+            value: dashboardData.metrics.purchaseRequests?.won?.toString() || "0",
             subtitle: t("metrics.inspections.won"),
           },
           {
-            value: dashboardData.metrics.purchaseRequests?.pending?.toString() || "22",
+            value: dashboardData.metrics.purchaseRequests?.pending?.toString() || "0",
             subtitle: t("metrics.inspections.pending"),
           },
           {
-            value: dashboardData.metrics.purchaseRequests?.rejected?.toString() || "12",
+            value: dashboardData.metrics.purchaseRequests?.rejected?.toString() || "0",
             subtitle: t("metrics.inspections.rejected"),
           },
         ],
@@ -293,62 +303,7 @@ export const OCPDashboard = () => {
   const DisplayCompanies: DisplayCompany[] =
     prepareDisplayCompanies(allCompanies);
 
-  const mockTasks = [
-    {
-      title: "Investigate Temperature Anomaly",
-      description: "Review temperature spike in Reactor Unit 3 detected at 14:30",
-      date: "2024-03-20",
-      status: "orange" as const,
-    },
-    {
-      title: "Calibrate Pressure Sensors",
-      description: "Quarterly calibration of pressure monitoring sensors",
-      date: "2024-03-21",
-      status: "blue" as const,
-    },
-    {
-      title: "Update Anomaly Detection Model",
-      description: "Update machine learning model with new training data",
-      date: "2024-03-22",
-      status: "blue" as const,
-    },
-  ];
-
-  const mockOngoingMonitoring = [
-    {
-      id: "SYS001",
-      title: "Reactor Temperature Monitoring",
-      description: "Continuous temperature monitoring for critical reactor systems",
-      bidding_deadline: "2024-03-20",
-      type: "temperature",
-      requesterEntity: "Plant A",
-      requesterDepartment: "Reactor Operations",
-      requester: "Sarah Johnson",
-      status: "active",
-    },
-    {
-      id: "SYS002",
-      title: "Vibration Analysis System",
-      description: "Real-time vibration monitoring for rotating equipment",
-      bidding_deadline: "2024-03-25",
-      type: "vibration",
-      requesterEntity: "Plant B",
-      requesterDepartment: "Mechanical Systems",
-      requester: "John Doe",
-      status: "active",
-    },
-    {
-      id: "SYS003",
-      title: "Chemical Process Monitoring",
-      description: "Automated monitoring of chemical process parameters",
-      bidding_deadline: "2024-03-28",
-      type: "chemical",
-      requesterEntity: "Plant C",
-      requesterDepartment: "Process Control",
-      requester: "Mohammed Ahmed",
-      status: "active",
-    },
-  ];
+  const cleanMonitoringSystems: MonitoringSystem[] = [];
 
   const prepareExportData = () => {
     return {
@@ -357,18 +312,13 @@ export const OCPDashboard = () => {
         Value: metric.value,
         Subtitle: metric.subtitle,
       })),
-      companies: DisplayCompanies.map((company) => ({
-        Company: company.name,
-        "Total Bids": company.bids,
-        "Won Bids": company.won,
-        "Success Rate": `${((company.won / company.bids) * 100).toFixed(1)}%`,
+      systems: DisplayCompanies.map((system) => ({
+        System: system.name,
+        "Total Sensors": system.bids,
+        "Operational Sensors": system.won,
+        "Efficiency Rate": `${((system.won / system.bids) * 100 || 0).toFixed(1)}%`,
       })),
-      tasks: mockTasks.map((task) => ({
-        Title: task.title,
-        Description: task.description,
-        "Due Date": task.date,
-        Status: task.status,
-      })),
+      tasks: [],
     };
   };
 
@@ -380,8 +330,8 @@ export const OCPDashboard = () => {
     utils.book_append_sheet(wb, utils.json_to_sheet(data.metrics), "Metrics");
     utils.book_append_sheet(
       wb,
-      utils.json_to_sheet(data.companies),
-      "Top Companies"
+      utils.json_to_sheet(data.systems),
+      "Industrial Systems"
     );
     utils.book_append_sheet(wb, utils.json_to_sheet(data.tasks), "Tasks");
 
@@ -521,7 +471,7 @@ export const OCPDashboard = () => {
           >
             <OngoingPurchases
               className="h-full border-none shadow-none"
-              purchases={mockOngoingMonitoring}
+              purchases={cleanMonitoringSystems}
             />
           </DashboardCard>
         </div>
@@ -557,9 +507,9 @@ export const OCPDashboard = () => {
           >
             <TopCompanies
               className="border-none shadow-none h-[400px]"
-              companies={DisplayCompanies}
+              companies={[]}
               selectedCategory={selectedCategory}
-              hasMore={hasMore}
+              hasMore={false}
               isLoading={false}
               observerRef={ref}
               error={error}

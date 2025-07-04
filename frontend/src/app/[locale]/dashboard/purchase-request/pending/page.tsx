@@ -175,7 +175,7 @@ const RequestsTable = ({
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="text-green-600 hover:text-green-700"
+                      className="text-blue-600 hover:text-blue-700"
                       onClick={() =>
                         setApprovalDialog({
                           isOpen: true,

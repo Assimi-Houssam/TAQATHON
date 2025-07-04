@@ -23,7 +23,7 @@ export const CompanyNameCell = ({ company }: { company: Company }) => {
       case CompanyStatus.LOCKED:
         return {
           icon: ShieldAlert,
-          color: "text-yellow-500 fill-yellow-100",
+          color: "text-red-500 fill-red-100",
           tooltip: "Suspended Company",
         };
       default:

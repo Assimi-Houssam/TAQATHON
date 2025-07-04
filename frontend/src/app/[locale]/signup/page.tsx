@@ -7,7 +7,7 @@ import ImagesCarousel from "@/components/ui/ocp/images-carousel";
 const RegisterPage = () => {
   return (
     <div className="min-h-screen w-full flex">
-      <div className="hidden lg:block lg:w-2/3 bg-custom-green-500">
+      <div className="hidden lg:block lg:w-2/3 bg-blue-500">
         <ImagesCarousel />
       </div>
       <div className="w-full lg:w-1/3 p-8 flex flex-col justify-center items-center">

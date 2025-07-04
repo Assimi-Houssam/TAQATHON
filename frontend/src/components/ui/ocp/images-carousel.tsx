@@ -16,24 +16,24 @@ const ImagesCarousel = () => {
 
   const carouselImages = [
     {
-      src: "https://www.barlamantoday.com/wp-content/uploads/2024/05/WhatsApp-Image-2024-05-03-at-14.34.17.jpeg",
-      title: "OCP Foundation",
-      description: "Empowering communities through sustainable development",
+      src: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=1440&h=810&fit=crop",
+      title: "TAQATHON Platform",
+      description: "Advanced industrial anomaly detection and monitoring systems",
     },
     {
-      src: "https://www.ocpgroup.ma/media/2020-07/Caravane%20agricole%20-%20Fondation%20OCP%20-%20RWANDA%20-%202019_1_0.jpg",
-      title: "Agricultural Development",
-      description: "Supporting farmers and agricultural initiatives",
+      src: "https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=1440&h=810&fit=crop", 
+      title: "Real-time Monitoring",
+      description: "Continuous monitoring of industrial systems and processes",
     },
     {
-      src: "https://ocpsiteprodsa.blob.core.windows.net/media/styles/wide_x1_max_w1440/azblob/2020-07/Screen%20Shot%202020-07-12%20at%2022.01.07.png",
-      title: "Innovation & Technology",
-      description: "Driving progress through technological advancement",
+      src: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1440&h=810&fit=crop",
+      title: "Smart Analytics",
+      description: "AI-powered analytics for predictive maintenance and optimization",
     },
     {
-      src: "https://ocpsiteprodsa.blob.core.windows.net/media/2020-07/OCP_hero_Ethiopia_%201440_compressed.jpg",
-      title: "Global Impact",
-      description: "Making a difference across continents",
+      src: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=1440&h=810&fit=crop",
+      title: "Industrial Intelligence",
+      description: "Transforming industrial operations through intelligent automation",
     },
   ];
 
