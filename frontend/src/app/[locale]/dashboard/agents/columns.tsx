@@ -1,5 +1,5 @@
 import { User } from "@/types/entities";
-import { Column } from "@/components/ui/ocp/layout/OCPDataTable-new/shared/BaseDataTable";
+import { Column } from "@/components/ui/ocp/layout/OCPDataTable-new/shared";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";

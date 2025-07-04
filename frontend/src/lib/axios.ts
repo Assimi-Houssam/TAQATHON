@@ -15,7 +15,7 @@ interface ApiErrorResponse {
 
 // Create axios instance with default config
 export const apiClient: AxiosInstance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  baseURL: "/api",
   headers: {
     "Content-Type": "application/json",
   },

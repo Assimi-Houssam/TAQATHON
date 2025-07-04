@@ -11,8 +11,13 @@ RUN apk add --no-cache curl
 COPY package*.json ./
 COPY vendor/ ./vendor/
 
-# Install dependencies
-RUN npm ci --only=production && npm cache clean --force
+# Install dependencies (including dev dependencies for build)
+RUN npm ci && npm cache clean --force
+
+# Set environment variables for build
+ENV NODE_ENV=production
+ENV NEXT_PUBLIC_API_URL=/api
+ENV HOSTNAME=0.0.0.0
 
 # Copy source code
 COPY . .

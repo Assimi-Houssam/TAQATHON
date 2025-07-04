@@ -1,12 +1,11 @@
 "use client";
 
-import { UnifiedDataTable } from "@/components/ui/ocp/layout/OCPDataTable-new/shared/UnifiedDataTable";
+import { UnifiedDataTable, FilterGroup } from "@/components/ui/ocp/layout/OCPDataTable-new/shared";
 import { useGetOcpAgents } from "@/endpoints/user/get-ocp-agents";
 import { Departement, User } from "@/types/entities";
 import { useTranslations } from "next-intl";
 import { useCallback, useState } from "react";
 import { getAgentColumns } from "./columns";
-import { FilterGroup } from "@/components/ui/ocp/layout/OCPDataTable-new/shared/BaseSearchBar";
 import { useDepartments } from "@/endpoints/departments/get-departements";
 
 export default function AgentsPage() {

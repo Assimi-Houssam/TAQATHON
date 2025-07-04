@@ -8,9 +8,9 @@ import {
 import { ChevronUp, ChevronDown, CircleX } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
-import { TableError } from "@/components/ui/ocp/layout/OCPDataTable-new/shared/TableError";
-import { TableLoading } from "@/components/ui/ocp/layout/OCPDataTable-new/shared/TableLoading";
-import { TableEmpty } from "@/components/ui/ocp/layout/OCPDataTable-new/shared/TableEmpty";
+import { TableError } from "./TableError";
+import { TableLoading } from "./TableLoading";
+import { TableEmpty } from "./TableEmpty";
 
 export interface Column<T> {
   header: string;

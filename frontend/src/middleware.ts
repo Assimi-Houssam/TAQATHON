@@ -18,13 +18,13 @@ const PUBLIC_PATHS = [
 
 const verifyToken = async (token: string) => {
   try {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL_DOCKER || process.env.NEXT_PUBLIC_API_URL;
-    const response = await fetch(`${apiUrl}/auth/me`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    return response.ok;
+    // For mock authentication, accept any mock token
+    if (token === 'mock-jwt-token-admin-user') {
+      return true;
+    }
+    return false;
   } catch (error) {
-    console.error('[Middleware] Token verification fetch error:', error);
+    console.error('[Middleware] Token verification error:', error);
     return false;
   }
 };

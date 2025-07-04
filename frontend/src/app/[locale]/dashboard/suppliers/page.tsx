@@ -1,13 +1,13 @@
 "use client";
 
-import { UnifiedDataTable } from "@/components/ui/ocp/layout/OCPDataTable-new/shared/UnifiedDataTable";
+import { UnifiedDataTable } from "@/components/ui/ocp/layout/OCPDataTable-new/shared";
 import { useTranslations } from "next-intl";
 import { getCompanyColumns } from "./columns";
 import { useGetAllCompanies } from "@/endpoints/company/get-all-companies";
 import { Company, BusinessScope } from "@/types/entities";
 import { useState, useCallback } from "react";
 import { useGetAllBusinessScopes } from "@/endpoints/company/get-all-business-scopes";
-import { FilterGroup } from "@/components/ui/ocp/layout/OCPDataTable-new/shared/BaseSearchBar";
+import { FilterGroup } from "@/components/ui/ocp/layout/OCPDataTable-new/shared";
 import { CompanyApprovalStatus } from "@/types/entities/enums/index.enum";
 
 export default function SuppliersPage() {

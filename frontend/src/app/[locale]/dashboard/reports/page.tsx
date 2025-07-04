@@ -5,7 +5,7 @@ import { ReportCard } from "@/components/ui/ocp/reports/report-card";
 import { EmptyReports } from "@/components/ui/ocp/reports/empty-reports";
 import { ReportsFilters } from "@/components/ui/ocp/reports/reports-filters";
 import { ReportsPagination } from "@/components/ui/ocp/reports/reports-pagination";
-import { NoResults } from "@/components/ui/ocp/reports/no-results";
+import { ReportsNoResults } from "@/components/ui/ocp/reports/no-results";
 import LoadingSpinner from "@/components/ui/loading-spinner";
 import { useGetReports } from "@/endpoints/reports/get-reports";
 import { Report } from "@/types/report";
@@ -99,7 +99,7 @@ export default function ReportsPage() {
                   </motion.div>
                 ))
               ) : (
-                <NoResults />
+                <ReportsNoResults />
               )}
             </motion.div>
 

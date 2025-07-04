@@ -1,9 +1,9 @@
-import { SearchX } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
 
-export function NoResults() {
+export function LogsNoResults() {
   const t = useTranslations("logs");
   return (
     <motion.div
@@ -13,19 +13,12 @@ export function NoResults() {
         duration: 0.5,
         ease: [0.4, 0, 0.2, 1],
       }}
-      className="flex flex-col items-center justify-center py-16 text-center"
+      className="flex flex-col items-center justify-center py-8 text-center"
     >
-      <div className="relative mb-6">
-        <div className="absolute inset-0 bg-custom-green-100 rounded-full blur-xl opacity-50 animate-pulse" />
-        <div className="relative bg-custom-green-50 rounded-full p-4">
-          <SearchX className="w-8 h-8 text-custom-green-600" />
-        </div>
-      </div>
-      <h3 className="text-xl font-semibold text-gray-900 mb-3">
-        {t("no_results.title")}
-      </h3>
-      <p className="text-sm text-muted-foreground max-w-sm mb-6">
-        {t("no_results.description")}
+      <AlertCircle className="w-12 h-12 text-muted-foreground mb-4" />
+      <h3 className="text-lg font-semibold mb-2">No results found</h3>
+      <p className="text-muted-foreground max-w-md">
+        We couldn&apos;t find any logs matching your search criteria. Try adjusting your filters or search terms.
       </p>
       <Button
         variant="outline"

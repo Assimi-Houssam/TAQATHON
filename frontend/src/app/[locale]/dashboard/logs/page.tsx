@@ -9,7 +9,7 @@ import { useTranslations } from "next-intl";
 import { format } from "date-fns";
 import { LogsType } from "@/types/entities/Logs.interface";
 import { motion } from "framer-motion";
-import { NoResults } from "@/components/ui/ocp/logs/no-results";
+import { LogsNoResults } from "@/components/ui/ocp/logs/no-results";
 
 export default function LogsPage() {
   const t = useTranslations("logs");
@@ -107,7 +107,7 @@ export default function LogsPage() {
             ))}
           </div>
         ) : (
-          <NoResults />
+          <LogsNoResults />
         )}
       </div>
     </motion.div>
