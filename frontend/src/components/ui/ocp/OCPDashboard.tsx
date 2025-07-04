@@ -2,50 +2,31 @@
 
 import { DashboardCard } from "@/components/ui/ocp/DashboardCard";
 import { DashboardHeader } from "@/components/ui/ocp/DashboardHeader";
-import { DepartmentsChart } from "@/components/ui/ocp/DepartmentsChart";
+import { AnomaliesByStatus } from "@/components/ui/ocp/AnomaliesByStatus";
+import { CriticalityDistribution } from "@/components/ui/ocp/CriticalityDistribution";
+import { AnomaliesOverTime } from "@/components/ui/ocp/AnomaliesOverTime";
+import { AnomalyTasksList } from "@/components/ui/ocp/AnomalyTasksList";
 import { ExportMenu } from "@/components/ui/ocp/ExportMenu";
 import { MetricsCard } from "@/components/ui/ocp/MetricsCard";
-import { OngoingPurchases } from "@/components/ui/ocp/OngoingPurchases";
 import { TimeframeSelect } from "@/components/ui/ocp/TimeframeSelect";
-import { TodoList, AddNewTaskButton } from "@/components/ui/ocp/TodoList";
-import { TopCompanies } from "@/components/ui/ocp/TopCompanies";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { useTimeFrame } from "@/context/TimeFrameContext";
-import { useGetAllCompanies } from "@/endpoints/company/get-all-companies";
-import { Company } from "@/types/entities";
 import {
-  Building2,
-  Factory,
-  TableOfContents,
-  Users,
   ClipboardList,
   AlertTriangle,
   AlertOctagon,
   CheckCircle,
   Clock,
   Activity,
+  PieChart,
+  TrendingUp,
+  Shield,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useMemo } from "react";
 import { renderToString } from "react-dom/server";
-import { useInView } from "react-intersection-observer";
 import { utils, write } from "xlsx";
 import { useAgentDashboardData } from "@/endpoints/dahboard/ocp/get-agent-dashboard-data";
 import Head from "next/head";
-
-interface DisplayCompany {
-  name: string;
-  bids: number;
-  won: number;
-  category: string;
-  categories: string[];
-}
 
 interface MonitoringSystem {
   title: string;
@@ -149,30 +130,108 @@ const PrintContent = ({ data }: { data: ExportMetricsData }) => (
   </html>
 );
 
-const prepareDisplayCompanies = (companies: Company[] | undefined) => {
-  if (!companies) return [];
 
-  return companies.map((company) => {
-    const categories = company.business_scopes?.map((scope) => scope.name) || [];
 
-    return {
-      name: company.legal_name,
-      bids: 0,
-      won: 0,
-      category: categories.join(", ") || "Uncategorized",
-      categories: categories,
-    };
-  });
-};
+// Mock data for anomaly visualizations
+const mockAnomaliesByStatus = [
+  {
+    name: "New",
+    value: 12,
+    color: "#3B82F6",
+    icon: <AlertTriangle className="h-4 w-4" />,
+  },
+  {
+    name: "In Progress",
+    value: 8,
+    color: "#F59E0B",
+    icon: <Clock className="h-4 w-4" />,
+  },
+  {
+    name: "Resolved",
+    value: 25,
+    color: "#10B981",
+    icon: <CheckCircle className="h-4 w-4" />,
+  },
+  {
+    name: "Escalated",
+    value: 3,
+    color: "#EF4444",
+    icon: <AlertOctagon className="h-4 w-4" />,
+  },
+];
+
+const mockCriticalityData = [
+  { name: "Unit A", low: 5, medium: 3, high: 2, critical: 1 },
+  { name: "Unit B", low: 8, medium: 4, high: 1, critical: 0 },
+  { name: "Unit C", low: 2, medium: 6, high: 4, critical: 2 },
+  { name: "Unit D", low: 7, medium: 2, high: 3, critical: 1 },
+  { name: "Unit E", low: 4, medium: 5, high: 2, critical: 0 },
+  { name: "Unit E", low: 4, medium: 5, high: 2, critical: 0 },
+];
+
+const mockAnomaliesOverTime = [
+  { date: "2024-01-01", anomalies: 15, resolved: 12, critical: 3 },
+  { date: "2024-01-02", anomalies: 18, resolved: 15, critical: 2 },
+  { date: "2024-01-03", anomalies: 22, resolved: 18, critical: 4 },
+  { date: "2024-01-04", anomalies: 19, resolved: 16, critical: 3 },
+  { date: "2024-01-05", anomalies: 25, resolved: 20, critical: 5 },
+  { date: "2024-01-06", anomalies: 21, resolved: 19, critical: 2 },
+  { date: "2024-01-07", anomalies: 17, resolved: 15, critical: 2 },
+];
+
+const mockAnomalyTasks = [
+  {
+    id: "1",
+    title: "Investigate Temperature Anomaly - Unit A",
+    description: "Temperature sensor showing irregular readings above normal thresholds",
+    priority: "high" as const,
+    status: "pending" as const,
+    assignee: "John Smith",
+    department: "Manufacturing",
+    createdAt: "2024-01-07T10:00:00Z",
+    dueDate: "2024-01-08T18:00:00Z",
+    type: "investigation" as const,
+  },
+  {
+    id: "2",
+    title: "Calibrate Pressure Sensors - Unit C",
+    description: "Scheduled calibration for pressure monitoring system",
+    priority: "medium" as const,
+    status: "in_progress" as const,
+    assignee: "Sarah Johnson",
+    department: "Quality Control",
+    createdAt: "2024-01-06T14:30:00Z",
+    dueDate: "2024-01-09T12:00:00Z",
+    type: "calibration" as const,
+  },
+  {
+    id: "3",
+    title: "Repair Vibration Sensor - Unit B",
+    description: "Vibration sensor requires immediate replacement",
+    priority: "critical" as const,
+    status: "in_progress" as const,
+    assignee: "Mike Davis",
+    department: "Maintenance",
+    createdAt: "2024-01-07T08:15:00Z",
+    dueDate: "2024-01-07T20:00:00Z",
+    type: "repair" as const,
+  },
+  {
+    id: "4",
+    title: "Review Anomaly Detection Algorithm",
+    description: "Analyze recent false positive rates and adjust thresholds",
+    priority: "low" as const,
+    status: "completed" as const,
+    assignee: "Emily Chen",
+    department: "Data Science",
+    createdAt: "2024-01-05T11:00:00Z",
+    dueDate: "2024-01-07T17:00:00Z",
+    type: "review" as const,
+  },
+];
 
 export const OCPDashboard = () => {
   const t = useTranslations("dashboard");
-  const [selectedCategory, setSelectedCategory] = useState("all");
-  const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
-  const [allCompanies, setAllCompanies] = useState<Company[]>([]);
-  const [error, setError] = useState<string | null>(null);
-  const { ref, inView } = useInView();
   const { dateRange } = useTimeFrame();
   const iconSize = "h-4 w-4";
 
@@ -240,97 +299,16 @@ export const OCPDashboard = () => {
     ];
   }, [t]);
 
-  const {
-    data: companiesData,
-    isLoading: isLoadingCompanies,
-    error: companiesError,
-  } = useGetAllCompanies({
-    page,
-    limit: 10,
-    approved: true,
-  });
-
-  useEffect(() => {
-    if (companiesData?.companies) {
-      if (companiesData.companies.length === 0) {
-        setHasMore(false);
-      } else {
-        setAllCompanies((prev) => {
-          const newCompanies = companiesData.companies.filter(
-            (newCompany: Company) =>
-              !prev.some(
-                (existingCompany) => existingCompany.id === newCompany.id
-              )
-          );
-          return [...prev, ...newCompanies];
-        });
-      }
-    }
-  }, [companiesData?.companies]);
-
-  const loadingRef = useRef(false);
-
-  const loadMoreCompanies = useCallback(async () => {
-    if (loadingRef.current || !hasMore || isLoadingCompanies) return;
-
-    try {
-      loadingRef.current = true;
-      setPage((prev) => prev + 1);
-    } finally {
-      loadingRef.current = false;
-    }
-  }, [hasMore, isLoadingCompanies]);
-
-  useEffect(() => {
-    if (inView) {
-      loadMoreCompanies();
-    }
-  }, [inView, loadMoreCompanies]);
-
-  useEffect(() => {
-    if (companiesError) {
-      setError("Failed to load companies");
-    } else {
-      setError(null);
-    }
-  }, [companiesError]);
-
-  const handleRetry = () => {
-    setError(null);
-    setPage(1);
-    setAllCompanies([]);
-    setHasMore(true);
-  };
-
-  const availableCategories = useMemo(() => {
-    if (!allCompanies.length) return [];
-
-    const allCategories = allCompanies.flatMap(
-      (company: Company) =>
-        company.business_scopes?.map((scope) => scope.name) || []
-    );
-
-    return Array.from(new Set(allCategories)).sort();
-  }, [allCompanies]);
-
-  const DisplayCompanies: DisplayCompany[] =
-    prepareDisplayCompanies(allCompanies);
-
   const cleanMonitoringSystems: MonitoringSystem[] = [];
 
   const prepareExportData = () => {
     return {
-      metrics: dashboardMetrics.map((metric) => ({
+      metrics: dashboardMetrics.map((metric: any) => ({
         Title: metric.title,
         Value: metric.value,
         Subtitle: metric.subtitle,
       })),
-      systems: DisplayCompanies.map((system) => ({
-        System: system.name,
-        "Total Sensors": system.bids,
-        "Operational Sensors": system.won,
-        "Efficiency Rate": `${((system.won / system.bids) * 100 || 0).toFixed(1)}%`,
-      })),
+      systems: [],
       tasks: [],
     };
   };
@@ -462,81 +440,53 @@ export const OCPDashboard = () => {
 
         <div className="grid grid-cols-1 2xl:grid-cols-2 gap-4 2xl:gap-8 mt-4 2xl:mt-8">
           <DashboardCard
-            title={t("departments.title")}
-            icon={<TableOfContents />}
+            title="Anomalies by Status"
+            icon={<PieChart />}
             className="h-fit"
           >
             {isDashboardLoading ? (
               <div className="h-80 bg-white rounded-lg animate-pulse" />
             ) : (
-              <DepartmentsChart
+              <AnomaliesByStatus
                 className="h-full border-none"
-                dateRange={dateRange}
-                data={dashboardData?.departments || []}
+                data={mockAnomaliesByStatus}
               />
             )}
           </DashboardCard>
 
           <DashboardCard
-            title={t("ongoingMonitoring.title")}
-            icon={<Building2 />}
+            title="Criticality Distribution"
+            icon={<Shield />}
             className="h-fit"
           >
-            <OngoingPurchases
+            <CriticalityDistribution
               className="h-full border-none shadow-none"
-              purchases={cleanMonitoringSystems}
+              data={mockCriticalityData}
             />
           </DashboardCard>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 2xl:gap-8 mt-4 2xl:mt-8">
           <DashboardCard
-            title={t("topSystems.title")}
-            icon={<Factory />}
+            title="Anomalies Over Time"
+            icon={<TrendingUp />}
             className="h-[500px]"
-            action={
-              <Select
-                value={selectedCategory}
-                onValueChange={setSelectedCategory}
-              >
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Filter by category" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">
-                    {t("topSystems.allCategories")}
-                  </SelectItem>
-                  {availableCategories.map((category: unknown) => (
-                    <SelectItem
-                      key={`category-${String(category)}`}
-                      value={String(category).toLowerCase()}
-                    >
-                      {String(category)}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            }
           >
-            <TopCompanies
-              className="border-none shadow-none h-[400px]"
-              companies={[]}
-              selectedCategory={selectedCategory}
-              hasMore={false}
-              isLoading={false}
-              observerRef={ref}
-              error={error}
-              onRetry={handleRetry}
+            <AnomaliesOverTime
+              className="border-none shadow-none h-[450px]"
+              data={mockAnomaliesOverTime}
             />
           </DashboardCard>
 
           <DashboardCard
-            title={t("tasks.title")}
+            title="Anomaly Tasks (Maintenance Window)"
             className="h-[500px]"
             icon={<ClipboardList />}
-            action={<AddNewTaskButton />}
           >
-            <TodoList className="h-full border-none shadow-none" />
+            <AnomalyTasksList 
+              className="h-full border-none shadow-none" 
+              tasks={mockAnomalyTasks}
+            />
           </DashboardCard>
         </div>
       </div>

@@ -570,7 +570,7 @@
     "clearAllConfirmation": "This action cannot be undone. All your answers will be cleared."
   },
   "dashboard": {
-    "title": "Industrial Anomaly Detection Dashboard",
+    "title": "Main Dashboard",
     "subtitle": "Monitor and analyze anomalies in industrial systems",
     "titleKey": "title",
     "subtitleKey": "subtitle",

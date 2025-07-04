@@ -566,7 +566,7 @@
     "clearAllConfirmation": "Cette action ne peut être annulée. Toutes vos réponses seront effacées."
   },
   "dashboard": {
-    "title": "Tableau de Bord de Détection d'Anomalies Industrielles",
+    "title": "Tableau de Bord Principal",
     "subtitle": "Surveillez et analysez les anomalies dans les systèmes industriels",
     "titleKey": "title",
     "subtitleKey": "subtitle",
