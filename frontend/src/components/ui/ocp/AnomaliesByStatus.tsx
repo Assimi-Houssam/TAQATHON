@@ -23,61 +23,24 @@ interface AnomaliesByStatusProps {
 
 const chartColors = {
   new: "#3B82F6",
-  inProgress: "#F59E0B",
+  inProgress: "#F59E0B", 
   resolved: "#10B981",
   escalated: "#EF4444",
-  tooltip: {
-    background: "hsl(0, 0%, 100%)",
-    border: "hsl(215.4, 16.3%, 46.9%, 0.2)",
-    text: "hsl(215.4, 16.3%, 46.9%)",
-  },
 };
 
 const CustomTooltip = ({ active, payload }: any) => {
   if (active && payload && payload.length) {
     const data = payload[0].payload;
     return (
-      <div
-        style={{
-          backgroundColor: chartColors.tooltip.background,
-          border: `1px solid ${chartColors.tooltip.border}`,
-          borderRadius: "8px",
-          boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-          padding: "12px 16px",
-        }}
-      >
-        <div className="flex items-center gap-2 mb-2">
-          {data.icon}
-          <span className="font-semibold text-gray-900">{data.name}</span>
+      <div className="bg-white border border-gray-200 rounded-lg shadow-lg p-3">
+        <div className="text-sm font-medium text-gray-900 mb-1">{data.name}</div>
+        <div className="text-xs text-gray-600">
+          {data.value} ({data.percentage}%)
         </div>
-        <p className="text-sm text-gray-600">
-          Count: <span className="font-semibold">{data.value}</span>
-        </p>
-        <p className="text-sm text-gray-600">
-          Percentage: <span className="font-semibold">{data.percentage}%</span>
-        </p>
       </div>
     );
   }
   return null;
-};
-
-const CustomLegend = ({ payload }: any) => {
-  return (
-    <div className="flex flex-wrap justify-center gap-4 mt-4">
-      {payload.map((entry: any, index: number) => (
-        <div key={index} className="flex items-center gap-2">
-          <div
-            className="w-3 h-3 rounded-full"
-            style={{ backgroundColor: entry.color }}
-          />
-          <span className="text-sm font-medium text-gray-700">
-            {entry.value}
-          </span>
-        </div>
-      ))}
-    </div>
-  );
 };
 
 export const AnomaliesByStatus = ({ className, data }: AnomaliesByStatusProps) => {
@@ -92,117 +55,52 @@ export const AnomaliesByStatus = ({ className, data }: AnomaliesByStatusProps) =
 
   if (!hasData) {
     return (
-      <Card
-        className={cn(
-          "bg-white/50 backdrop-blur-sm border-none overflow-hidden",
-          className
-        )}
-      >
-        <CardContent className="pt-4 p-0 h-[350px] relative">
-          <motion.div
-            className="relative h-full flex flex-col items-center justify-center"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            <motion.div
-              initial={{ scale: 0.5, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{
-                delay: 0.2,
-                duration: 0.5,
-                type: "spring",
-                stiffness: 100,
-              }}
-              className="mb-4"
-            >
-              <div className="relative">
-                <motion.div
-                  animate={{
-                    rotate: [0, 5, 0, -5, 0],
-                    scale: [1, 1.05, 1],
-                  }}
-                  transition={{
-                    duration: 4,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                  }}
-                  className="relative z-10"
-                >
-                  <AlertTriangle className="w-12 h-12 text-blue-600/80" />
-                </motion.div>
-                <motion.div
-                  className="absolute inset-0 bg-blue-500/20 rounded-full blur-xl"
-                  animate={{
-                    scale: [1, 1.2, 1],
-                    opacity: [0.5, 0.8, 0.5],
-                  }}
-                  transition={{
-                    duration: 4,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                  }}
-                />
-              </div>
-            </motion.div>
-
-            <motion.div
-              className="text-center space-y-3 px-4"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3, duration: 0.5 }}
-            >
-              <motion.p
-                className="text-gray-700 font-semibold text-lg"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.4 }}
-              >
-                No anomalies detected
-              </motion.p>
-              <motion.p
-                className="text-sm text-gray-500 max-w-xs mx-auto"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.5 }}
-              >
-                All systems operating normally. Anomaly status distribution will appear here when issues are detected.
-              </motion.p>
-            </motion.div>
-          </motion.div>
+      <Card className={cn("bg-white border border-gray-200", className)}>
+        <CardContent className="flex flex-col items-center justify-center h-[300px] text-center">
+          <AlertTriangle className="w-8 h-8 text-gray-400 mb-3" />
+          <h3 className="text-sm font-medium text-gray-900 mb-1">No anomalies</h3>
+          <p className="text-xs text-gray-500">All systems operating normally</p>
         </CardContent>
       </Card>
     );
   }
 
   return (
-    <Card
-      className={cn(
-        "bg-white/50 backdrop-blur-sm border border-gray-200/50",
-        className
-      )}
-    >
-      <CardContent className="pt-6 px-4 pb-4">
-        <ResponsiveContainer width="100%" height={350}>
+    <Card className={cn("bg-white border border-gray-200", className)}>
+      <CardContent className="p-4">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3">
+            {dataWithPercentages.map((entry, index) => (
+              <div key={index} className="flex items-center gap-2">
+                <div
+                  className="w-3 h-3 rounded-sm"
+                  style={{ backgroundColor: entry.color }}
+                />
+                <span className="text-xs text-gray-600">{entry.name}</span>
+                <span className="text-xs font-medium text-gray-900">{entry.value}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        
+        <ResponsiveContainer width="100%" height={250}>
           <PieChart>
             <Pie
               data={dataWithPercentages}
               cx="50%"
               cy="50%"
-              innerRadius={60}
-              outerRadius={120}
-              paddingAngle={2}
+              innerRadius={50}
+              outerRadius={100}
+              paddingAngle={1}
               dataKey="value"
               stroke="none"
               className="focus:outline-none"
-              animationDuration={1000}
             >
               {dataWithPercentages.map((entry, index) => (
                 <Cell key={`cell-${index}`} fill={entry.color} />
               ))}
             </Pie>
             <Tooltip content={<CustomTooltip />} />
-            <Legend content={<CustomLegend />} />
           </PieChart>
         </ResponsiveContainer>
       </CardContent>
