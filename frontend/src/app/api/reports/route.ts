@@ -26,10 +26,12 @@ export async function GET(request: NextRequest) {
         title: 'Supplier Performance Report Q4 2024',
         description: 'Comprehensive analysis of supplier performance metrics',
         type: 'supplier_performance',
-        status: 'completed',
-        createdBy: 'Admin',
+        status: 'RESOLVED',
+        creator: {
+          username: 'Admin'
+        },
         createdAt: '2024-12-01T09:00:00Z',
-        completedAt: '2024-12-15T16:30:00Z',
+        updatedAt: '2024-12-15T16:30:00Z',
         priority: 'high',
         tags: ['quarterly', 'performance', 'suppliers'],
         attachments: ['q4_supplier_report.pdf'],
@@ -40,10 +42,12 @@ export async function GET(request: NextRequest) {
         title: 'Budget Utilization Analysis',
         description: 'Department-wise budget utilization and variance analysis',
         type: 'budget_analysis',
-        status: 'in_progress',
-        createdBy: 'John Doe',
+        status: 'IN_PROGRESS',
+        creator: {
+          username: 'John Doe'
+        },
         createdAt: '2024-12-10T10:15:00Z',
-        completedAt: null,
+        updatedAt: '2024-12-23T14:30:00Z',
         priority: 'medium',
         tags: ['budget', 'financial', 'departments'],
         attachments: [],
@@ -54,10 +58,12 @@ export async function GET(request: NextRequest) {
         title: 'Procurement Process Efficiency',
         description: 'Analysis of procurement process bottlenecks and improvements',
         type: 'process_efficiency',
-        status: 'pending',
-        createdBy: 'Jane Smith',
+        status: 'OPEN',
+        creator: {
+          username: 'Jane Smith'
+        },
         createdAt: '2024-12-18T14:20:00Z',
-        completedAt: null,
+        updatedAt: '2024-12-18T14:20:00Z',
         priority: 'low',
         tags: ['process', 'efficiency', 'procurement'],
         attachments: [],
@@ -68,10 +74,12 @@ export async function GET(request: NextRequest) {
         title: 'Vendor Risk Assessment',
         description: 'Risk evaluation of current vendor portfolio',
         type: 'risk_assessment',
-        status: 'completed',
-        createdBy: 'Admin',
+        status: 'CLOSED',
+        creator: {
+          username: 'Admin'
+        },
         createdAt: '2024-11-25T11:45:00Z',
-        completedAt: '2024-12-08T13:20:00Z',
+        updatedAt: '2024-12-08T13:20:00Z',
         priority: 'high',
         tags: ['risk', 'vendors', 'assessment'],
         attachments: ['vendor_risk_report.pdf', 'mitigation_strategies.docx'],

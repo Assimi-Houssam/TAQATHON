@@ -8,7 +8,7 @@ import {
   useTerminateAllSessions,
   useTerminateSession,
 } from "@/endpoints/auth/useSessions";
-import { format } from "date-fns";
+import { safeFormat } from "@/lib/utils/date";
 import { motion } from "framer-motion";
 import { Loader2, Monitor, Smartphone, X } from "lucide-react";
 
@@ -64,7 +64,7 @@ function SessionCard({
             </p>
             <p className="text-sm text-muted-foreground">
               IP: {session.ip_address} • Last active:{" "}
-              {format(new Date(session.last_activity), "PPp")}
+                              {safeFormat(session.last_activity, "PPp", "Invalid date")}
             </p>
           </div>
         </div>

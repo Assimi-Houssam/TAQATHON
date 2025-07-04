@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Mock notifications data
+    // Mock notifications data with proper date formatting
     const mockNotifications = [
       {
         id: '1',
@@ -20,7 +20,8 @@ export async function GET(request: NextRequest) {
         message: 'A new purchase request for office equipment has been submitted',
         type: 'info',
         isRead: false,
-        createdAt: '2024-12-25T10:30:00Z',
+        created_at: '2024-12-25T10:30:00.000Z',
+        updated_at: '2024-12-25T10:30:00.000Z',
         userId: '1'
       },
       {
@@ -29,7 +30,8 @@ export async function GET(request: NextRequest) {
         message: 'Bid deadline for cleaning services contract is in 2 days',
         type: 'warning',
         isRead: false,
-        createdAt: '2024-12-24T14:15:00Z',
+        created_at: '2024-12-24T14:15:00.000Z',
+        updated_at: '2024-12-24T14:15:00.000Z',
         userId: '1'
       },
       {
@@ -38,7 +40,8 @@ export async function GET(request: NextRequest) {
         message: 'Supplier performance report has been generated and is ready for review',
         type: 'success',
         isRead: true,
-        createdAt: '2024-12-23T09:45:00Z',
+        created_at: '2024-12-23T09:45:00.000Z',
+        updated_at: '2024-12-23T09:45:00.000Z',
         userId: '1'
       }
     ];

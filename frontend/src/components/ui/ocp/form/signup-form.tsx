@@ -13,7 +13,7 @@ const formSchema = z
     first_name: z.string().min(1, "First name is required"),
     last_name: z.string().min(1, "Last name is required"),
     email: z.string().email("Please enter a valid email"),
-    password: z.string().min(6, "Password must be at least 6 characters"),
+    password: z.string().min(1, "Password must be at least 6 characters"),
     confirmation_password: z.string(),
   })
   .refine((data) => data.password === data.confirmation_password, {

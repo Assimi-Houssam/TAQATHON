@@ -1,5 +1,5 @@
 import { Report, ReportStatus } from "@/types/report";
-import { format, formatDistance } from "date-fns";
+import { safeFormat, safeFormatDistance } from "@/lib/utils/date";
 import { Clock } from "lucide-react";
 import { useTranslations } from "next-intl";
 
@@ -57,7 +57,7 @@ export function ReportHeader({ report }: ReportHeaderProps) {
           <span>
             {t("details.created_on")}{" "}
             <span className="font-medium">
-              {format(new Date(report.createdAt), "MMM d, yyyy 'at' h:mm a")}
+              {safeFormat(report.createdAt, "MMM d, yyyy 'at' h:mm a", "Invalid date")}
             </span>{" "}
             {t("details.by")}{" "}
             <span className="font-medium">{report.creator.username}</span>
@@ -73,9 +73,9 @@ export function ReportHeader({ report }: ReportHeaderProps) {
         {report.updatedAt && report.updatedAt !== report.createdAt && (
           <div className="text-xs text-muted-foreground">
             {t("details.updated")}{" "}
-            {formatDistance(new Date(report.updatedAt), new Date(), {
+            {safeFormatDistance(report.updatedAt, new Date(), {
               addSuffix: true,
-            })}
+            }, "Invalid date")}
           </div>
         )}
       </div>

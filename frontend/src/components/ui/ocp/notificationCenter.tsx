@@ -22,7 +22,7 @@ import {
   useGetAllNotifications,
   groupNotificationsByDate,
 } from "@/endpoints/notifications/get-all-notifications";
-import { format } from "date-fns";
+import { safeFormat } from "@/lib/utils/date";
 import { useInView } from "react-intersection-observer";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AxiosError } from "axios";
@@ -198,7 +198,7 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({
                   <div key={date} className="space-y-1">
                     <div className="sticky top-0 bg-white px-3 py-3 mb-2 -mx-2 z-10">
                       <h6 className="text-xs font-medium text-gray-500">
-                        {format(new Date(date), "EEEE, MMMM d")}
+                        {safeFormat(date, "EEEE, MMMM d", "Invalid date")}
                       </h6>
                     </div>
                     <div className="space-y-2 p-2 pb-6">

@@ -1,7 +1,7 @@
 "use client";
 
 import { Log } from "@/types/entities/Logs.interface";
-import { format } from "date-fns";
+import { safeFormat } from "@/lib/utils/date";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
@@ -103,7 +103,7 @@ export function LogCard({
       >
         <div className="flex items-center justify-between gap-x-2">
           <time className="text-md text-muted-foreground shrink-0">
-            {format(new Date(log.created_at), "HH:mm")}
+            {safeFormat(log.created_at, "HH:mm", "")}
           </time>
         </div>
 

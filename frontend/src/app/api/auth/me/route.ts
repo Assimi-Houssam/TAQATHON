@@ -14,16 +14,21 @@ export async function GET(request: NextRequest) {
 
     // Return mock admin user
     const mockUser = {
-      id: '1',
+      id: 1,
       username: 'Admin',
       email: 'admin@taqathon.com',
-      firstName: 'System',
-      lastName: 'Administrator',
+      first_name: 'System',
+      last_name: 'Administrator',
       roles: ['admin', 'ocp_agent'],
-      department: 'Administration',
+      entity_type: 'OCP_AGENT',
+      phone_number: '+1-555-0100',
+      language: 'en',
       status: 'active',
-      createdAt: '2024-01-01T00:00:00Z',
-      updatedAt: '2024-01-01T00:00:00Z'
+      is_active: true,
+      is_verified: true,
+      two_factor_enabled: false,
+      created_at: '2024-01-01T00:00:00.000Z',
+      updated_at: '2024-01-01T00:00:00.000Z'
     };
 
     return NextResponse.json(mockUser);

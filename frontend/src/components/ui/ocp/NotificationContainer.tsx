@@ -25,7 +25,7 @@ import {
   X as CloseIcon,
   ArrowRight,
 } from "lucide-react";
-import { formatDistanceToNow } from "date-fns";
+import { safeFormatDistanceToNow } from "@/lib/utils/date";
 import {
   useMarkNotificationAsRead,
   useDeleteNotification,
@@ -188,9 +188,9 @@ const NotificationContainer: React.FC<NotificationContainerProps> = ({
             </p>
             <div className="mt-1.5 flex items-center gap-2">
               <p className="text-xs text-gray-500">
-                {formatDistanceToNow(new Date(notification.created_at), {
-                  addSuffix: true,
-                })}
+                            {safeFormatDistanceToNow(notification.created_at, {
+              addSuffix: true,
+            }, "")}
               </p>
               {(notification.purchase_request || notification.bid) && (
                 <>

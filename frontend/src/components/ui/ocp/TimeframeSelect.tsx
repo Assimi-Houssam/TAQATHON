@@ -1,7 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { format, startOfMonth, endOfMonth } from "date-fns"
+import { startOfMonth, endOfMonth } from "date-fns"
+import { safeFormat } from "@/lib/utils/date"
 import { CalendarIcon, ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
 import { DateRange } from "react-day-picker"
 import { cn } from "@/lib/utils"
@@ -69,7 +70,7 @@ export const TimeframeSelect = ({
 
   const formatDateRange = (range: DateRange) => {
     if (!range.from || !range.to) return "Select date range";
-    return `${format(range.from, "MMM yyyy")} - ${format(range.to, "MMM yyyy")}`;
+    return `${safeFormat(range.from, "MMM yyyy", "Invalid")} - ${safeFormat(range.to, "MMM yyyy", "Invalid")}`;
   }
 
   const DateSelector = ({ isStart }: { isStart: boolean }) => {
@@ -166,10 +167,10 @@ export const TimeframeSelect = ({
           
           <div className="flex justify-between text-sm text-muted-foreground">
             <p>
-              From: {format(new Date(localRange.startYear, localRange.startMonth), "MMM yyyy")}
+              From: {safeFormat(new Date(localRange.startYear, localRange.startMonth), "MMM yyyy", "Invalid")}
             </p>
             <p>
-              To: {format(new Date(localRange.endYear, localRange.endMonth), "MMM yyyy")}
+              To: {safeFormat(new Date(localRange.endYear, localRange.endMonth), "MMM yyyy", "Invalid")}
             </p>
           </div>
         </PopoverContent>
