@@ -27,7 +27,7 @@ export function ViewAttachmentsCard({
             className="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
           >
             <div className="flex items-center gap-3">
-              <Paperclip className="w-5 h-5 text-custom-green-500" />
+              <Paperclip className="w-5 h-5 text-blue-500" />
               <div>
                 <p className="font-medium">{attachment.name}</p>
                 <p className="text-sm text-gray-500">{attachment.size}</p>
@@ -37,7 +37,7 @@ export function ViewAttachmentsCard({
               <Button
                 variant="outline"
                 size="sm"
-                className="border-custom-green-200 hover:bg-custom-green-100 hover:text-custom-green-900 text-custom-green-500"
+                className="border-blue-200 hover:bg-blue-100 hover:text-blue-900 text-blue-500"
                 onClick={() => window.open(attachment.url, "_blank")}
               >
                 <Download className="w-4 h-4" />

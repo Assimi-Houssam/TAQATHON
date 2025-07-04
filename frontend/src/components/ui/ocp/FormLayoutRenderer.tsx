@@ -233,7 +233,7 @@ export function FormLayoutRenderer({
           <Button
             type="submit"
             disabled={isPending}
-            className="bg-custom-green-500"
+            className="bg-blue-500"
           >
             {isPending ? "Submitting..." : "Submit All Answers"}
           </Button>

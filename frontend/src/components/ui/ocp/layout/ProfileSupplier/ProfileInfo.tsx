@@ -35,7 +35,7 @@ const ProfileHeader = ({ entity, type }: { entity: User; type: string }) => {
 };
 
 const CompanyInfo = ({ company }: { company: string }) => (
-  <div className="flex gap-2 items-center rounded-lg cursor-pointer w-full hover:bg-custom-green-50 p-2 transition-all duration-200 select-none">
+        <div className="flex gap-2 items-center rounded-lg cursor-pointer w-full hover:bg-blue-50 p-2 transition-all duration-200 select-none">
     <div className="h-10 w-10 rounded-full bg-black flex items-center justify-center">
       <span className="text-white text-xs">
         {company.slice(0, 2).toUpperCase()}
@@ -60,7 +60,7 @@ const ContactInfo = ({
       <div className="">
         <a
           href={`tel:${phone}`}
-          className="flex items-center p-2 gap-x-2 hover:underline rounded-lg hover:bg-custom-green-50 text-zinc-500 hover:text-zinc-700 cursor-pointer transition-all duration-150"
+          className="flex items-center p-2 gap-x-2 hover:underline rounded-lg hover:bg-blue-50 text-zinc-500 hover:text-zinc-700 cursor-pointer transition-all duration-150"
         >
           <Phone className="size-4" />
           <span className="">{phone}</span>
@@ -69,14 +69,14 @@ const ContactInfo = ({
       <div className="">
         <a
           href={`mailto:${email}`}
-          className="flex items-center p-2 gap-x-2 hover:underline rounded-lg hover:bg-custom-green-50 text-zinc-500 hover:text-zinc-700 cursor-pointer transition-all duration-150"
+          className="flex items-center p-2 gap-x-2 hover:underline rounded-lg hover:bg-blue-50 text-zinc-500 hover:text-zinc-700 cursor-pointer transition-all duration-150"
         >
           <Mail className="size-4" />
           <span>{email}</span>
         </a>
       </div>
       <div className="">
-        <div className="flex items-center p-2 gap-x-2 rounded-lg hover:bg-custom-green-50 text-zinc-500 hover:text-zinc-700 transition-all duration-150 cursor-default select-none">
+        <div className="flex items-center p-2 gap-x-2 rounded-lg hover:bg-blue-50 text-zinc-500 hover:text-zinc-700 transition-all duration-150 cursor-default select-none">
           <Calendar className="size-4" />
           <span>
             {t("entered_service")}: {startDate}

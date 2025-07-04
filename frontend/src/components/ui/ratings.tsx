@@ -22,7 +22,7 @@ const Rating = forwardRef<HTMLInputElement, RatingProps>((props, ref) => {
             strokeWidth={1.5}
             stroke="transparent"
             className={`size-4 ${
-              i < value ? "fill-custom-green-900" : "fill-gray-300"
+              i < value ? "fill-blue-900" : "fill-gray-300"
             }`}
             onClick={() => onChange(i === value - 1 ? 0 : i + 1)}
           >

@@ -281,8 +281,8 @@ const TwoFactorEnabled = ({
   if (!show) return null;
   return (
     <div className="space-y-4 p-6 border rounded-lg">
-      <div className="flex items-center gap-2 text-sm font-medium text-green-600">
-        <div className="size-2 rounded-full bg-green-600" />
+                  <div className="flex items-center gap-2 text-sm font-medium text-blue-600">
+              <div className="size-2 rounded-full bg-blue-600" />
         {t("isEnabled")}
       </div>
 

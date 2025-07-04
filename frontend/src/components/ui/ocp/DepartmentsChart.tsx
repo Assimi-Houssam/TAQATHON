@@ -21,8 +21,8 @@ interface DepartmentsChartProps {
 }
 
 const chartColors = {
-  bar: "hsl(142.1, 76.2%, 36.3%)",
-  barHover: "hsl(142.1, 76.2%, 42%)",
+  bar: "hsl(217.2, 91.2%, 59.8%)",
+  barHover: "hsl(217.2, 91.2%, 65%)",
   text: "hsl(215.4, 16.3%, 46.9%)",
   grid: "hsl(215.4, 16.3%, 46.9%, 0.1)",
   border: "hsl(215.4, 16.3%, 46.9%, 0.2)",
@@ -94,10 +94,10 @@ export const DepartmentsChart = ({
                   }}
                   className="relative z-10"
                 >
-                  <TableProperties className="w-12 h-12 text-custom-green-600/80" />
+                  <TableProperties className="w-12 h-12 text-blue-600/80" />
                 </motion.div>
                 <motion.div
-                  className="absolute inset-0 bg-custom-green-500/20 rounded-full blur-xl"
+                  className="absolute inset-0 bg-blue-500/20 rounded-full blur-xl"
                   animate={{
                     scale: [1, 1.2, 1],
                     opacity: [0.5, 0.8, 0.5],
@@ -143,7 +143,7 @@ export const DepartmentsChart = ({
               animate={{ opacity: 1 }}
               transition={{ delay: 0.6, duration: 0.8 }}
             >
-              <div className="absolute top-0 left-0 w-32 h-32 bg-custom-green-500/5 rounded-full blur-3xl" />
+              <div className="absolute top-0 left-0 w-32 h-32 bg-blue-500/5 rounded-full blur-3xl" />
               <div className="absolute bottom-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full blur-3xl" />
             </motion.div>
           </motion.div>

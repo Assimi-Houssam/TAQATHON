@@ -7,63 +7,31 @@
       "allowedEntityTypes": ["OCP_AGENT", "SUPPLIER"]
     },
     {
-      "titleKey": "pages.agents",
-      "icon": "Users",
-      "url": "/dashboard/agents",
-      "allowedEntityTypes": ["OCP_AGENT"]
-    },
-    {
-      "titleKey": "pages.chat",
-      "icon": "MessageSquare",
-      "url": "/dashboard/chat",
-      "allowedEntityTypes": ["OCP_AGENT", "SUPPLIER"]
-    },
-    {
-      "titleKey": "pages.suppliers",
-      "icon": "Building2",
-      "url": "/dashboard/suppliers",
-      "allowedEntityTypes": ["OCP_AGENT"],
-      "subItems": [
-        {
-          "titleKey": "pages.operators",
-          "url": "/dashboard/suppliers/operators",
-          "parent": "/dashboard/suppliers",
-          "allowedEntityTypes": ["OCP_AGENT"]
-        },
-        {
-          "titleKey": "pages.pending_verification",
-          "url": "/dashboard/suppliers/pending-verification",
-          "parent": "/dashboard/suppliers",
-          "allowedEntityTypes": ["OCP_AGENT"]
-        }
-      ]
-    },
-    {
-      "titleKey": "pages.purchase_request",
-      "icon": "ShoppingCart",
+      "titleKey": "pages.anomaly_list",
+      "icon": "ClipboardList",
       "url": "/dashboard/purchase-request",
       "allowedEntityTypes": ["OCP_AGENT", "SUPPLIER"],
       "subItems": [
         {
-          "titleKey": "pages.purchase_request_create",
+          "titleKey": "pages.anomaly_create",
           "url": "/dashboard/purchase-request/create",
           "parent": "/dashboard/purchase-request",
           "allowedEntityTypes": ["OCP_AGENT"]
         },
         {
-          "titleKey": "pages.purchase_request_ongoing",
+          "titleKey": "pages.anomaly_ongoing",
           "url": "/dashboard/purchase-request/ongoing",
           "parent": "/dashboard/purchase-request",
           "allowedEntityTypes": ["OCP_AGENT", "SUPPLIER"]
         },
         {
-          "titleKey": "pages.purchase_request_drafts",
+          "titleKey": "pages.anomaly_drafts",
           "url": "/dashboard/purchase-request/drafts",
           "parent": "/dashboard/purchase-request",
           "allowedEntityTypes": ["OCP_AGENT"]
         },
         {
-          "titleKey": "pages.purchase_request_pending",
+          "titleKey": "pages.anomaly_pending",
           "url": "/dashboard/purchase-request/pending",
           "parent": "/dashboard/purchase-request",
           "allowedEntityTypes": ["OCP_AGENT"]
@@ -71,23 +39,37 @@
       ]
     },
     {
-      "titleKey": "pages.register_company",
-      "icon": "HousePlus",
-      "url": "/dashboard/register-company",
-      "allowedEntityTypes": ["SUPPLIER"]
-    },
-    {
-      "titleKey": "pages.reports",
+      "titleKey": "pages.anomaly_details",
       "icon": "FileText",
       "url": "/dashboard/reports",
       "alertCount": 0,
       "allowedEntityTypes": ["OCP_AGENT", "SUPPLIER"]
     },
     {
-      "titleKey": "pages.logs",
-      "icon": "ClipboardList",
-      "url": "/dashboard/logs",
-      "allowedEntityTypes": ["OCP_AGENT"]
+      "titleKey": "pages.maintenance_window",
+      "icon": "MonitorCog",
+      "url": "/dashboard/suppliers",
+      "allowedEntityTypes": ["OCP_AGENT"],
+      "subItems": [
+        {
+          "titleKey": "pages.maintenance_operators",
+          "url": "/dashboard/suppliers/operators",
+          "parent": "/dashboard/suppliers",
+          "allowedEntityTypes": ["OCP_AGENT"]
+        },
+        {
+          "titleKey": "pages.maintenance_scheduled",
+          "url": "/dashboard/suppliers/pending-verification",
+          "parent": "/dashboard/suppliers",
+          "allowedEntityTypes": ["OCP_AGENT"]
+        }
+      ]
+    },
+    {
+      "titleKey": "pages.chat",
+      "icon": "MessageSquare",
+      "url": "/dashboard/chat",
+      "allowedEntityTypes": ["OCP_AGENT", "SUPPLIER"]
     }
   ]
 }

@@ -117,14 +117,14 @@ export function OperatorsTable({ onDelete, onInvite }: OperatorsTableProps) {
         <h1 className="text-xl font-bold">Operators</h1>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-green-600 hover:bg-green-700 text-white gap-2">
+            <Button className="bg-blue-600 hover:bg-blue-700 text-white gap-2">
               <UserPlus size={16} />
               Add Operator
             </Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-md">
             <DialogHeader>
-              <DialogTitle className="text-green-600">
+              <DialogTitle className="text-blue-600">
                 Invite Agents
               </DialogTitle>
             </DialogHeader>
@@ -143,7 +143,7 @@ export function OperatorsTable({ onDelete, onInvite }: OperatorsTableProps) {
                 <Button
                   onClick={handleSubmit}
                   disabled={selectedUsers.length === 0}
-                  className="bg-green-600 hover:bg-green-700"
+                  className="bg-blue-600 hover:bg-blue-700"
                 >
                   Invite ({selectedUsers.length})
                 </Button>
@@ -154,7 +154,7 @@ export function OperatorsTable({ onDelete, onInvite }: OperatorsTableProps) {
                   {selectedUsers.map((user) => (
                     <div
                       key={user.id}
-                      className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-sm flex items-center gap-1"
+                      className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm flex items-center gap-1"
                     >
                       {user.email}
                       <button
@@ -188,7 +188,7 @@ export function OperatorsTable({ onDelete, onInvite }: OperatorsTableProps) {
                             </p>
                           </div>
                           {selectedUsers.some((u) => u.id === user.id) && (
-                            <div className="w-2 h-2 bg-green-500 rounded-full" />
+                            <div className="w-2 h-2 bg-blue-500 rounded-full" />
                           )}
                         </CommandItem>
                       ))}
@@ -204,11 +204,11 @@ export function OperatorsTable({ onDelete, onInvite }: OperatorsTableProps) {
         <Table>
           <TableHeader className="bg-gray-50">
             <TableRow>
-              <TableHead className="text-custom-green-500">Full Name</TableHead>
-              <TableHead className="text-custom-green-500">Title</TableHead>
-              <TableHead className="text-custom-green-500">Email</TableHead>
-              <TableHead className="text-custom-green-500">Added At</TableHead>
-              <TableHead className="text-custom-green-500">Actions</TableHead>
+                        <TableHead className="text-blue-500">Full Name</TableHead>
+          <TableHead className="text-blue-500">Title</TableHead>
+          <TableHead className="text-blue-500">Email</TableHead>
+          <TableHead className="text-blue-500">Added At</TableHead>
+          <TableHead className="text-blue-500">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>

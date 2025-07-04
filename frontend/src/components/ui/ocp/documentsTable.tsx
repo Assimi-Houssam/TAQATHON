@@ -19,7 +19,7 @@ interface Document {
 
 function DownloadButton() {
   return (
-    <Button size={"sm"} className="bg-custom-green-500">
+            <Button size={"sm"} className="bg-blue-500">
       <FolderDown className="" />
       <h1>Download</h1>
     </Button>

@@ -28,7 +28,7 @@ const Bid = ({ bid }: BidProps) => {
         <h1 className="font-semibold">${bid.price.toLocaleString()}</h1>
         <h2
           className={clsx("text-sm", {
-            "text-custom-green-500": bid.status === "Won",
+            "text-blue-500": bid.status === "Won",
             "text-red-500": bid.status === "Lost",
           })}
         >

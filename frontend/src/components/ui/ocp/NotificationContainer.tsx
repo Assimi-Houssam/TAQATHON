@@ -58,14 +58,14 @@ const NotificationContainer: React.FC<NotificationContainerProps> = ({
       case NotificationType.NEW_PURCHASE_REQUEST:
         return <ShoppingCart className="h-4 w-4 text-blue-500" />;
       case NotificationType.MESSAGE:
-        return <MessageSquare className="h-4 w-4 text-green-500" />;
+        return <MessageSquare className="h-4 w-4 text-blue-500" />;
       case NotificationType.BID_INVIATION:
         return <Bell className="h-4 w-4 text-purple-500" />;
       case NotificationType.COMPANY_NEEDS_VERIFICATION:
       case NotificationType.COMPANY_JOINING_REQUEST:
         return <Building2 className="h-4 w-4 text-orange-500" />;
       case NotificationType.COMPANY_VERIFIED:
-        return <CheckCircle2 className="h-4 w-4 text-green-500" />;
+        return <CheckCircle2 className="h-4 w-4 text-blue-500" />;
       case NotificationType.COMPANY_NOT_VERIFIED:
         return <XCircle className="h-4 w-4 text-red-500" />;
       case NotificationType.PURCHASE_REQUEST_POSTPONED:

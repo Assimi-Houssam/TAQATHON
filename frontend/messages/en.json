@@ -241,6 +241,16 @@
   "sidebar": {
     "pages": {
       "dashboard": "Dashboard",
+      "anomaly_list": "Anomaly List",
+      "anomaly_details": "Anomaly Details",
+      "anomaly_create": "Create Anomaly",
+      "anomaly_ongoing": "Active Anomalies",
+      "anomaly_drafts": "Draft Anomalies",
+      "anomaly_pending": "Pending Review",
+      "maintenance_window": "Maintenance Window",
+      "maintenance_operators": "Maintenance Operators",
+      "maintenance_scheduled": "Scheduled Maintenance",
+      "chat": "Chat",
       "companies": "Companies",
       "operators": "Operators",
       "pending_verification": "Pending Verification",
@@ -248,7 +258,6 @@
       "logs": "Logs",
       "agents": "Agents",
       "bids": "Bids",
-      "chat": "Chat",
       "purchase_request": "Purchase Request",
       "purchase_request_create": "Create",
       "purchase_request_drafts": "Drafts",
@@ -561,47 +570,47 @@
     "clearAllConfirmation": "This action cannot be undone. All your answers will be cleared."
   },
   "dashboard": {
-    "title": "Dashboard",
-    "subtitle": "Overview of your procurement system",
+    "title": "Industrial Anomaly Detection Dashboard",
+    "subtitle": "Monitor and analyze anomalies in industrial systems",
     "titleKey": "title",
     "subtitleKey": "subtitle",
     "metrics": {
-      "companies": {
-        "title": "Companies",
+      "systems": {
+        "title": "Industrial Systems",
         "value": "1,250",
-        "subtitle": "Total registered companies"
+        "subtitle": "Monitored industrial systems"
       },
-      "agents": {
-        "title": "Agents",
+      "sensors": {
+        "title": "Active Sensors",
         "value": "1,250",
-        "subtitle": "Total registered agents"
+        "subtitle": "Real-time monitoring sensors"
       },
-      "bids": {
-        "title": "Bids",
+      "anomalies": {
+        "title": "Detected Anomalies",
         "value": "1,250",
-        "subtitle": "Total registered bids"
+        "subtitle": "Anomalies identified today"
       },
-      "suppliers": {
-        "title": "Suppliers",
+      "alerts": {
+        "title": "Critical Alerts",
         "value": "2,300",
-        "subtitle": "Total registered suppliers"
+        "subtitle": "Active critical alerts"
       },
-      "totalOperators": {
-        "title": "Total Operators",
+      "operators": {
+        "title": "System Operators",
         "value": "609",
-        "subtitle": "Active procurement agents"
+        "subtitle": "Active system operators"
       },
-      "totalAgents": {
-        "title": "Total Agents",
+      "maintenance": {
+        "title": "Maintenance Tasks",
         "value": "50",
-        "subtitle": "Active procurement agents"
+        "subtitle": "Scheduled maintenance tasks"
       },
-      "purchaseRequests": {
-        "title": "Purchase Requests",
-        "closed": "Closed requests",
-        "won": "Won requests",
-        "pending": "Pending requests",
-        "rejected": "Rejected requests"
+      "inspections": {
+        "title": "System Inspections",
+        "closed": "Completed inspections",
+        "won": "Passed inspections",
+        "pending": "Pending inspections",
+        "rejected": "Failed inspections"
       },
       "tasks": {
         "title": "Tasks Overview",
@@ -611,28 +620,28 @@
       }
     },
     "departments": {
-      "title": "Purchase Requests Distribution by Department",
+      "title": "Anomaly Distribution by Industrial Unit",
       "noData": "No data available for the selected time frame",
       "tryDifferent": "Try selecting a different date range",
-      "requests": "Requests"
+      "requests": "Anomalies"
     },
-    "ongoingPurchases": {
-      "title": "Ongoing Purchases",
-      "deadline": "Deadline",
-      "department": "Department",
-      "entity": "Entity",
-      "requester": "Requester"
+    "ongoingMonitoring": {
+      "title": "Active Monitoring Systems",
+      "deadline": "Next Check",
+      "department": "Industrial Unit",
+      "entity": "System",
+      "requester": "Operator"
     },
-    "topCompanies": {
-      "title": "Top Companies",
-      "filterByCategory": "Filter by category",
-      "allCategories": "All Categories",
-      "bids": "bids",
-      "won": "won",
-      "noCompanies": "No companies found",
-      "noCompaniesCategory": "No companies found in the \"{category}\" category",
-      "noCompaniesRegistered": "No companies have been registered yet",
-      "loadMore": "No more companies to load"
+    "topSystems": {
+      "title": "System Performance Overview",
+      "filterByCategory": "Filter by system type",
+      "allCategories": "All System Types",
+      "bids": "alerts",
+      "won": "resolved",
+      "noCompanies": "No systems found",
+      "noCompaniesCategory": "No systems found in the \"{category}\" category",
+      "noCompaniesRegistered": "No systems have been registered yet",
+      "loadMore": "No more systems to load"
     },
     "tasks": {
       "title": "Tasks Overview",

@@ -52,7 +52,7 @@ const TwoFactorForm = () => {
 
         <Button
           type="submit"
-          className="w-full bg-custom-green-500 hover:bg-custom-green-600 text-white transition-colors"
+          className="w-full bg-blue-500 hover:bg-blue-600 text-white transition-colors"
           disabled={verify2FAMutation.isPending}
         >
           {verify2FAMutation.isPending ? "Verifying..." : "Verify"}

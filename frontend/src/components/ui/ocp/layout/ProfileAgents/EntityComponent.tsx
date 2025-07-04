@@ -112,7 +112,7 @@ function MembersCard({ member }: { member: companyMembers }) {
           suscipit, adipisci harum optio atque omnis debitis, laborum iure sequi
           perferendis, voluptates corrupti. Aut.
         </h1>
-        <h1 className="text-xs text-custom-green-500 line-clamp-1">
+        <h1 className="text-xs text-blue-500 line-clamp-1">
           {member.role}
         </h1>
       </div>

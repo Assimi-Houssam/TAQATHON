@@ -13,8 +13,8 @@ const getStatusStyles = (status: string) => {
   switch (status) {
     case ReportStatus.OPEN:
       return {
-        dot: "bg-custom-green-500",
-        badge: "bg-custom-green-50 text-custom-green-700",
+            dot: "bg-blue-500",
+    badge: "bg-blue-50 text-blue-700",
       };
     case ReportStatus.IN_PROGRESS:
       return {

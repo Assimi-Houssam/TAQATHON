@@ -102,14 +102,14 @@ export function CompaniesTable({ onDelete, onAdd }: CompaniesTableProps) {
         <h1 className="text-xl font-bold">Companies</h1>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-green-600 hover:bg-green-700 text-white gap-2">
+            <Button className="bg-blue-600 hover:bg-blue-700 text-white gap-2">
               <Building2Icon size={16} />
               Invite Company
             </Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-md">
             <DialogHeader>
-              <DialogTitle className="text-green-600">
+              <DialogTitle className="text-blue-600">
                 Invite Companies
               </DialogTitle>
             </DialogHeader>
@@ -127,7 +127,7 @@ export function CompaniesTable({ onDelete, onAdd }: CompaniesTableProps) {
                 <Button
                   onClick={handleSubmit}
                   disabled={selectedCompanies.length === 0}
-                  className="bg-green-600 hover:bg-green-700"
+                  className="bg-blue-600 hover:bg-blue-700"
                 >
                   Add ({selectedCompanies.length})
                 </Button>
@@ -138,7 +138,7 @@ export function CompaniesTable({ onDelete, onAdd }: CompaniesTableProps) {
                   {selectedCompanies.map((company) => (
                     <div
                       key={company.id}
-                      className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-sm flex items-center gap-1"
+                      className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm flex items-center gap-1"
                     >
                       {company.legal_name} | {company.legal_form}
                       <button
@@ -174,7 +174,7 @@ export function CompaniesTable({ onDelete, onAdd }: CompaniesTableProps) {
                           {selectedCompanies.some(
                             (c) => c.id === company.id
                           ) && (
-                            <div className="w-2 h-2 bg-green-500 rounded-full" />
+                            <div className="w-2 h-2 bg-blue-500 rounded-full" />
                           )}
                         </CommandItem>
                       ))}
@@ -190,15 +190,15 @@ export function CompaniesTable({ onDelete, onAdd }: CompaniesTableProps) {
         <Table>
           <TableHeader className="bg-gray-100">
             <TableRow>
-              <TableHead className="text-custom-green-500">
+              <TableHead className="text-blue-500">
                 Company Name
               </TableHead>
-              <TableHead className="text-custom-green-500">
+              <TableHead className="text-blue-500">
                 Fields of work
               </TableHead>
-              <TableHead className="text-custom-green-500">Phone</TableHead>
-              <TableHead className="text-custom-green-500">Email</TableHead>
-              <TableHead className="text-custom-green-500">Actions</TableHead>
+              <TableHead className="text-blue-500">Phone</TableHead>
+              <TableHead className="text-blue-500">Email</TableHead>
+              <TableHead className="text-blue-500">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>

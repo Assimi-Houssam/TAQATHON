@@ -353,7 +353,7 @@ export const FileInput = forwardRef<
           `w-full rounded-lg duration-300 ease-in-out
          ${
            dropzoneState.isDragAccept
-             ? "border-green-500"
+                             ? "border-blue-500"
              : dropzoneState.isDragReject || isFileTooBig
              ? "border-red-500"
              : "border-gray-300"

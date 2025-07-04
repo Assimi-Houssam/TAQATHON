@@ -25,7 +25,7 @@ export function CustomCard({
         className="bg-gray-50 rounded flex flex-row justify-between items-center cursor-pointer py-3 overflow-hidden"
         onClick={() => setIsExpanded(!isExpanded)}
       >
-        <CardTitle className="text-custom-green-500">{title}</CardTitle>
+        <CardTitle className="text-blue-500">{title}</CardTitle>
         <div className="flex items-center gap-2">
           {headerAction}
           <ChevronDown

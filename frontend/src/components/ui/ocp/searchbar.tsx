@@ -82,7 +82,7 @@ const SearchBar = () => {
 
   return (
     <div className="relative w-[32rem]">
-      <div className="flex items-center border-2 border-custom-green-400 rounded-lg overflow-hidden">
+      <div className="flex items-center border-2 border-blue-400 rounded-lg overflow-hidden">
         <Input
           className="py-4 border-none rounded-l-none border-l-0 h-10 shadow-none w-full focus-visible:ring-0 focus-visible:ring-transparent"
           placeholder={SEARCH_PLACEHOLDER}

@@ -90,7 +90,7 @@ function ContactInfoComponent({ member }: { member: companyMembers }) {
                 </Avatar>
                 <div className="space-y-1">
                   <h3 className="font-semibold text-lg">{member.fullname}</h3>
-                  <span className="text-sm text-custom-green-600 bg-custom-green-50 px-2 py-0.5 rounded-full">
+                  <span className="text-sm text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">
                     {member.role}
                   </span>
                 </div>
@@ -164,7 +164,7 @@ function MembersCard({ member }: { member: companyMembers }) {
             </Avatar>
             <div>
               <h3 className="font-medium text-gray-900">{member.fullname}</h3>
-              <span className="inline-flex text-sm text-custom-green-600 bg-custom-green-50/50 px-2 py-0.5 rounded-full">
+              <span className="inline-flex text-sm text-blue-600 bg-blue-50/50 px-2 py-0.5 rounded-full">
                 {member.role}
               </span>
             </div>

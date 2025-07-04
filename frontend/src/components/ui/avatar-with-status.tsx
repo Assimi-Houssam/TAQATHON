@@ -38,7 +38,7 @@ export function AvatarWithStatus({
     <div className="relative">
       <Avatar className={className}>
         <AvatarImage src={src} alt={fallback} />
-        <AvatarFallback className="bg-custom-green-300 text-white font-medium">
+        <AvatarFallback className="bg-blue-300 text-white font-medium">
           {fallback}
         </AvatarFallback>
       </Avatar>

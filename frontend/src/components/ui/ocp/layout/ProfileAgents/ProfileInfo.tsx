@@ -130,7 +130,7 @@ export function ProfileInfo({
         </div>
         <div
           onClick={() => handleSendMessage(profile.id)}
-          className="p-1 px-2 select-none cursor-pointer rounded-md h-8 gap-1 flex justify-center items-center min-w-24 border border-custom-green-600 bg-custom-green-400 active:bg-custom-green-600 text-white transition-all"
+          className="p-1 px-2 select-none cursor-pointer rounded-md h-8 gap-1 flex justify-center items-center min-w-24 border border-blue-600 bg-blue-400 active:bg-blue-600 text-white transition-all"
         >
           <MessageCircle className="size-4" />
           <div>Message</div>

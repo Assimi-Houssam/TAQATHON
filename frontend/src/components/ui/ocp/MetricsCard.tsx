@@ -20,8 +20,8 @@ const MetricSubtitle = ({ subtitle }: { subtitle: string }) => (
 );
 
 const MetricIcon = ({ icon }: { icon: React.ReactNode }) => (
-  <div className="p-2 rounded-xl bg-custom-green-500/10">
-    <span className="text-custom-green-600 text-lg">{icon}</span>
+          <div className="p-2 rounded-xl bg-blue-500/10">
+          <span className="text-blue-600 text-lg">{icon}</span>
   </div>
 );
 
@@ -93,10 +93,10 @@ export const MetricsCard = ({ item, className = "" }: MetricsCardProps) => {
                 </CarouselContent>
 
                 <div className="flex justify-end items-center gap-2 mt-4 absolute bottom-0 right-0">
-                  <CarouselPrevious className="h-7 w-7 p-1.5 rounded-lg border border-gray-200 hover:bg-custom-green-50 hover:border-custom-green-200 hover:text-custom-green-600 static translate-y-0 transition-colors duration-200">
+                  <CarouselPrevious className="h-7 w-7 p-1.5 rounded-lg border border-gray-200 hover:bg-blue-50 hover:border-blue-200 hover:text-blue-600 static translate-y-0 transition-colors duration-200">
                     <ChevronLeft className="h-3 w-3" />
                   </CarouselPrevious>
-                  <CarouselNext className="h-7 w-7 p-1.5 rounded-lg border border-gray-200 hover:bg-custom-green-50 hover:border-custom-green-200 hover:text-custom-green-600 static translate-y-0 transition-colors duration-200">
+                  <CarouselNext className="h-7 w-7 p-1.5 rounded-lg border border-gray-200 hover:bg-blue-50 hover:border-blue-200 hover:text-blue-600 static translate-y-0 transition-colors duration-200">
                     <ChevronRight className="h-3 w-3" />
                   </CarouselNext>
                 </div>

@@ -37,8 +37,8 @@ const CompanyItem = ({ company }: { company: Company }) => {
         <div
           className={cn(
             "w-10 h-10 rounded-lg flex items-center justify-center shrink-0",
-            "bg-gradient-to-br from-custom-green-50 to-custom-green-100",
-            "text-custom-green-600"
+                "bg-gradient-to-br from-blue-50 to-blue-100",
+    "text-blue-600"
           )}
         >
           <Building2 className="h-5 w-5" />
@@ -58,7 +58,7 @@ const CompanyItem = ({ company }: { company: Company }) => {
                   <BarChart3 className="h-3 w-3" />
                   {company.bids} bids
                 </span>
-                <span className="text-sm text-custom-green-600 flex items-center gap-1">
+                <span className="text-sm text-blue-600 flex items-center gap-1">
                   <TrendingUp className="h-3 w-3" />
                   {company.won} won
                 </span>
@@ -70,7 +70,7 @@ const CompanyItem = ({ company }: { company: Company }) => {
                 className={cn(
                   "text-sm font-medium rounded-full px-2.5 py-1",
                   Number(successRate) >= 50
-                    ? "bg-custom-green-50 text-custom-green-700"
+                    ? "bg-blue-50 text-blue-700"
                     : Number(successRate) >= 30
                     ? "bg-amber-50 text-amber-700"
                     : "bg-gray-50 text-gray-700"
@@ -86,7 +86,7 @@ const CompanyItem = ({ company }: { company: Company }) => {
               className={cn(
                 "h-full rounded-full transition-all duration-500",
                 Number(successRate) >= 50
-                  ? "bg-custom-green-500"
+                  ? "bg-blue-500"
                   : Number(successRate) >= 30
                   ? "bg-amber-500"
                   : "bg-gray-400"
@@ -230,7 +230,7 @@ const ScrollToTop = ({
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.5 }}
           onClick={scrollTop}
-          className="fixed bottom-4 right-4 bg-custom-green-600 text-white rounded-full p-2 shadow-lg hover:bg-custom-green-700 transition-colors"
+          className="fixed bottom-4 right-4 bg-blue-600 text-white rounded-full p-2 shadow-lg hover:bg-blue-700 transition-colors"
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
         >

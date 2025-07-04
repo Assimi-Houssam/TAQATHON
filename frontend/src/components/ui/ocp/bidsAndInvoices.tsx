@@ -206,7 +206,7 @@ const BidRowContentComponent = ({
   return (
     <div className="w-full flex flex-col">
       <h1 className="2xl:text-lg font-medium">{company}</h1>
-      <h2 className="text-xs 2xl:text-base text-custom-green-500">
+              <h2 className="text-xs 2xl:text-base text-blue-500">
         {bidNumber}
       </h2>
       <div className="py-1 text-xxs 2xl:text-sm text-gray-500 flex flex-col gap-1 max-w-sm">
@@ -238,11 +238,11 @@ const BidRowTriggerComponent = ({
       >
         {selectedBid !== bid.id ? (
           <ExternalLink
-            className="size-4 text-custom-green-600"
+                          className="size-4 text-blue-600"
             aria-hidden="true"
           />
         ) : (
-          <X className="size-4 text-custom-green-600" />
+                      <X className="size-4 text-blue-600" />
         )}
       </div>
     </div>

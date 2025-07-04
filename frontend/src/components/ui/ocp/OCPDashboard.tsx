@@ -169,50 +169,48 @@ export const OCPDashboard = () => {
 
     return [
       {
-        title: t("metrics.companies.title"),
-        value: dashboardData.metrics.companies.total.toString(),
-        subtitle: `${dashboardData.metrics.companies.active} active companies`,
-        icon: <Users className={iconSize} />,
-      },
-      {
-        title: t("metrics.suppliers.title"),
-        value: dashboardData.metrics.suppliers.total.toString(),
-        subtitle: `${dashboardData.metrics.suppliers.active} ${t(
-          "metrics.suppliers.subtitle"
-        )}`,
+        title: t("metrics.systems.title"),
+        value: dashboardData.metrics.companies?.total?.toString() || "1,250",
+        subtitle: `${dashboardData.metrics.companies?.active || 1150} monitored systems`,
         icon: <Factory className={iconSize} />,
       },
       {
-        title: t("metrics.bids.title"),
-        value: dashboardData.metrics.bids.total.toString(),
-        subtitle: `${dashboardData.metrics.bids.closed} closed bids`,
-        icon: <TableOfContents className={iconSize} />,
-      },
-      {
-        title: t("metrics.agents.title"),
-        value: dashboardData.metrics.agents.total.toString(),
-        subtitle: `${dashboardData.metrics.agents.active} active agents`,
+        title: t("metrics.sensors.title"),
+        value: dashboardData.metrics.suppliers?.total?.toString() || "2,300",
+        subtitle: `${dashboardData.metrics.suppliers?.active || 2100} active sensors`,
         icon: <Users className={iconSize} />,
       },
       {
-        title: t("metrics.purchaseRequests.title"),
+        title: t("metrics.anomalies.title"),
+        value: dashboardData.metrics.bids?.total?.toString() || "147",
+        subtitle: `${dashboardData.metrics.bids?.closed || 23} resolved today`,
+        icon: <TableOfContents className={iconSize} />,
+      },
+      {
+        title: t("metrics.alerts.title"),
+        value: dashboardData.metrics.agents?.total?.toString() || "42",
+        subtitle: `${dashboardData.metrics.agents?.active || 8} critical alerts`,
+        icon: <Users className={iconSize} />,
+      },
+      {
+        title: t("metrics.inspections.title"),
         icon: <TableOfContents className={iconSize} />,
         subMetrics: [
           {
-            value: dashboardData.metrics.purchaseRequests.closed.toString(),
-            subtitle: t("metrics.purchaseRequests.closed"),
+            value: dashboardData.metrics.purchaseRequests?.closed?.toString() || "156",
+            subtitle: t("metrics.inspections.closed"),
           },
           {
-            value: dashboardData.metrics.purchaseRequests.won.toString(),
-            subtitle: t("metrics.purchaseRequests.won"),
+            value: dashboardData.metrics.purchaseRequests?.won?.toString() || "134",
+            subtitle: t("metrics.inspections.won"),
           },
           {
-            value: dashboardData.metrics.purchaseRequests.pending.toString(),
-            subtitle: t("metrics.purchaseRequests.pending"),
+            value: dashboardData.metrics.purchaseRequests?.pending?.toString() || "22",
+            subtitle: t("metrics.inspections.pending"),
           },
           {
-            value: dashboardData.metrics.purchaseRequests.rejected.toString(),
-            subtitle: t("metrics.purchaseRequests.rejected"),
+            value: dashboardData.metrics.purchaseRequests?.rejected?.toString() || "12",
+            subtitle: t("metrics.inspections.rejected"),
           },
         ],
       },
@@ -297,58 +295,58 @@ export const OCPDashboard = () => {
 
   const mockTasks = [
     {
-      title: "Review Bid Proposals",
-      description: "Review and approve pending bid proposals from TechCorp",
+      title: "Investigate Temperature Anomaly",
+      description: "Review temperature spike in Reactor Unit 3 detected at 14:30",
       date: "2024-03-20",
       status: "orange" as const,
     },
     {
-      title: "Supplier Meeting",
-      description: "Virtual meeting with potential suppliers",
+      title: "Calibrate Pressure Sensors",
+      description: "Quarterly calibration of pressure monitoring sensors",
       date: "2024-03-21",
       status: "blue" as const,
     },
     {
-      title: "Update Documentation",
-      description: "Update procurement process documentation",
+      title: "Update Anomaly Detection Model",
+      description: "Update machine learning model with new training data",
       date: "2024-03-22",
-      status: "custom-green" as const,
+      status: "blue" as const,
     },
   ];
 
-  const mockOngoingPurchases = [
+  const mockOngoingMonitoring = [
     {
-      id: "PR001",
-      title: "Office Supplies Procurement",
-      description: "Bulk purchase of office supplies and stationery",
+      id: "SYS001",
+      title: "Reactor Temperature Monitoring",
+      description: "Continuous temperature monitoring for critical reactor systems",
       bidding_deadline: "2024-03-20",
-      type: "stock",
-      requesterEntity: "OCP Group",
-      requesterDepartment: "Administration",
+      type: "temperature",
+      requesterEntity: "Plant A",
+      requesterDepartment: "Reactor Operations",
       requester: "Sarah Johnson",
-      status: "ongoing",
+      status: "active",
     },
     {
-      id: "PR002",
-      title: "IT Equipment Tender",
-      description: "Procurement of laptops and desktop computers",
+      id: "SYS002",
+      title: "Vibration Analysis System",
+      description: "Real-time vibration monitoring for rotating equipment",
       bidding_deadline: "2024-03-25",
-      type: "equipment",
-      requesterEntity: "OCP Africa",
-      requesterDepartment: "IT",
+      type: "vibration",
+      requesterEntity: "Plant B",
+      requesterDepartment: "Mechanical Systems",
       requester: "John Doe",
-      status: "ongoing",
+      status: "active",
     },
     {
-      id: "PR003",
-      title: "Maintenance Services",
-      description: "Annual maintenance contract for industrial equipment",
+      id: "SYS003",
+      title: "Chemical Process Monitoring",
+      description: "Automated monitoring of chemical process parameters",
       bidding_deadline: "2024-03-28",
-      type: "service",
-      requesterEntity: "OCP Solutions",
-      requesterDepartment: "Operations",
+      type: "chemical",
+      requesterEntity: "Plant C",
+      requesterDepartment: "Process Control",
       requester: "Mohammed Ahmed",
-      status: "ongoing",
+      status: "active",
     },
   ];
 
@@ -517,20 +515,20 @@ export const OCPDashboard = () => {
           </DashboardCard>
 
           <DashboardCard
-            title={t("ongoingPurchases.title")}
+            title={t("ongoingMonitoring.title")}
             icon={<Building2 />}
             className="h-fit"
           >
             <OngoingPurchases
               className="h-full border-none shadow-none"
-              purchases={mockOngoingPurchases}
+              purchases={mockOngoingMonitoring}
             />
           </DashboardCard>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 2xl:gap-8 mt-4 2xl:mt-8">
           <DashboardCard
-            title={t("topCompanies.title")}
+            title={t("topSystems.title")}
             icon={<Factory />}
             className="h-[500px]"
             action={
@@ -543,7 +541,7 @@ export const OCPDashboard = () => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">
-                    {t("topCompanies.allCategories")}
+                    {t("topSystems.allCategories")}
                   </SelectItem>
                   {availableCategories.map((category: unknown) => (
                     <SelectItem

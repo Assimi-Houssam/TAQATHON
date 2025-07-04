@@ -8,12 +8,18 @@ const i18nMiddleware = createI18nMiddleware(routing);
 
 // Constants
 const SUPPORTED_LOCALES = ["en", "fr"];
-const PUBLIC_PATHS = [
+const ALLOWED_PATHS = [
+  "/dashboard", // Only exact dashboard page, not sub-routes
+  "/maintenance",
   "/login",
   "/login/2fa",
   "/signup",
-  "/forgot-password",
-  "/public-requests",
+];
+const PUBLIC_PATHS = [
+  "/maintenance",
+  "/login",
+  "/login/2fa", 
+  "/signup",
 ];
 
 const verifyToken = async (token: string) => {
@@ -52,44 +58,72 @@ export async function middleware(request: NextRequest) {
 
   console.log(`[Middleware] Locale: ${locale}, Segments:`, actualSegments);
 
-  const isPublicPath =
-    PUBLIC_PATHS.some((path) => request.nextUrl.pathname.includes(path)) ||
-    actualSegments.length === 0;
+  // Build the actual path without locale
+  const actualPath = "/" + actualSegments.join("/");
+  
+  // Check if the path is allowed
+  const isAllowedPath = ALLOWED_PATHS.some((allowedPath) => {
+    if (allowedPath === "/dashboard") {
+      // For dashboard, only allow exact match, no sub-routes
+      return actualPath === allowedPath;
+    }
+    // For other paths, allow sub-routes
+    return actualPath === allowedPath || actualPath.startsWith(allowedPath + "/");
+  });
+
+  const isPublicPath = PUBLIC_PATHS.some((path) => {
+    // Allow sub-routes for all public paths (login, maintenance, etc.)
+    return actualPath === path || actualPath.startsWith(path + "/");
+  });
+
+  // Redirect root path to login
+  if (actualSegments.length === 0) {
+    console.log("[Middleware] Root path accessed, redirecting to login");
+    return redirectTo(request, "/login");
+  }
+
+  console.log(`[Middleware] Actual path: ${actualPath}, Is allowed: ${isAllowedPath}, Is public: ${isPublicPath}`);
+
+  // If path is not allowed, redirect to maintenance
+  if (!isAllowedPath) {
+    console.log("[Middleware] Path not allowed, redirecting to maintenance");
+    return redirectTo(request, "/maintenance");
+  }
+
   const token = request.cookies.get("access_token")?.value;
 
-  console.log(
-    `[Middleware] Is public path: ${isPublicPath}, Token present: ${!!token}`
-  );
+  console.log(`[Middleware] Token present: ${!!token}`);
 
   try {
-    // Handle public paths
+    // Handle public paths (maintenance, login, signup)
     if (isPublicPath) {
-      if (token && (await verifyToken(token))) {
-        console.log(
-          "[Middleware] Token valid on public path, redirecting to dashboard"
-        );
-        return redirectTo(request, "/dashboard");
+      // If user has valid token and is on login/signup, redirect to dashboard
+      if (token && (actualPath.startsWith("/login") || actualPath.startsWith("/signup"))) {
+        if (await verifyToken(token)) {
+          console.log("[Middleware] Valid token on login page, redirecting to dashboard");
+          return redirectTo(request, "/dashboard");
+        }
       }
       return i18nResponse;
     }
 
-    // Handle protected paths
+    // Handle dashboard (protected path)
     if (!token) {
-      console.log("[Middleware] No token found, redirecting to login");
-      return redirectTo(request, "/login");
+      console.log("[Middleware] No token found for dashboard, redirecting to maintenance");
+      return redirectTo(request, "/maintenance");
     }
 
-    // Verify token for protected routes
+    // Verify token for dashboard access
     if (await verifyToken(token)) {
-      console.log("[Middleware] Token valid, proceeding with request");
+      console.log("[Middleware] Token valid, proceeding with dashboard request");
       return i18nResponse;
     }
 
-    console.log("[Middleware] Token invalid, redirecting to login");
-    return redirectTo(request, "/login");
+    console.log("[Middleware] Token invalid, redirecting to maintenance");
+    return redirectTo(request, "/maintenance");
   } catch (error) {
     console.log("[Middleware] Error during token verification:", error);
-    return redirectTo(request, "/login");
+    return redirectTo(request, "/maintenance");
   }
 }
 

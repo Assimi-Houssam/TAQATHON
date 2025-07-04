@@ -164,26 +164,26 @@ export const SupplierDashboard = () => {
     },
   ];
 
-  const mockBids = [
+  const mockIncidents = [
     {
-      title: "Office Supplies Procurement",
+      title: "Temperature Sensor Calibration",
       dueDate: "3 days",
       status: "pending",
-      amount: "$45,000",
+      amount: "Priority: High",
       progress: 75,
     },
     {
-      title: "IT Equipment Tender",
+      title: "Vibration Anomaly Analysis",
       dueDate: "5 days",
       status: "approved",
-      amount: "$120,000",
+      amount: "Priority: Critical",
       progress: 40,
     },
     {
-      title: "Maintenance Services",
+      title: "Pressure System Inspection",
       dueDate: "1 week",
       status: "pending",
-      amount: "$25,000",
+      amount: "Priority: Medium",
       progress: 20,
     },
   ];
@@ -256,8 +256,8 @@ export const SupplierDashboard = () => {
 
                 <div className="p-4 space-y-4">
                   <TabsContent value="all" className="space-y-4 mt-0">
-                    {mockBids.map((bid, index) => (
-                      <BidCard key={index} {...bid} />
+                    {mockIncidents.map((incident, index) => (
+                      <BidCard key={index} {...incident} />
                     ))}
                   </TabsContent>
                 </div>

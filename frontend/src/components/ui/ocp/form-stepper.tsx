@@ -16,7 +16,7 @@ const Stepper: React.FC = () => {
       <div className="flex justify-between items-center mb-8 relative">
         <div className="absolute top-5 left-0 h-[2px] bg-gray-200 w-full -z-10" />
         <div
-          className="absolute top-5 left-0 h-[2px] bg-custom-green-500 transition-all duration-300 -z-10"
+          className="absolute top-5 left-0 h-[2px] bg-blue-500 transition-all duration-300 -z-10"
           style={{
             width: `${
               (currentStep / (companyRegistrationSteps.length - 1)) * 100
@@ -29,9 +29,9 @@ const Stepper: React.FC = () => {
             <div
               className={`w-10 h-10 rounded-full flex items-center justify-center z-10 transition-all duration-300 ${
                 index === currentStep
-                  ? "bg-custom-green-500 text-white"
-                  : index < currentStep
-                  ? "bg-green-100 text-custom-green-500 border-2 border-custom-green-500"
+                                  ? "bg-blue-500 text-white"
+                : index < currentStep
+                ? "bg-blue-100 text-blue-500 border-2 border-blue-500"
                   : "bg-white border-2 border-gray-200 text-gray-500"
               }`}
             >

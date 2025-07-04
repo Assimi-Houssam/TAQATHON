@@ -108,7 +108,7 @@ const LoginForm = () => {
                 type="checkbox"
                 checked={rememberMe}
                 onChange={(e) => setRememberMe(e.target.checked)}
-                className="h-4 w-4 rounded border-gray-300 text-custom-green-500 focus:ring-custom-green-500 transition-colors duration-200"
+                className="h-4 w-4 rounded border-gray-300 text-blue-500 focus:ring-blue-500 transition-colors duration-200"
               />
               <label
                 htmlFor="remember-me"
@@ -120,7 +120,7 @@ const LoginForm = () => {
             <div className="text-sm">
               <a
                 href="#"
-                className="font-medium text-custom-green-600 hover:text-custom-green-500 transition-colors duration-200 hover:underline"
+                className="font-medium text-blue-600 hover:text-blue-500 transition-colors duration-200 hover:underline"
               >
                 {t("forgotPassword")}
               </a>
@@ -135,7 +135,7 @@ const LoginForm = () => {
         >
           <Button
             type="submit"
-            className={`w-full py-6 bg-custom-green-500 hover:bg-custom-green-600 text-white transition-all duration-300 
+            className={`w-full py-6 bg-blue-500 hover:bg-blue-600 text-white transition-all duration-300 
               shadow-lg hover:shadow-xl text-lg font-semibold rounded-lg relative overflow-hidden
               ${
                 loginMutation.isPending

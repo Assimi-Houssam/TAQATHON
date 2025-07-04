@@ -39,7 +39,7 @@ export function ReportReplies({ report }: ReportRepliesProps) {
   if (status === "pending") {
     return (
       <div className="flex justify-center py-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-custom-green-600" />
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
       </div>
     );
   }
@@ -106,7 +106,7 @@ export function ReportReplies({ report }: ReportRepliesProps) {
               >
                 <div className="relative w-24 h-24 mb-6">
                   <motion.div
-                    className="absolute inset-0 bg-custom-green-50 rounded-full"
+                    className="absolute inset-0 bg-blue-50 rounded-full"
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     transition={{ duration: 0.5, delay: 0.2 }}
@@ -117,7 +117,7 @@ export function ReportReplies({ report }: ReportRepliesProps) {
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.5, delay: 0.5 }}
                   >
-                    <CheckCircle2 className="w-12 h-12 text-custom-green-600" />
+                    <CheckCircle2 className="w-12 h-12 text-blue-600" />
                   </motion.div>
                   <svg
                     className="absolute inset-0 w-full h-full"

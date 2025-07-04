@@ -230,13 +230,22 @@
   "sidebar": {
     "pages": {
       "dashboard": "Tableau de bord",
+      "anomaly_list": "Liste des Anomalies",
+      "anomaly_details": "Détails d'Anomalie",
+      "anomaly_create": "Créer Anomalie",
+      "anomaly_ongoing": "Anomalies Actives",
+      "anomaly_drafts": "Brouillons d'Anomalies",
+      "anomaly_pending": "En Attente de Révision",
+      "maintenance_window": "Fenêtre de Maintenance",
+      "maintenance_operators": "Opérateurs de Maintenance",
+      "maintenance_scheduled": "Maintenance Programmée",
+      "chat": "Chat",
       "operators": "Opérateurs",
       "suppliers": "Fournisseurs",
       "pending_verification": "En attente de vérification",
       "logs": "Journaux",
       "agents": "Agents",
       "bids": "Offres",
-      "chat": "Chat",
       "purchase_request": "Demande d'achat",
       "purchase_request_create": "Créer",
       "purchase_request_drafts": "Brouillons",
@@ -557,8 +566,8 @@
     "clearAllConfirmation": "Cette action ne peut être annulée. Toutes vos réponses seront effacées."
   },
   "dashboard": {
-    "title": "Tableau de bord",
-    "subtitle": "Aperçu de votre système de procurement",
+    "title": "Tableau de Bord de Détection d'Anomalies Industrielles",
+    "subtitle": "Surveillez et analysez les anomalies dans les systèmes industriels",
     "titleKey": "title",
     "subtitleKey": "subtitle",
     "metrics": {

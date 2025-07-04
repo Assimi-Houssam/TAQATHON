@@ -79,10 +79,10 @@ const TaskItem = ({
       <div className="flex items-start gap-2">
         <button
           onClick={() => onToggleComplete(task.id)}
-          className="mt-1 text-gray-400 hover:text-custom-green-500 transition-colors"
+                      className="mt-1 text-gray-400 hover:text-blue-500 transition-colors"
         >
           {task.completed ? (
-            <CheckCircle2 className="h-5 w-5 text-custom-green-500" />
+                          <CheckCircle2 className="h-5 w-5 text-blue-500" />
           ) : (
             <Circle className="h-5 w-5" />
           )}
@@ -246,7 +246,7 @@ export const AddNewTaskButton = () => {
         <Button
           className={cn(
             "gap-2",
-            "bg-custom-green-500 hover:bg-custom-green-600",
+            "bg-blue-500 hover:bg-blue-600",
             "text-white font-medium",
             "transition-all duration-200"
           )}
@@ -352,7 +352,7 @@ export const TodoList = ({ className }: { className?: string }) => {
               <Button
                 className={cn(
                   "gap-2 p-2 px-4 h-auto text-base shadow-lg",
-                  "bg-custom-green-500 hover:bg-custom-green-600",
+                  "bg-blue-500 hover:bg-blue-600",
                   "text-white font-medium",
                   "transition-all duration-200 hover:scale-105"
                 )}

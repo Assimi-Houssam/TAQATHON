@@ -14,7 +14,7 @@ export const LanguageSwitcher = ({ currentLang }: { currentLang: string }) => {
 
   return (
     <div className="flex items-center space-x-4">
-      <span className="text-custom-green-100">Language:</span>
+      <span className="text-blue-100">Language:</span>
       <div className="flex space-x-2">
         {["en", "fr"].map((locale) => (
           <Link
@@ -23,8 +23,8 @@ export const LanguageSwitcher = ({ currentLang }: { currentLang: string }) => {
             onClick={() => handleLanguageChange(locale)}
             className={`px-2 py-1 rounded ${
               currentLang === locale
-                ? "bg-custom-green-700 text-white"
-                : "text-custom-green-100 hover:text-white hover:bg-custom-green-800/50"
+                              ? "bg-blue-700 text-white"
+              : "text-blue-100 hover:text-white hover:bg-blue-800/50"
             } transition-all uppercase text-sm`}
           >
             {locale}

@@ -88,7 +88,7 @@ const FormFieldWrapper = <TFormSchema extends FieldValues>({
               <DatePicker
                 defaultValue={field.value}
                 onChange={field.onChange}
-                className="border-gray-300 focus:border-custom-green-500 focus:ring-custom-green-500"
+                className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
               />
             ) : inputComponent === "password" ? (
               <div className="relative">
@@ -112,7 +112,7 @@ const FormFieldWrapper = <TFormSchema extends FieldValues>({
             ) : inputComponent === "textarea" ? (
               <Textarea
                 placeholder={placeholder}
-                className="border-gray-300 focus:border-custom-green-500 focus:ring-custom-green-500"
+                className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                 rows={rows}
                 {...field}
                 value={(field.value ?? "").toString()}
@@ -124,7 +124,7 @@ const FormFieldWrapper = <TFormSchema extends FieldValues>({
               <Input
                 type={type}
                 placeholder={placeholder}
-                className="border-gray-300 focus:border-custom-green-500 focus:ring-custom-green-500"
+                className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                 maxLength={maxLength}
                 pattern={pattern}
                 {...field}

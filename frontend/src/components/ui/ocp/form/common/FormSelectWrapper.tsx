@@ -87,7 +87,7 @@ const FormSelectWrapper = <TFormSchema extends FieldValues>({
             )}
             <Select onValueChange={handleChange} value={field.value}>
               <FormControl>
-                <SelectTrigger className="border-gray-300 focus:border-custom-green-500 focus:ring-custom-green-500">
+                <SelectTrigger className="border-gray-300 focus:border-blue-500 focus:ring-blue-500">
                   <SelectValue placeholder={placeholder} />
                 </SelectTrigger>
               </FormControl>

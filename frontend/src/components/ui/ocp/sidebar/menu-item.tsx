@@ -40,7 +40,7 @@ export function MenuItem({
       }}
       className={` ${
         isActive
-          ? "bg-custom-green-400 text-white font-bold"
+          ? "bg-blue-400 text-white font-bold"
           : "hover:bg-zinc-100 hover:text-black"
       }`}
     >
@@ -49,7 +49,7 @@ export function MenuItem({
         className={clsx(
           "flex items-center gap-2 p-5 w-full justify-between",
           isActive &&
-            "hover:bg-custom-green-400 hover:text-white active:bg-custom-green-600 active:text-white"
+            "hover:bg-blue-400 hover:text-white active:bg-blue-600 active:text-white"
         )}
         target={external ? "_blank" : undefined}
       >
@@ -98,7 +98,7 @@ export const SubMenu: React.FC<SubMenuProps> = ({
       className="ml-6 relative"
     >
       <div
-        className="absolute left-0 w-[2px] bg-custom-green-400"
+                    className="absolute left-0 w-[2px] bg-blue-400"
         style={{
           top: "1.25rem",
           height: `calc(100% - 2.9rem)`,

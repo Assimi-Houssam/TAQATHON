@@ -1,19 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
-//
+
 const Logo = () => {
   return (
-    <Link href="/">
-      <Image
-        className="md:mx-4 md:w-32"
-        src="/logo-1-slogan-2.png"
-        // src={"/logo-white.webp"}
-        alt="OCP Foundation"
-        width={100}
-        height={25}
-      />
+    <Link href="/" className="flex items-center">
+      <h1 className="text-2xl font-bold text-primary hover:text-primary/80 transition-colors">
+        TAQATHON
+      </h1>
     </Link>
   );
 };
