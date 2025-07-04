@@ -25,6 +25,11 @@ import {
   TableOfContents,
   Users,
   ClipboardList,
+  AlertTriangle,
+  AlertOctagon,
+  CheckCircle,
+  Clock,
+  Activity,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -175,57 +180,65 @@ export const OCPDashboard = () => {
     useAgentDashboardData(dateRange);
 
   const dashboardMetrics = useMemo(() => {
-    if (!dashboardData?.metrics) return [];
-
     return [
       {
-        title: t("metrics.systems.title"),
-        value: dashboardData.metrics.companies?.total?.toString() || "0",
-        subtitle: `${dashboardData.metrics.companies?.active || 0} monitored systems`,
-        icon: <Factory className={iconSize} />,
+        title: "Total Anomalies",
+        value: "0",
+        subtitle: "All detected anomalies",
+        icon: <AlertTriangle className={iconSize} />,
+        color: "text-blue-600",
+        bgColor: "bg-blue-50",
       },
       {
-        title: t("metrics.sensors.title"),
-        value: dashboardData.metrics.suppliers?.total?.toString() || "0",
-        subtitle: `${dashboardData.metrics.suppliers?.active || 0} active sensors`,
-        icon: <Users className={iconSize} />,
+        title: "Critical Anomalies",
+        value: "0",
+        subtitle: "High priority alerts",
+        icon: <AlertOctagon className={iconSize} />,
+        color: "text-red-600",
+        bgColor: "bg-red-50",
       },
       {
-        title: t("metrics.anomalies.title"),
-        value: dashboardData.metrics.bids?.total?.toString() || "0",
-        subtitle: `${dashboardData.metrics.bids?.closed || 0} resolved today`,
-        icon: <TableOfContents className={iconSize} />,
+        title: "Resolved Anomalies",
+        value: "0",
+        subtitle: "Successfully resolved",
+        icon: <CheckCircle className={iconSize} />,
+        color: "text-green-600",
+        bgColor: "bg-green-50",
       },
       {
-        title: t("metrics.alerts.title"),
-        value: dashboardData.metrics.agents?.total?.toString() || "0",
-        subtitle: `${dashboardData.metrics.agents?.active || 0} critical alerts`,
-        icon: <Users className={iconSize} />,
+        title: "Average Resolution Time",
+        value: "0",
+        subtitle: "Hours to resolve",
+        icon: <Clock className={iconSize} />,
+        color: "text-purple-600",
+        bgColor: "bg-purple-50",
       },
       {
-        title: t("metrics.inspections.title"),
-        icon: <TableOfContents className={iconSize} />,
+        title: "Anomalies in Progress",
+        icon: <Activity className={iconSize} />,
+        color: "text-orange-600",
+        bgColor: "bg-orange-50",
         subMetrics: [
           {
-            value: dashboardData.metrics.purchaseRequests?.closed?.toString() || "0",
-            subtitle: t("metrics.inspections.closed"),
+            value: "0",
+            subtitle: "In Investigation",
           },
           {
-            value: dashboardData.metrics.purchaseRequests?.won?.toString() || "0",
-            subtitle: t("metrics.inspections.won"),
+            value: "0",
+            subtitle: "Under Review",
           },
           {
-            value: dashboardData.metrics.purchaseRequests?.pending?.toString() || "0",
-            subtitle: t("metrics.inspections.pending"),
+            value: "0",
+            subtitle: "Awaiting Action",
           },
           {
-            value: dashboardData.metrics.purchaseRequests?.rejected?.toString() || "0",
-            subtitle: t("metrics.inspections.rejected"),
+            value: "0",
+            subtitle: "Escalated",
           },
         ],
       },
     ];
-  }, [dashboardData?.metrics, t]);
+  }, [t]);
 
   const {
     data: companiesData,

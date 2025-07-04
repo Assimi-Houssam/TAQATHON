@@ -194,17 +194,19 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({
               </div>
             ) : (
               <div className="space-y-4">
-                {groupedNotifications.map(([date, notifications]) => (
-                  <div key={date} className="space-y-1">
+                {groupedNotifications.map(([date, notifications], index) => (
+                  <div key={`${date}-${index}`} className="space-y-1">
                     <div className="sticky top-0 bg-white px-3 py-3 mb-2 -mx-2 z-10">
                       <h6 className="text-xs font-medium text-gray-500">
                         {safeFormat(date, "EEEE, MMMM d", "Invalid date")}
                       </h6>
                     </div>
-                    <div className="space-y-2 p-2 pb-6">
-                      {notifications.map((notification) => (
+                    <div
+                      className="space-y-2 p-2 pb-6"
+                    >
+                      {notifications.map((notification, notificationIndex) => (
                         <NotificationContainer
-                          key={notification.id}
+                          key={`${notification.id}-${index}-${notificationIndex}`}
                           notification={notification}
                         />
                       ))}

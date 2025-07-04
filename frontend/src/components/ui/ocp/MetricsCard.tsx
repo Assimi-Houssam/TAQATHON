@@ -19,9 +19,17 @@ const MetricSubtitle = ({ subtitle }: { subtitle: string }) => (
   <p className="text-gray-500 text-sm leading-none line-clamp-1">{subtitle}</p>
 );
 
-const MetricIcon = ({ icon }: { icon: React.ReactNode }) => (
-          <div className="p-2 rounded-xl bg-blue-500/10">
-          <span className="text-blue-600 text-lg">{icon}</span>
+const MetricIcon = ({ 
+  icon, 
+  color = "text-blue-600", 
+  bgColor = "bg-blue-500/10" 
+}: { 
+  icon: React.ReactNode;
+  color?: string;
+  bgColor?: string;
+}) => (
+  <div className={`p-2 rounded-xl ${bgColor}`}>
+    <span className={`${color} text-lg`}>{icon}</span>
   </div>
 );
 
@@ -44,6 +52,8 @@ interface MetricsCardProps {
     value?: string;
     subtitle?: string;
     icon?: React.ReactNode;
+    color?: string;
+    bgColor?: string;
     subMetrics?: Array<{
       value: string;
       subtitle: string;
@@ -58,7 +68,11 @@ export const MetricsCard = ({ item, className = "" }: MetricsCardProps) => {
       <h2 className="text-gray-800 font-medium leading-none text-sm">
         {item.title}
       </h2>
-      <MetricIcon icon={item.icon} />
+      <MetricIcon 
+        icon={item.icon} 
+        color={item.color} 
+        bgColor={item.bgColor} 
+      />
     </div>
   );
 

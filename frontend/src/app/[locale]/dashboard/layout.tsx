@@ -16,7 +16,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   return (
     <Providers>
       <UserProvider>
-        <SidebarProvider defaultOpen={false}>
+        <SidebarProvider defaultOpen={true}>
           <NotificationProvider>
             <AppSidebar />
             <main className="w-full bg-white">
