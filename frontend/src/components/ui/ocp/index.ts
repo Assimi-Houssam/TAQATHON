@@ -28,7 +28,7 @@ export * from './tables';
 export { LoadingSkeleton } from './LoadingSkeleton';
 export { FOCPLogo } from './focp-logo';
 export { default as Logo } from './logo';
-export { OCPDashboard } from './OCPDashboard';
+export { Dashboard } from './Dashboard';
 export { SupplierDashboard } from './SupplierDashboard';
 export { AnomaliesByStatus } from "./AnomaliesByStatus";
 export { CriticalityDistribution } from "./CriticalityDistribution";

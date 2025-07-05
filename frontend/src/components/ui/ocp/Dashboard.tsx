@@ -132,7 +132,7 @@ const PrintContent = ({ data }: { data: ExportMetricsData }) => (
 
 
 
-export const OCPDashboard = () => {
+export const Dashboard = () => {
   const t = useTranslations("dashboard");
   const { dateRange } = useTimeFrame();
   const iconSize = "h-4 w-4";
