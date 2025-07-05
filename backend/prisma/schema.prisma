@@ -1,0 +1,66 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model user {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  password  String
+}
+
+
+model anomaly {
+  id          String   @id @default(cuid())
+  num_equipments String
+  unite      String?
+  systeme   String?
+  descreption_anomalie String?
+  date_detection DateTime @default(now())
+  origine String?
+  section_proprietaire String?
+  fiablite_integrite String?
+  disponsibilite String?
+  process_safty String?
+  Criticite String?
+  equipement_id String? @unique
+  equipement   equipement? @relation(fields: [equipement_id], references: [id]) 
+  atachments_id String? @unique
+  atachments   attachments? @relation(fields: [atachments_id], references: [id])
+  rex_id String? @unique
+  rex_entrie   rex_entrie? @relation(fields: [rex_id], references: [id])
+}
+
+model equipement {
+  id          String   @id @default(cuid())
+  name        String?
+  location   String?
+  tag_number String?
+  description String
+  anomalies   anomaly?
+}
+
+model attachments {
+  id          String   @id @default(cuid())
+  file_name   String?
+  file_path   String?
+  anomalies anomaly[]
+}
+
+model rex_entrie {
+  id          String   @id @default(cuid())
+  summary     String?
+  docment_path String?
+  anomalies anomaly?
+}
