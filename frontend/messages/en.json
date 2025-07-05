@@ -570,11 +570,27 @@
     "clearAllConfirmation": "This action cannot be undone. All your answers will be cleared."
   },
   "dashboard": {
-    "title": "Main Dashboard",
+    "title": "Industrial Monitoring Dashboard",
     "subtitle": "Monitor and analyze anomalies in industrial systems",
     "titleKey": "title",
     "subtitleKey": "subtitle",
     "metrics": {
+      "criticalAlerts": {
+        "title": "Critical Alerts",
+        "subtitle": "new anomalies detected"
+      },
+      "resolvedAnomalies": {
+        "title": "Resolved Anomalies",
+        "subtitle": "Successfully resolved"
+      },
+      "averageResolutionTime": {
+        "title": "Average Resolution Time",
+        "subtitle": "Hours to resolve"
+      },
+      "systemStatus": {
+        "title": "System Status",
+        "subtitle": "Units operating normally"
+      },
       "systems": {
         "title": "Industrial Systems",
         "value": "1,250",
@@ -619,6 +635,56 @@
         "loadMore": "Load More Tasks"
       }
     },
+    "charts": {
+      "anomaliesByStatus": {
+        "title": "Anomalies by Status",
+        "new": "New",
+        "inProgress": "In Progress",
+        "resolved": "Resolved",
+        "escalated": "Escalated"
+      },
+      "criticalityDistribution": {
+        "title": "Criticality Distribution",
+        "low": "Low",
+        "medium": "Medium",
+        "high": "High",
+        "critical": "Critical"
+      },
+      "anomaliesOverTime": {
+        "title": "Anomalies Over Time",
+        "anomalies": "Anomalies",
+        "resolved": "Resolved",
+        "critical": "Critical"
+      },
+      "anomalyTasks": {
+        "title": "Anomaly Tasks (Maintenance Window)",
+        "investigation": "Investigation",
+        "calibration": "Calibration",
+        "repair": "Repair",
+        "review": "Review"
+      }
+    },
+    "tasks": {
+      "priorities": {
+        "low": "Low",
+        "medium": "Medium",
+        "high": "High",
+        "critical": "Critical"
+      },
+      "statuses": {
+        "pending": "Pending",
+        "in_progress": "In Progress",
+        "completed": "Completed",
+        "cancelled": "Cancelled"
+      },
+      "types": {
+        "investigation": "Investigation",
+        "calibration": "Calibration",
+        "repair": "Repair",
+        "review": "Review",
+        "maintenance": "Maintenance"
+      }
+    },
     "departments": {
       "title": "Anomaly Distribution by Industrial Unit",
       "noData": "No data available for the selected time frame",
@@ -642,12 +708,6 @@
       "noCompaniesCategory": "No systems found in the \"{category}\" category",
       "noCompaniesRegistered": "No systems have been registered yet",
       "loadMore": "No more systems to load"
-    },
-    "tasks": {
-      "title": "Tasks Overview",
-      "addNewTask": "Add New Task",
-      "noTasks": "No tasks available",
-      "loadMore": "Load More Tasks"
     },
     "export": {
       "title": "Export Statistics",

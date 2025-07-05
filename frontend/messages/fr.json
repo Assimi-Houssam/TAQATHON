@@ -566,11 +566,27 @@
     "clearAllConfirmation": "Cette action ne peut être annulée. Toutes vos réponses seront effacées."
   },
   "dashboard": {
-    "title": "Tableau de Bord Principal",
+    "title": "Tableau de Bord de Surveillance Industrielle",
     "subtitle": "Surveillez et analysez les anomalies dans les systèmes industriels",
     "titleKey": "title",
     "subtitleKey": "subtitle",
     "metrics": {
+      "criticalAlerts": {
+        "title": "Alertes Critiques",
+        "subtitle": "nouvelles anomalies détectées"
+      },
+      "resolvedAnomalies": {
+        "title": "Anomalies Résolues",
+        "subtitle": "Résolues avec succès"
+      },
+      "averageResolutionTime": {
+        "title": "Temps Moyen de Résolution",
+        "subtitle": "Heures pour résoudre"
+      },
+      "systemStatus": {
+        "title": "État du Système",
+        "subtitle": "Unités fonctionnant normalement"
+      },
       "companies": {
         "title": "Entreprises",
         "value": "1,250",
@@ -615,11 +631,61 @@
         "loadMore": "Charger plus de tâches"
       }
     },
+    "charts": {
+      "anomaliesByStatus": {
+        "title": "Anomalies par Statut",
+        "new": "Nouvelles",
+        "inProgress": "En Cours",
+        "resolved": "Résolues",
+        "escalated": "Escalées"
+      },
+      "criticalityDistribution": {
+        "title": "Distribution de la Criticité",
+        "low": "Faible",
+        "medium": "Moyenne",
+        "high": "Élevée",
+        "critical": "Critique"
+      },
+      "anomaliesOverTime": {
+        "title": "Anomalies dans le Temps",
+        "anomalies": "Anomalies",
+        "resolved": "Résolues",
+        "critical": "Critiques"
+      },
+      "anomalyTasks": {
+        "title": "Tâches d'Anomalie (Fenêtre de Maintenance)",
+        "investigation": "Enquête",
+        "calibration": "Calibration",
+        "repair": "Réparation",
+        "review": "Révision"
+      }
+    },
+    "tasks": {
+      "priorities": {
+        "low": "Faible",
+        "medium": "Moyenne",
+        "high": "Élevée",
+        "critical": "Critique"
+      },
+      "statuses": {
+        "pending": "En Attente",
+        "in_progress": "En Cours",
+        "completed": "Terminée",
+        "cancelled": "Annulée"
+      },
+      "types": {
+        "investigation": "Enquête",
+        "calibration": "Calibration",
+        "repair": "Réparation",
+        "review": "Révision",
+        "maintenance": "Maintenance"
+      }
+    },
     "departments": {
-      "title": "Distribution des DA par Département",
+      "title": "Distribution des Anomalies par Unité Industrielle",
       "noData": "Aucune donnée disponible pour la période sélectionnée",
       "tryDifferent": "Essayez de sélectionner une autre période",
-      "requests": "Demandes"
+      "requests": "Anomalies"
     },
     "ongoingPurchases": {
       "title": "Achats en Cours",
@@ -638,12 +704,6 @@
       "noCompaniesCategory": "Aucune entreprise trouvée dans la catégorie \"{category}\"",
       "noCompaniesRegistered": "Aucune entreprise n'a encore été enregistrée",
       "loadMore": "Plus d'entreprises à charger"
-    },
-    "tasks": {
-      "title": "Aperçu des Tâches",
-      "addNewTask": "Ajouter une nouvelle tâche",
-      "noTasks": "Aucune tâche disponible",
-      "loadMore": "Charger plus de tâches"
     },
     "export": {
       "title": "Exporter les Statistiques",
