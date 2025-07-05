@@ -118,27 +118,39 @@ export default function AnomalyDetailPage() {
 
   return (
     <div className="container mx-auto px-4 py-6">
-      <div className="flex items-center gap-4 mb-6">
-        <Button 
-          variant="outline" 
-          size="sm" 
-          onClick={() => router.back()}
-        >
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Back
-        </Button>
-        <div className="flex-1">
-          <h1 className="text-2xl font-bold text-gray-900">Anomaly Details</h1>
-          <p className="text-gray-600 mt-1">ID: {mockAnomalyDetail.id}</p>
-        </div>
-        <div className="flex gap-2">
+      <div className="mb-8 pb-6 border-b border-gray-200">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={() => router.push("/dashboard/anomalies")}
+              className="h-8 w-8 p-0 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-md"
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+            <nav className="flex items-center gap-1 text-sm">
+              <span className="text-gray-500 hover:text-gray-700 cursor-pointer">Anomaly Management</span>
+              <span className="text-gray-400">/</span>
+              <span className="text-gray-900 font-medium">Details</span>
+            </nav>
+          </div>
           <Button 
             size="sm"
+            variant="outline"
             onClick={() => router.push(`/dashboard/anomalies/edit/${mockAnomalyDetail.id}`)}
+            className="hover:bg-gray-50"
           >
             <Edit className="h-4 w-4 mr-2" />
             Edit
           </Button>
+        </div>
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900 mb-1">Anomaly Details</h1>
+          <p className="text-sm text-gray-600">
+            Viewing anomaly <span className="font-mono font-medium text-gray-900">{mockAnomalyDetail.id}</span> • 
+            Equipment <span className="font-mono font-medium text-gray-900">{mockAnomalyDetail.num_equipments}</span>
+          </p>
         </div>
       </div>
 
