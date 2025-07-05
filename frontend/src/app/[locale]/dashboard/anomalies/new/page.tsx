@@ -22,18 +22,21 @@ export default function NewAnomalyPage() {
   const router = useRouter();
   
   const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-    severity: "",
-    unit: "",
-    category: "",
-    detectedAt: "",
-    reportedBy: "",
-    initialObservation: "",
-    expectedBehavior: "",
-    actualBehavior: "",
-    impactAssessment: "",
-    urgency: "",
+    num_equipments: "",
+    unite: "",
+    systeme: "",
+    descreption_anomalie: "",
+    origine: "",
+    section_proprietaire: "",
+    fiablite_integrite: "",
+    disponsibilite: "",
+    process_safty: "",
+    Criticite: "",
+    // Equipment details
+    equipment_name: "",
+    equipment_location: "",
+    equipment_tag_number: "",
+    equipment_description: "",
   });
 
   const handleInputChange = (field: string, value: string) => {
@@ -44,7 +47,7 @@ export default function NewAnomalyPage() {
     e.preventDefault();
     // Handle form submission
     console.log("Form submitted:", formData);
-    // Redirect to list or detail view
+    // Redirect to list view
     router.push("/dashboard/anomalies");
   };
 
@@ -65,7 +68,7 @@ export default function NewAnomalyPage() {
           Back
         </Button>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">{t("anomaly_create")}</h1>
+          <h1 className="text-2xl font-bold text-gray-900">New Anomaly</h1>
           <p className="text-gray-600 mt-1">Create a new anomaly report</p>
         </div>
       </div>
@@ -75,181 +78,195 @@ export default function NewAnomalyPage() {
           {/* Basic Information */}
           <Card>
             <CardHeader>
-              <CardTitle>Basic Information</CardTitle>
+              <CardTitle>Anomaly Information</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <Label htmlFor="title">Anomaly Title *</Label>
+                <Label htmlFor="num_equipments">Equipment Number *</Label>
                 <Input
-                  id="title"
-                  value={formData.title}
-                  onChange={(e) => handleInputChange("title", e.target.value)}
-                  placeholder="Enter a descriptive title"
+                  id="num_equipments"
+                  value={formData.num_equipments}
+                  onChange={(e) => handleInputChange("num_equipments", e.target.value)}
+                  placeholder="e.g., EQ-001"
                   required
                 />
               </div>
               
               <div>
-                <Label htmlFor="description">Description *</Label>
+                <Label htmlFor="unite">Unit</Label>
+                <Input
+                  id="unite"
+                  value={formData.unite}
+                  onChange={(e) => handleInputChange("unite", e.target.value)}
+                  placeholder="e.g., Production Unit A"
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="systeme">System</Label>
+                <Input
+                  id="systeme"
+                  value={formData.systeme}
+                  onChange={(e) => handleInputChange("systeme", e.target.value)}
+                  placeholder="e.g., Pressure Control System"
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="descreption_anomalie">Anomaly Description *</Label>
                 <Textarea
-                  id="description"
-                  value={formData.description}
-                  onChange={(e) => handleInputChange("description", e.target.value)}
+                  id="descreption_anomalie"
+                  value={formData.descreption_anomalie}
+                  onChange={(e) => handleInputChange("descreption_anomalie", e.target.value)}
                   placeholder="Describe the anomaly in detail"
                   rows={4}
                   required
                 />
               </div>
               
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="severity">Severity *</Label>
-                  <Select value={formData.severity} onValueChange={(value) => handleInputChange("severity", value)}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select severity" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="LOW">Low</SelectItem>
-                      <SelectItem value="MEDIUM">Medium</SelectItem>
-                      <SelectItem value="HIGH">High</SelectItem>
-                      <SelectItem value="CRITICAL">Critical</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                <div>
-                  <Label htmlFor="urgency">Urgency *</Label>
-                  <Select value={formData.urgency} onValueChange={(value) => handleInputChange("urgency", value)}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select urgency" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="LOW">Low</SelectItem>
-                      <SelectItem value="MEDIUM">Medium</SelectItem>
-                      <SelectItem value="HIGH">High</SelectItem>
-                      <SelectItem value="URGENT">Urgent</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              
               <div>
-                <Label htmlFor="unit">Production Unit *</Label>
-                <Select value={formData.unit} onValueChange={(value) => handleInputChange("unit", value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select unit" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="UNIT_A">Production Unit A</SelectItem>
-                    <SelectItem value="UNIT_B">Production Unit B</SelectItem>
-                    <SelectItem value="UNIT_C">Production Unit C</SelectItem>
-                    <SelectItem value="WAREHOUSE">Warehouse</SelectItem>
-                    <SelectItem value="QUALITY_CONTROL">Quality Control</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div>
-                <Label htmlFor="category">Category *</Label>
-                <Select value={formData.category} onValueChange={(value) => handleInputChange("category", value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="SENSOR_FAILURE">Sensor Failure</SelectItem>
-                    <SelectItem value="MECHANICAL_ISSUE">Mechanical Issue</SelectItem>
-                    <SelectItem value="PRESSURE_ANOMALY">Pressure Anomaly</SelectItem>
-                    <SelectItem value="TEMPERATURE_ANOMALY">Temperature Anomaly</SelectItem>
-                    <SelectItem value="VIBRATION_ANOMALY">Vibration Anomaly</SelectItem>
-                    <SelectItem value="ELECTRICAL_ISSUE">Electrical Issue</SelectItem>
-                    <SelectItem value="SOFTWARE_ISSUE">Software Issue</SelectItem>
-                    <SelectItem value="PROCESS_DEVIATION">Process Deviation</SelectItem>
-                    <SelectItem value="QUALITY_ISSUE">Quality Issue</SelectItem>
-                    <SelectItem value="SAFETY_CONCERN">Safety Concern</SelectItem>
-                  </SelectContent>
-                </Select>
+                <Label htmlFor="origine">Origin</Label>
+                <Input
+                  id="origine"
+                  value={formData.origine}
+                  onChange={(e) => handleInputChange("origine", e.target.value)}
+                  placeholder="e.g., Sensor Malfunction, Calibration Drift"
+                />
               </div>
             </CardContent>
           </Card>
 
-          {/* Detection Details */}
+          {/* Classification */}
           <Card>
             <CardHeader>
-              <CardTitle>Detection Details</CardTitle>
+              <CardTitle>Classification</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <Label htmlFor="detectedAt">Detection Date & Time *</Label>
-                <Input
-                  id="detectedAt"
-                  type="datetime-local"
-                  value={formData.detectedAt}
-                  onChange={(e) => handleInputChange("detectedAt", e.target.value)}
-                  required
-                />
+                <Label htmlFor="section_proprietaire">Owner Section *</Label>
+                <Select value={formData.section_proprietaire} onValueChange={(value) => handleInputChange("section_proprietaire", value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select section" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Production">Production</SelectItem>
+                    <SelectItem value="Maintenance">Maintenance</SelectItem>
+                    <SelectItem value="Engineering">Engineering</SelectItem>
+                    <SelectItem value="Quality">Quality</SelectItem>
+                    <SelectItem value="Safety">Safety</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               
               <div>
-                <Label htmlFor="reportedBy">Reported By *</Label>
-                <Input
-                  id="reportedBy"
-                  value={formData.reportedBy}
-                  onChange={(e) => handleInputChange("reportedBy", e.target.value)}
-                  placeholder="Enter reporter name or ID"
-                  required
-                />
+                <Label htmlFor="Criticite">Criticality *</Label>
+                <Select value={formData.Criticite} onValueChange={(value) => handleInputChange("Criticite", value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select criticality" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="LOW">Low</SelectItem>
+                    <SelectItem value="MEDIUM">Medium</SelectItem>
+                    <SelectItem value="HIGH">High</SelectItem>
+                    <SelectItem value="CRITICAL">Critical</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               
               <div>
-                <Label htmlFor="initialObservation">Initial Observation *</Label>
-                <Textarea
-                  id="initialObservation"
-                  value={formData.initialObservation}
-                  onChange={(e) => handleInputChange("initialObservation", e.target.value)}
-                  placeholder="Describe what was initially observed"
-                  rows={3}
-                  required
-                />
+                <Label htmlFor="fiablite_integrite">Reliability & Integrity</Label>
+                <Select value={formData.fiablite_integrite} onValueChange={(value) => handleInputChange("fiablite_integrite", value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select impact" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="No Impact">No Impact</SelectItem>
+                    <SelectItem value="Low Impact">Low Impact</SelectItem>
+                    <SelectItem value="Medium Impact">Medium Impact</SelectItem>
+                    <SelectItem value="High Impact">High Impact</SelectItem>
+                    <SelectItem value="Critical Impact">Critical Impact</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               
               <div>
-                <Label htmlFor="expectedBehavior">Expected Behavior</Label>
-                <Textarea
-                  id="expectedBehavior"
-                  value={formData.expectedBehavior}
-                  onChange={(e) => handleInputChange("expectedBehavior", e.target.value)}
-                  placeholder="Describe the expected normal behavior"
-                  rows={2}
-                />
+                <Label htmlFor="disponsibilite">Availability</Label>
+                <Select value={formData.disponsibilite} onValueChange={(value) => handleInputChange("disponsibilite", value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select availability status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Operational">Operational</SelectItem>
+                    <SelectItem value="Reduced">Reduced</SelectItem>
+                    <SelectItem value="Limited">Limited</SelectItem>
+                    <SelectItem value="Shutdown Required">Shutdown Required</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               
               <div>
-                <Label htmlFor="actualBehavior">Actual Behavior</Label>
-                <Textarea
-                  id="actualBehavior"
-                  value={formData.actualBehavior}
-                  onChange={(e) => handleInputChange("actualBehavior", e.target.value)}
-                  placeholder="Describe the actual observed behavior"
-                  rows={2}
-                />
+                <Label htmlFor="process_safty">Process Safety</Label>
+                <Select value={formData.process_safty} onValueChange={(value) => handleInputChange("process_safty", value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select safety level" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="No Risk">No Risk</SelectItem>
+                    <SelectItem value="Monitor">Monitor</SelectItem>
+                    <SelectItem value="Safety Risk">Safety Risk</SelectItem>
+                    <SelectItem value="Immediate Action">Immediate Action</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </CardContent>
           </Card>
         </div>
 
-        {/* Impact Assessment */}
+        {/* Equipment Details */}
         <Card>
           <CardHeader>
-            <CardTitle>Impact Assessment</CardTitle>
+            <CardTitle>Equipment Details</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="equipment_name">Equipment Name</Label>
+                <Input
+                  id="equipment_name"
+                  value={formData.equipment_name}
+                  onChange={(e) => handleInputChange("equipment_name", e.target.value)}
+                  placeholder="e.g., Main Pressure Sensor"
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="equipment_tag_number">Tag Number</Label>
+                <Input
+                  id="equipment_tag_number"
+                  value={formData.equipment_tag_number}
+                  onChange={(e) => handleInputChange("equipment_tag_number", e.target.value)}
+                  placeholder="e.g., PS-001"
+                />
+              </div>
+            </div>
+            
             <div>
-              <Label htmlFor="impactAssessment">Impact Assessment</Label>
+              <Label htmlFor="equipment_location">Location</Label>
+              <Input
+                id="equipment_location"
+                value={formData.equipment_location}
+                onChange={(e) => handleInputChange("equipment_location", e.target.value)}
+                placeholder="e.g., Building A - Floor 2"
+              />
+            </div>
+            
+            <div>
+              <Label htmlFor="equipment_description">Equipment Description</Label>
               <Textarea
-                id="impactAssessment"
-                value={formData.impactAssessment}
-                onChange={(e) => handleInputChange("impactAssessment", e.target.value)}
-                placeholder="Describe the potential or actual impact of this anomaly"
+                id="equipment_description"
+                value={formData.equipment_description}
+                onChange={(e) => handleInputChange("equipment_description", e.target.value)}
+                placeholder="Describe the equipment"
                 rows={3}
               />
             </div>
@@ -268,7 +285,7 @@ export default function NewAnomalyPage() {
           </Button>
           <Button type="submit">
             <Send className="h-4 w-4 mr-2" />
-            Submit Anomaly
+            Create Anomaly
           </Button>
         </div>
       </form>

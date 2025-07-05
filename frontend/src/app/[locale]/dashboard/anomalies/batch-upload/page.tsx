@@ -37,11 +37,13 @@ interface UploadedFile {
 
 interface PreviewRecord {
   id: string;
-  title: string;
-  description: string;
-  severity: string;
-  unit: string;
-  category: string;
+  num_equipments: string;
+  unite: string;
+  systeme: string;
+  descreption_anomalie: string;
+  origine: string;
+  section_proprietaire: string;
+  Criticite: string;
   status: 'valid' | 'invalid' | 'warning';
   errors?: string[];
 }
@@ -57,35 +59,41 @@ export default function BatchUploadPage() {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [showPreview, setShowPreview] = useState(false);
 
-  // Mock preview data
+  // Mock preview data based on new schema
   const mockPreviewRecords: PreviewRecord[] = [
     {
       id: "1",
-      title: "Temperature Sensor Failure",
-      description: "Sensor TMP-001 showing irregular readings",
-      severity: "HIGH",
-      unit: "Unit A",
-      category: "SENSOR_FAILURE",
+      num_equipments: "EQ-001",
+      unite: "Production Unit A",
+      systeme: "Pressure Control System",
+      descreption_anomalie: "Pressure sensor showing irregular readings",
+      origine: "Sensor Malfunction",
+      section_proprietaire: "Production",
+      Criticite: "HIGH",
       status: "valid"
     },
     {
       id: "2",
-      title: "Pressure Anomaly",
-      description: "Pressure readings outside normal range",
-      severity: "MEDIUM",
-      unit: "Unit B",
-      category: "PRESSURE_ANOMALY",
+      num_equipments: "EQ-002",
+      unite: "Production Unit B",
+      systeme: "Temperature Control",
+      descreption_anomalie: "Temperature fluctuations outside normal range",
+      origine: "Calibration Drift",
+      section_proprietaire: "Maintenance",
+      Criticite: "MEDIUM",
       status: "valid"
     },
     {
       id: "3",
-      title: "Invalid Record",
-      description: "Missing required fields",
-      severity: "HIGH",
-      unit: "",
-      category: "SENSOR_FAILURE",
+      num_equipments: "",
+      unite: "Production Unit C",
+      systeme: "Vibration Monitoring",
+      descreption_anomalie: "Missing equipment number",
+      origine: "Unknown",
+      section_proprietaire: "",
+      Criticite: "HIGH",
       status: "invalid",
-      errors: ["Unit field is required", "Category field is invalid"]
+      errors: ["Equipment number is required", "Owner section is required"]
     }
   ];
 
@@ -184,7 +192,7 @@ export default function BatchUploadPage() {
           Back
         </Button>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">{t("anomaly_batch_upload")}</h1>
+          <h1 className="text-2xl font-bold text-gray-900">Batch Upload</h1>
           <p className="text-gray-600 mt-1">Upload multiple anomalies using CSV or Excel files</p>
         </div>
       </div>
@@ -325,14 +333,14 @@ export default function BatchUploadPage() {
                             {record.status === 'valid' && <CheckCircle className="h-4 w-4 text-green-500" />}
                             {record.status === 'invalid' && <AlertCircle className="h-4 w-4 text-red-500" />}
                             {record.status === 'warning' && <AlertTriangle className="h-4 w-4 text-yellow-500" />}
-                            <span className="font-medium">{record.title}</span>
+                            <span className="font-medium">{record.num_equipments}</span>
                           </div>
-                          <p className="text-sm text-gray-600 mb-2">{record.description}</p>
-                                                     <div className="flex gap-2">
-                             <Badge variant="outline">{record.severity}</Badge>
-                             <Badge variant="outline">{record.unit}</Badge>
-                             <Badge variant="outline">{record.category}</Badge>
-                           </div>
+                          <p className="text-sm text-gray-600 mb-2">{record.descreption_anomalie}</p>
+                          <div className="flex gap-2">
+                            <Badge variant="outline">{record.Criticite}</Badge>
+                            <Badge variant="outline">{record.unite}</Badge>
+                            <Badge variant="outline">{record.systeme}</Badge>
+                          </div>
                           {record.errors && record.errors.length > 0 && (
                             <div className="mt-2">
                               <p className="text-sm font-medium text-red-700">Errors:</p>
@@ -399,31 +407,43 @@ export default function BatchUploadPage() {
               <div className="space-y-2 text-sm">
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-                  <span>Title</span>
+                  <span>num_equipments</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-                  <span>Description</span>
+                  <span>descreption_anomalie</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-                  <span>Severity</span>
+                  <span>section_proprietaire</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-                  <span>Unit</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-                  <span>Category</span>
+                  <span>Criticite</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
-                  <span>Detected At</span>
+                  <span>unite</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
-                  <span>Reported By</span>
+                  <span>systeme</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                  <span>origine</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                  <span>fiablite_integrite</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                  <span>disponsibilite</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                  <span>process_safty</span>
                 </div>
               </div>
             </CardContent>

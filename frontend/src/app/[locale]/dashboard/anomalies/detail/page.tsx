@@ -8,43 +8,61 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   ArrowLeft, 
   Edit, 
-  Share2, 
-  Download, 
   Clock, 
   AlertTriangle, 
   CheckCircle,
-  User,
+  Wrench,
   Activity,
   FileText,
-  MessageSquare,
-  Settings
+  Settings,
+  MapPin,
+  Tag,
+  Shield,
+  AlertCircle
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { AnomalyDisplay } from "@/types/anomaly";
 
-// Mock data for demonstration
-const mockAnomalyDetail = {
+// Mock data based on the schema
+const mockAnomalyDetail: AnomalyDisplay = {
   id: "ANM-001",
-  title: "Temperature Sensor Malfunction",
-  description: "Temperature sensor in Unit A shows irregular readings with values fluctuating between 45°C and 85°C when normal operating temperature should be 55°C ± 5°C",
-  severity: "HIGH",
+  num_equipments: "EQ-001",
+  unite: "Production Unit A",
+  systeme: "Pressure Control System",
+  descreption_anomalie: "Irregular pressure readings detected in main pipeline. Sensor shows fluctuating values between 2.5 and 4.2 bar when normal operating pressure should be 3.0 ± 0.2 bar.",
+  date_detection: new Date("2024-01-15T08:30:00Z"),
+  origine: "Sensor Malfunction",
+  section_proprietaire: "Production",
+  fiablite_integrite: "High Impact",
+  disponsibilite: "Reduced",
+  process_safty: "Safety Risk",
+  Criticite: "HIGH",
   status: "OPEN",
-  category: "SENSOR_FAILURE",
-  unit: "Production Unit A",
-  detectedAt: "2024-01-15T08:30:00Z",
-  reportedBy: "John Smith",
-  reporterId: "EMP-001",
-  initialObservation: "Temperature readings from sensor TMP-A01 showing erratic behavior during morning shift. Values jumping between 45°C and 85°C every 30 seconds.",
-  expectedBehavior: "Temperature should maintain steady reading of 55°C ± 5°C during normal operation",
-  actualBehavior: "Temperature readings fluctuating wildly between 45°C and 85°C with no apparent pattern",
-  impactAssessment: "High impact - could affect product quality and potentially trigger safety shutdowns if not addressed promptly",
-  assignedTo: "Sarah Johnson",
-  priority: "HIGH",
-  createdAt: "2024-01-15T08:35:00Z",
-  updatedAt: "2024-01-15T10:15:00Z",
-  estimatedResolution: "2024-01-16T16:00:00Z",
+  criticite_display: "HIGH",
+  equipement_id: "EQ-001",
+  equipement: {
+    id: "EQ-001",
+    name: "Main Pressure Sensor",
+    location: "Building A - Floor 2",
+    tag_number: "PS-001",
+    description: "Primary pressure monitoring sensor for production line A. Critical for maintaining safe operating conditions."
+  },
+  atachments_id: "ATT-001",
+  atachments: {
+    id: "ATT-001",
+    file_name: "pressure_readings.pdf",
+    file_path: "/uploads/pressure_readings.pdf",
+    anomalies: []
+  },
+  rex_id: "REX-001",
+  rex_entrie: {
+    id: "REX-001",
+    summary: "Similar pressure sensor malfunction occurred in 2023. Resolution involved sensor replacement and calibration.",
+    docment_path: "/documents/rex_pressure_sensor_2023.pdf"
+  }
 };
 
 const mockTimeline = [
@@ -52,52 +70,29 @@ const mockTimeline = [
     id: 1,
     timestamp: "2024-01-15T08:30:00Z",
     action: "Anomaly Detected",
-    description: "Temperature sensor anomaly detected by monitoring system",
+    description: "Pressure sensor anomaly detected by monitoring system",
     user: "System",
     type: "detection"
   },
   {
     id: 2,
     timestamp: "2024-01-15T08:35:00Z",
-    action: "Anomaly Reported",
-    description: "Anomaly reported by shift supervisor",
-    user: "John Smith",
-    type: "report"
+    action: "Anomaly Logged",
+    description: "Anomaly automatically logged in the system",
+    user: "System",
+    type: "system"
   },
   {
     id: 3,
     timestamp: "2024-01-15T09:00:00Z",
     action: "Investigation Started",
-    description: "Technical team notified and investigation initiated",
-    user: "Sarah Johnson",
+    description: "Production team notified and investigation initiated",
+    user: "Production Team",
     type: "investigation"
   },
-  {
-    id: 4,
-    timestamp: "2024-01-15T10:15:00Z",
-    action: "Status Update",
-    description: "Preliminary investigation completed, sensor replacement scheduled",
-    user: "Sarah Johnson",
-    type: "update"
-  },
 ];
 
-const mockComments = [
-  {
-    id: 1,
-    user: "John Smith",
-    timestamp: "2024-01-15T08:35:00Z",
-    message: "First noticed the issue during routine monitoring. Temperature readings appear completely unreliable."
-  },
-  {
-    id: 2,
-    user: "Sarah Johnson",
-    timestamp: "2024-01-15T10:15:00Z",
-    message: "Checked the sensor connections and found some corrosion on the terminals. Scheduling sensor replacement for tomorrow."
-  },
-];
-
-const severityColors = {
+const criticiteColors = {
   LOW: "bg-green-100 text-green-800",
   MEDIUM: "bg-yellow-100 text-yellow-800",
   HIGH: "bg-orange-100 text-orange-800",
@@ -116,14 +111,6 @@ export default function AnomalyDetailPage() {
   const router = useRouter();
   const [newComment, setNewComment] = useState("");
 
-  const handleAddComment = () => {
-    if (newComment.trim()) {
-      // Handle comment submission
-      console.log("Adding comment:", newComment);
-      setNewComment("");
-    }
-  };
-
   const handleStatusChange = (newStatus: string) => {
     // Handle status change
     console.log("Changing status to:", newStatus);
@@ -141,19 +128,14 @@ export default function AnomalyDetailPage() {
           Back
         </Button>
         <div className="flex-1">
-          <h1 className="text-2xl font-bold text-gray-900">{t("anomaly_detail")}</h1>
-          <p className="text-gray-600 mt-1">Anomaly ID: {mockAnomalyDetail.id}</p>
+          <h1 className="text-2xl font-bold text-gray-900">Anomaly Details</h1>
+          <p className="text-gray-600 mt-1">ID: {mockAnomalyDetail.id}</p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" size="sm">
-            <Share2 className="h-4 w-4 mr-2" />
-            Share
-          </Button>
-          <Button variant="outline" size="sm">
-            <Download className="h-4 w-4 mr-2" />
-            Export
-          </Button>
-          <Button size="sm">
+          <Button 
+            size="sm"
+            onClick={() => router.push(`/dashboard/anomalies/edit/${mockAnomalyDetail.id}`)}
+          >
             <Edit className="h-4 w-4 mr-2" />
             Edit
           </Button>
@@ -166,9 +148,9 @@ export default function AnomalyDetailPage() {
           <Tabs defaultValue="overview" className="w-full">
             <TabsList className="grid w-full grid-cols-4">
               <TabsTrigger value="overview">Overview</TabsTrigger>
+              <TabsTrigger value="equipment">Equipment</TabsTrigger>
               <TabsTrigger value="timeline">Timeline</TabsTrigger>
-              <TabsTrigger value="comments">Comments</TabsTrigger>
-              <TabsTrigger value="documents">Documents</TabsTrigger>
+              <TabsTrigger value="rex">REX</TabsTrigger>
             </TabsList>
 
             <TabsContent value="overview" className="space-y-6">
@@ -176,47 +158,95 @@ export default function AnomalyDetailPage() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-3">
                     <AlertTriangle className="h-5 w-5" />
-                    {mockAnomalyDetail.title}
+                    Anomaly Overview
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="flex flex-wrap gap-2">
-                    <Badge className={severityColors[mockAnomalyDetail.severity as keyof typeof severityColors]}>
-                      {mockAnomalyDetail.severity}
+                    <Badge className={criticiteColors[mockAnomalyDetail.criticite_display]}>
+                      {mockAnomalyDetail.criticite_display}
                     </Badge>
-                    <Badge className={statusColors[mockAnomalyDetail.status as keyof typeof statusColors]}>
-                      {mockAnomalyDetail.status}
+                    <Badge className={statusColors[mockAnomalyDetail.status]}>
+                      {mockAnomalyDetail.status.replace("_", " ")}
                     </Badge>
                     <Badge variant="outline">
-                      {mockAnomalyDetail.category.replace("_", " ")}
+                      {mockAnomalyDetail.systeme}
                     </Badge>
                   </div>
                   
                   <div>
                     <h3 className="font-semibold mb-2">Description</h3>
-                    <p className="text-gray-700">{mockAnomalyDetail.description}</p>
-                  </div>
-                  
-                  <div>
-                    <h3 className="font-semibold mb-2">Initial Observation</h3>
-                    <p className="text-gray-700">{mockAnomalyDetail.initialObservation}</p>
+                    <p className="text-gray-700">{mockAnomalyDetail.descreption_anomalie}</p>
                   </div>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <h4 className="font-semibold mb-2">Expected Behavior</h4>
-                      <p className="text-gray-700 text-sm">{mockAnomalyDetail.expectedBehavior}</p>
+                      <h4 className="font-semibold mb-2">Origin</h4>
+                      <p className="text-gray-700">{mockAnomalyDetail.origine}</p>
                     </div>
                     <div>
-                      <h4 className="font-semibold mb-2">Actual Behavior</h4>
-                      <p className="text-gray-700 text-sm">{mockAnomalyDetail.actualBehavior}</p>
+                      <h4 className="font-semibold mb-2">Owner Section</h4>
+                      <p className="text-gray-700">{mockAnomalyDetail.section_proprietaire}</p>
                     </div>
                   </div>
                   
-                  <div>
-                    <h3 className="font-semibold mb-2">Impact Assessment</h3>
-                    <p className="text-gray-700">{mockAnomalyDetail.impactAssessment}</p>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                      <h4 className="font-semibold mb-2">Reliability & Integrity</h4>
+                      <Badge variant="outline">{mockAnomalyDetail.fiablite_integrite}</Badge>
+                    </div>
+                    <div>
+                      <h4 className="font-semibold mb-2">Availability</h4>
+                      <Badge variant="outline">{mockAnomalyDetail.disponsibilite}</Badge>
+                    </div>
+                    <div>
+                      <h4 className="font-semibold mb-2">Process Safety</h4>
+                      <Badge variant="outline">{mockAnomalyDetail.process_safty}</Badge>
+                    </div>
                   </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="equipment" className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Wrench className="h-5 w-5" />
+                    Equipment Information
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {mockAnomalyDetail.equipement && (
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <h4 className="font-semibold mb-2 flex items-center gap-2">
+                            <Tag className="h-4 w-4" />
+                            Equipment Details
+                          </h4>
+                          <div className="space-y-2">
+                            <p><strong>Name:</strong> {mockAnomalyDetail.equipement.name}</p>
+                            <p><strong>Tag Number:</strong> {mockAnomalyDetail.equipement.tag_number}</p>
+                            <p><strong>Equipment ID:</strong> {mockAnomalyDetail.num_equipments}</p>
+                          </div>
+                        </div>
+                        <div>
+                          <h4 className="font-semibold mb-2 flex items-center gap-2">
+                            <MapPin className="h-4 w-4" />
+                            Location
+                          </h4>
+                          <p>{mockAnomalyDetail.equipement.location}</p>
+                          <p className="text-sm text-gray-600 mt-1">Unit: {mockAnomalyDetail.unite}</p>
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <h4 className="font-semibold mb-2">Description</h4>
+                        <p className="text-gray-700">{mockAnomalyDetail.equipement.description}</p>
+                      </div>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </TabsContent>
@@ -257,68 +287,38 @@ export default function AnomalyDetailPage() {
               </Card>
             </TabsContent>
 
-            <TabsContent value="comments" className="space-y-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <MessageSquare className="h-5 w-5" />
-                    Comments
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {mockComments.map((comment) => (
-                    <div key={comment.id} className="border rounded-lg p-4">
-                      <div className="flex justify-between items-start mb-2">
-                        <div className="flex items-center gap-2">
-                          <User className="h-4 w-4 text-gray-500" />
-                          <span className="font-semibold">{comment.user}</span>
-                        </div>
-                        <span className="text-sm text-gray-500">
-                          {new Date(comment.timestamp).toLocaleString()}
-                        </span>
-                      </div>
-                      <p className="text-gray-700">{comment.message}</p>
-                    </div>
-                  ))}
-                  
-                  <div className="border-t pt-4">
-                    <Label htmlFor="new-comment">Add Comment</Label>
-                    <Textarea
-                      id="new-comment"
-                      value={newComment}
-                      onChange={(e) => setNewComment(e.target.value)}
-                      placeholder="Add a comment..."
-                      rows={3}
-                      className="mt-2"
-                    />
-                    <Button 
-                      onClick={handleAddComment}
-                      className="mt-2"
-                      disabled={!newComment.trim()}
-                    >
-                      Add Comment
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            <TabsContent value="documents" className="space-y-4">
+            <TabsContent value="rex" className="space-y-4">
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <FileText className="h-5 w-5" />
-                    Related Documents
+                    REX (Return of Experience)
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-center py-8">
-                    <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                    <p className="text-gray-600">No documents attached yet</p>
-                    <Button variant="outline" className="mt-2">
-                      Upload Document
-                    </Button>
-                  </div>
+                  {mockAnomalyDetail.rex_entrie ? (
+                    <div className="space-y-4">
+                      <div>
+                        <h4 className="font-semibold mb-2">Summary</h4>
+                        <p className="text-gray-700">{mockAnomalyDetail.rex_entrie.summary}</p>
+                      </div>
+                      
+                      {mockAnomalyDetail.rex_entrie.docment_path && (
+                        <div>
+                          <h4 className="font-semibold mb-2">Related Documents</h4>
+                          <Button variant="outline" size="sm">
+                            <FileText className="h-4 w-4 mr-2" />
+                            View REX Document
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="text-center py-8">
+                      <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                      <p className="text-gray-600">No REX entry available</p>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </TabsContent>
@@ -331,7 +331,7 @@ export default function AnomalyDetailPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Settings className="h-5 w-5" />
-                Quick Actions
+                Actions
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
@@ -354,44 +354,63 @@ export default function AnomalyDetailPage() {
               <Button 
                 variant="outline" 
                 className="w-full justify-start"
+                disabled={!mockAnomalyDetail.atachments}
               >
-                <User className="h-4 w-4 mr-2" />
-                Assign to Team
+                <FileText className="h-4 w-4 mr-2" />
+                View Attachments
               </Button>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader>
-              <CardTitle>Details</CardTitle>
+              <CardTitle>Summary</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">Detected:</span>
-                  <span className="text-sm">{new Date(mockAnomalyDetail.detectedAt).toLocaleString()}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">Reported by:</span>
-                  <span className="text-sm">{mockAnomalyDetail.reportedBy}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">Assigned to:</span>
-                  <span className="text-sm">{mockAnomalyDetail.assignedTo}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">Unit:</span>
-                  <span className="text-sm">{mockAnomalyDetail.unit}</span>
-                </div>
-                                 <div className="flex justify-between">
-                   <span className="text-sm text-gray-600">Priority:</span>
-                   <Badge className={severityColors[mockAnomalyDetail.priority as keyof typeof severityColors]}>
-                     {mockAnomalyDetail.priority}
-                   </Badge>
-                 </div>
+            <CardContent className="space-y-3">
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-gray-600">Detected:</span>
+                <span className="text-sm">{mockAnomalyDetail.date_detection.toLocaleDateString()}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-gray-600">Equipment:</span>
+                <span className="text-sm font-mono">{mockAnomalyDetail.num_equipments}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-gray-600">Unit:</span>
+                <span className="text-sm">{mockAnomalyDetail.unite}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-gray-600">System:</span>
+                <span className="text-sm">{mockAnomalyDetail.systeme}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-gray-600">Criticality:</span>
+                <Badge className={criticiteColors[mockAnomalyDetail.criticite_display]}>
+                  {mockAnomalyDetail.criticite_display}
+                </Badge>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-gray-600">Status:</span>
+                <Badge className={statusColors[mockAnomalyDetail.status]}>
+                  {mockAnomalyDetail.status.replace("_", " ")}
+                </Badge>
               </div>
             </CardContent>
           </Card>
+
+          {mockAnomalyDetail.atachments && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Attachments</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center gap-2 p-2 border rounded">
+                  <FileText className="h-4 w-4 text-gray-500" />
+                  <span className="text-sm">{mockAnomalyDetail.atachments.file_name}</span>
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </div>
       </div>
     </div>
