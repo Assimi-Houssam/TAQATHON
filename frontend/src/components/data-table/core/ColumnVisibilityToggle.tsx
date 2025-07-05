@@ -1,0 +1,135 @@
+import React from "react";
+import { Settings, Eye, EyeOff } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
+import { Column, ColumnVisibilityState } from "../types";
+
+interface ColumnVisibilityToggleProps<T> {
+  columns: Column<T>[];
+  columnVisibility: ColumnVisibilityState<T>;
+  onColumnVisibilityChange: (columnVisibility: ColumnVisibilityState<T>) => void;
+}
+
+/**
+ * ColumnVisibilityToggle - Controls for showing/hiding table columns
+ * 
+ * Features:
+ * - Dropdown with checkboxes for each column
+ * - Show/hide all functionality
+ * - Persist column visibility state
+ * - Only show hideable columns
+ */
+export function ColumnVisibilityToggle<T>({
+  columns,
+  columnVisibility,
+  onColumnVisibilityChange,
+}: ColumnVisibilityToggleProps<T>) {
+  const hideableColumns = columns.filter(col => col.hideable !== false);
+  
+  if (hideableColumns.length === 0) {
+    return null;
+  }
+
+  const visibleCount = hideableColumns.filter(col => 
+    columnVisibility[col.accessor as string] !== false
+  ).length;
+
+  const handleToggleColumn = (accessor: keyof T, checked: boolean) => {
+    onColumnVisibilityChange({
+      ...columnVisibility,
+      [accessor as string]: checked,
+    });
+  };
+
+  const handleShowAll = () => {
+    const newVisibility = { ...columnVisibility };
+    hideableColumns.forEach(col => {
+      newVisibility[col.accessor as string] = true;
+    });
+    onColumnVisibilityChange(newVisibility);
+  };
+
+  const handleHideAll = () => {
+    const newVisibility = { ...columnVisibility };
+    hideableColumns.forEach(col => {
+      newVisibility[col.accessor as string] = false;
+    });
+    onColumnVisibilityChange(newVisibility);
+  };
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="outline" size="sm">
+          <Settings className="h-4 w-4 mr-2" />
+          Columns ({visibleCount}/{hideableColumns.length})
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-56">
+        <DropdownMenuLabel>Toggle columns</DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        
+        {/* Show/Hide All buttons */}
+        <div className="flex gap-1 p-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleShowAll}
+            className="h-6 px-2 text-xs flex-1"
+          >
+            <Eye className="h-3 w-3 mr-1" />
+            Show All
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleHideAll}
+            className="h-6 px-2 text-xs flex-1"
+          >
+            <EyeOff className="h-3 w-3 mr-1" />
+            Hide All
+          </Button>
+        </div>
+        
+        <DropdownMenuSeparator />
+        
+        {/* Individual column toggles */}
+        {hideableColumns.map((column) => {
+          const isVisible = columnVisibility[column.accessor as string] !== false;
+          return (
+            <DropdownMenuItem
+              key={column.accessor as string}
+              onClick={(e) => e.preventDefault()}
+              className="cursor-default"
+            >
+              <div className="flex items-center w-full">
+                <Checkbox
+                  id={column.accessor as string}
+                  checked={isVisible}
+                  onCheckedChange={(checked) => 
+                    handleToggleColumn(column.accessor, checked as boolean)
+                  }
+                  className="mr-2"
+                />
+                <label
+                  htmlFor={column.accessor as string}
+                  className="flex-1 cursor-pointer"
+                >
+                  {column.header}
+                </label>
+              </div>
+            </DropdownMenuItem>
+          );
+        })}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+} 

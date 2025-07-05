@@ -2,25 +2,29 @@ import { useState, useMemo } from "react";
 import { BaseDataTable } from "./core/BaseDataTable";
 import { SearchBar } from "./core/SearchBar";
 import { Pagination } from "./core/Pagination";
-import { Column, FilterGroup, DataTableConfig } from "./types";
+import { ColumnVisibilityToggle } from "./core/ColumnVisibilityToggle";
+import { Column, FilterGroup, DataTableConfig, ColumnVisibilityState, DataTableProps } from "./types";
 import { cn } from "@/lib/utils";
-
-interface DataTableProps<T extends Record<string, any>> {
-  data: T[];
-  columns: Column<T>[];
-  config?: DataTableConfig<T>;
-  className?: string;
-  loading?: boolean;
-  error?: Error | null;
-  filters?: FilterGroup[];
-  onRowClick?: (row: T) => void;
-}
+import { Search, Filter, X } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
 
 /**
  * DataTable - Complete data table component with all features
  * 
  * Features:
- * - Search and filtering
+ * - Search and filtering with multiple filter support
+ * - Column visibility controls
  * - Sorting (client-side)
  * - Pagination
  * - Loading, error, and empty states
@@ -39,6 +43,8 @@ export function DataTable<T extends Record<string, any>>({
   error = null,
   filters = [],
   onRowClick,
+  columnVisibility: externalColumnVisibility,
+  onColumnVisibilityChange: externalOnColumnVisibilityChange,
 }: DataTableProps<T>) {
   const {
     searchable = true,
@@ -48,25 +54,72 @@ export function DataTable<T extends Record<string, any>>({
     pageSize = 10,
     searchFields = [],
     defaultSort,
+    columnVisibility: enableColumnVisibility = true,
+    defaultHiddenColumns = [],
   } = config;
+
+  // Initialize column visibility state
+  const [internalColumnVisibility, setInternalColumnVisibility] = useState<ColumnVisibilityState<T>>(() => {
+    const initialState: ColumnVisibilityState<T> = {};
+    
+    // Set default visibility for all columns
+    columns.forEach(column => {
+      const key = column.accessor as string;
+      initialState[key] = !defaultHiddenColumns.includes(column.accessor);
+    });
+    
+    return initialState;
+  });
+
+  // Use external column visibility state if provided, otherwise use internal state
+  const columnVisibility = externalColumnVisibility || internalColumnVisibility;
+  const handleColumnVisibilityChange = externalOnColumnVisibilityChange || setInternalColumnVisibility;
 
   // State management
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [sortField, setSortField] = useState<keyof T | undefined>(defaultSort?.field);
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">(defaultSort?.direction || "asc");
+  const [activeFilters, setActiveFilters] = useState<Record<string, string>>({});
 
-  // Data processing
-  const filteredData = useMemo(() => {
-    if (!searchable || !searchTerm) return data;
+  // Filter columns based on visibility
+  const visibleColumns = useMemo(() => {
+    if (!enableColumnVisibility) return columns;
     
-    return data.filter((item) => {
-      const fieldsToSearch = searchFields.length > 0 ? searchFields : Object.keys(item) as (keyof T)[];
-      return fieldsToSearch.some((field) =>
-        String(item[field]).toLowerCase().includes(searchTerm.toLowerCase())
-      );
+    return columns.filter(column => {
+      const key = column.accessor as string;
+      return columnVisibility[key] !== false;
     });
-  }, [data, searchTerm, searchable, searchFields]);
+  }, [columns, columnVisibility, enableColumnVisibility]);
+
+  // Data processing with enhanced filtering
+  const filteredData = useMemo(() => {
+    let result = data;
+    
+    // Apply search filter
+    if (searchable && searchTerm) {
+      result = result.filter((item) => {
+        const fieldsToSearch = searchFields.length > 0 ? searchFields : Object.keys(item) as (keyof T)[];
+        return fieldsToSearch.some((field) =>
+          String(item[field]).toLowerCase().includes(searchTerm.toLowerCase())
+        );
+      });
+    }
+    
+    // Apply custom filters
+    if (filterable && Object.keys(activeFilters).length > 0) {
+      result = result.filter((item) => {
+        return Object.entries(activeFilters).every(([key, value]) => {
+          if (!value) return true; // Skip empty filter values
+          
+          const itemValue = String(item[key as keyof T]);
+          return itemValue === value;
+        });
+      });
+    }
+    
+    return result;
+  }, [data, searchTerm, searchable, searchFields, filterable, activeFilters]);
 
   const sortedData = useMemo(() => {
     if (!sortable || !sortField) return filteredData;
@@ -82,6 +135,9 @@ export function DataTable<T extends Record<string, any>>({
         comparison = aValue.localeCompare(bValue);
       } else if (typeof aValue === "number" && typeof bValue === "number") {
         comparison = aValue - bValue;
+      } else if (aValue && bValue && typeof aValue === "object" && typeof bValue === "object" && 
+                 "getTime" in aValue && "getTime" in bValue) {
+        comparison = (aValue as Date).getTime() - (bValue as Date).getTime();
       } else {
         comparison = String(aValue).localeCompare(String(bValue));
       }
@@ -121,25 +177,169 @@ export function DataTable<T extends Record<string, any>>({
     setCurrentPage(page);
   };
 
+  const handleFilterChange = (filterKey: string, value: string) => {
+    setActiveFilters(prev => {
+      const updated = { ...prev };
+      if (!value || updated[filterKey] === value) {
+        delete updated[filterKey];
+      } else {
+        updated[filterKey] = value;
+      }
+      return updated;
+    });
+    setCurrentPage(1); // Reset to first page when filtering
+  };
+
+  const handleClearFilters = () => {
+    setActiveFilters({});
+    setCurrentPage(1);
+  };
+
   // Make columns sortable based on config
   const processedColumns = useMemo(() => {
-    return columns.map(column => ({
+    return visibleColumns.map(column => ({
       ...column,
       clickable: sortable && (column.clickable !== false),
     }));
-  }, [columns, sortable]);
+  }, [visibleColumns, sortable]);
 
   return (
     <div className={cn("space-y-4", className)}>
-      {/* Search Bar */}
-      {searchable && (
-        <SearchBar
-          onSearch={handleSearch}
-          placeholder="Search by ID, equipment, system, or description..."
-          filters={filterable ? filters : []}
-          className="w-full"
-        />
-      )}
+      {/* Top Controls */}
+      <div className="flex flex-col gap-3">
+        {/* Search Input and Action Buttons Row */}
+        <div className="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
+          <div className="flex-1">
+            {/* Search Input Only */}
+            {searchable && (
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  placeholder="Search by ID, equipment, system, or description..."
+                  value={searchTerm}
+                  onChange={(e) => handleSearch(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+            )}
+          </div>
+          
+          {/* Action Buttons Container */}
+          <div className="flex items-center gap-2 flex-shrink-0">
+            {/* Filter Button */}
+            {filterable && filters.length > 0 && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="sm">
+                    <Filter className="h-4 w-4 mr-2" />
+                    Filters
+                    {Object.keys(activeFilters).length > 0 && (
+                      <Badge variant="secondary" className="ml-2 h-5 w-5 rounded-full p-0 text-xs">
+                        {Object.keys(activeFilters).length}
+                      </Badge>
+                    )}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56 max-h-96 overflow-y-auto">
+                  <DropdownMenuLabel>Filter Options</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  
+                  {/* Clear all filters button */}
+                  {Object.keys(activeFilters).length > 0 && (
+                    <>
+                      <div className="p-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={handleClearFilters}
+                          className="h-6 px-2 text-xs w-full"
+                        >
+                          Clear All Filters
+                        </Button>
+                      </div>
+                      <DropdownMenuSeparator />
+                    </>
+                  )}
+                  
+                  {filters.map((filterGroup) => (
+                    <div key={filterGroup.key} className="p-2">
+                      <p className="text-sm font-medium mb-2">{filterGroup.label}</p>
+                      {filterGroup.options.map((option) => {
+                        const isActive = activeFilters[filterGroup.key] === option.value;
+                        return (
+                          <DropdownMenuItem
+                            key={option.value}
+                            onClick={(e) => e.preventDefault()}
+                            className="cursor-default"
+                          >
+                            <div className="flex items-center w-full">
+                              <Checkbox
+                                id={`${filterGroup.key}-${option.value}`}
+                                checked={isActive}
+                                onCheckedChange={(checked) => {
+                                  if (checked) {
+                                    handleFilterChange(filterGroup.key, option.value);
+                                  } else {
+                                    handleFilterChange(filterGroup.key, "");
+                                  }
+                                }}
+                                className="mr-2"
+                              />
+                              <label
+                                htmlFor={`${filterGroup.key}-${option.value}`}
+                                className="flex-1 cursor-pointer text-sm"
+                              >
+                                {option.label}
+                              </label>
+                            </div>
+                          </DropdownMenuItem>
+                        );
+                      })}
+                    </div>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
+            
+            {/* Column Visibility Toggle */}
+            {enableColumnVisibility && (
+              <ColumnVisibilityToggle
+                columns={columns}
+                columnVisibility={columnVisibility}
+                onColumnVisibilityChange={handleColumnVisibilityChange}
+              />
+            )}
+          </div>
+        </div>
+        
+        {/* Active Filters Display */}
+        {Object.keys(activeFilters).length > 0 && (
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-sm text-muted-foreground">Active filters:</span>
+            {Object.entries(activeFilters).map(([key, value]) => {
+              const filterGroup = filters.find(f => f.key === key);
+              const option = filterGroup?.options.find(o => o.value === value);
+              return (
+                <Badge key={`${key}-${value}`} variant="secondary" className="gap-1">
+                  {filterGroup?.label}: {option?.label || value}
+                  <X
+                    className="h-3 w-3 cursor-pointer hover:text-destructive"
+                    onClick={() => handleFilterChange(key, "")}
+                  />
+                </Badge>
+              );
+            })}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleClearFilters}
+              className="h-6 px-2 text-xs"
+            >
+              Clear all
+            </Button>
+          </div>
+        )}
+      </div>
 
       {/* Data Table */}
       <div className="bg-white rounded-lg border border-zinc-200 overflow-hidden shadow-sm">
@@ -169,9 +369,19 @@ export function DataTable<T extends Record<string, any>>({
 
       {/* Results summary */}
       {!loading && !error && (
-        <div className="text-xs text-zinc-500">
-          Showing {paginatedData.length} of {sortedData.length} results
-          {searchTerm && ` for "${searchTerm}"`}
+        <div className="flex flex-col sm:flex-row gap-2 sm:items-center sm:justify-between text-xs text-zinc-500">
+          <div>
+            Showing {paginatedData.length} of {sortedData.length} results
+            {searchTerm && ` for "${searchTerm}"`}
+          </div>
+          
+          {/* Active filters summary */}
+          {Object.keys(activeFilters).length > 0 && (
+            <div className="flex items-center gap-1">
+              <span>•</span>
+              <span>{Object.keys(activeFilters).length} filter{Object.keys(activeFilters).length > 1 ? 's' : ''} active</span>
+            </div>
+          )}
         </div>
       )}
     </div>

@@ -26,7 +26,7 @@ export * from './tables';
 
 // Other components
 export { LoadingSkeleton } from './LoadingSkeleton';
-export { FOCPLogo } from './focp-logo';
+export { TaqaLogo } from './focp-logo';
 export { default as Logo } from './logo';
 export { Dashboard } from './Dashboard';
 export { SupplierDashboard } from './SupplierDashboard';

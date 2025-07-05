@@ -1,6 +1,6 @@
 "use client";
 
-import { FOCPLogo } from "@/components/ui/ocp/focp-logo";
+import { TaqaLogo } from "@/components/ui/ocp/focp-logo";
 import SignupForm from "@/components/ui/ocp/form/signup-form";
 import ImagesCarousel from "@/components/ui/ocp/images-carousel";
 
@@ -11,7 +11,7 @@ const RegisterPage = () => {
         <ImagesCarousel />
       </div>
       <div className="w-full lg:w-1/3 p-8 flex flex-col justify-center items-center">
-        <FOCPLogo />
+        <TaqaLogo />
         <div className="max-w-md w-full mx-auto space-y-8">
           <SignupForm />
         </div>

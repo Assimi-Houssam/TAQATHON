@@ -15,6 +15,112 @@ A comprehensive, feature-rich data table system built with React, TypeScript, an
 - ✅ **Accessibility** - ARIA labels and keyboard navigation
 - ✅ **Internationalization** - Ready for i18n with next-intl
 
+## New Features
+
+### Column Visibility Controls
+
+Users can now show/hide columns using the column visibility dropdown:
+
+```tsx
+import { DataTable } from "@/components/data-table";
+
+const columns = [
+  { header: "ID", accessor: "id", hideable: true },
+  { header: "Name", accessor: "name", hideable: true },
+  { header: "Email", accessor: "email", hideable: true },
+  { header: "Actions", accessor: "actions", hideable: false }, // Cannot be hidden
+];
+
+function MyTable() {
+  return (
+    <DataTable
+      data={users}
+      columns={columns}
+      config={{
+        columnVisibility: true, // Enable column visibility controls
+        defaultHiddenColumns: ["email"], // Hide email column by default
+      }}
+    />
+  );
+}
+```
+
+### Enhanced Filtering
+
+The search bar now supports multiple persistent filters:
+
+```tsx
+const filters = [
+  {
+    key: "status",
+    label: "Status",
+    options: [
+      { value: "active", label: "Active" },
+      { value: "inactive", label: "Inactive" },
+      { value: "pending", label: "Pending" },
+    ],
+  },
+  {
+    key: "role",
+    label: "Role",
+    options: [
+      { value: "admin", label: "Admin" },
+      { value: "user", label: "User" },
+      { value: "guest", label: "Guest" },
+    ],
+  },
+];
+
+function MyTable() {
+  return (
+    <DataTable
+      data={users}
+      columns={columns}
+      filters={filters}
+      config={{
+        filterable: true,
+        searchable: true,
+      }}
+    />
+  );
+}
+```
+
+### Key Features
+
+1. **Column Visibility**: Users can show/hide columns via dropdown
+   - Checkboxes for each hideable column
+   - Show All / Hide All buttons
+   - Persistent state management
+   - Configurable default hidden columns
+
+2. **Enhanced Filtering**: Multiple filters can be applied simultaneously
+   - Checkbox-based filter selection
+   - Persistent filter state
+   - Clear individual or all filters
+   - Filter badges showing active filters
+
+3. **Improved Search**: Search with persistent filters
+   - Real-time search with debouncing
+   - Works alongside filters
+   - Configurable search fields
+
+### Configuration Options
+
+```tsx
+interface DataTableConfig<T> {
+  // ... existing options ...
+  columnVisibility?: boolean; // Enable column visibility controls
+  defaultHiddenColumns?: (keyof T)[]; // Columns hidden by default
+}
+
+interface Column<T> {
+  // ... existing properties ...
+  hideable?: boolean; // Whether column can be hidden (default: true)
+  defaultVisible?: boolean; // Default visibility state
+}
+```
+
 ## Quick Start
 
 ### 1. Basic Usage
@@ -201,6 +307,8 @@ interface Column<T> {
   render?: (value: T[keyof T], item: T) => React.ReactNode; // Custom renderer
   hidden?: boolean;             // Hide on mobile
   clickable?: boolean;          // Enable sorting
+  hideable?: boolean;           // Whether column can be hidden (default: true)
+  defaultVisible?: boolean;     // Default visibility state
 }
 ```
 
@@ -215,6 +323,8 @@ interface DataTableConfig<T> {
   pageSize?: number;            // Items per page (default: 10)
   searchFields?: (keyof T)[];   // Fields to search in
   defaultSort?: SortConfig<T>;  // Default sort configuration
+  columnVisibility?: boolean;    // Enable column visibility controls
+  defaultHiddenColumns?: (keyof T)[]; // Columns hidden by default
 }
 ```
 

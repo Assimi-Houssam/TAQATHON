@@ -1,16 +1,17 @@
 import { useState, useMemo } from "react";
-import { SortConfig, DataTableConfig } from "../types";
+import { SortConfig, DataTableConfig, ColumnVisibilityState } from "../types";
 
 interface UseDataTableProps<T> {
   data: T[];
   config?: DataTableConfig<T>;
+  columns?: { accessor: keyof T; hideable?: boolean }[];
 }
 
 /**
  * Custom hook for data table state management
- * Handles search, sorting, pagination, and filtering logic
+ * Handles search, sorting, pagination, filtering, and column visibility logic
  */
-export function useDataTable<T>({ data, config = {} }: UseDataTableProps<T>) {
+export function useDataTable<T>({ data, config = {}, columns = [] }: UseDataTableProps<T>) {
   const {
     searchable = true,
     sortable = true,
@@ -19,6 +20,8 @@ export function useDataTable<T>({ data, config = {} }: UseDataTableProps<T>) {
     pageSize = 10,
     searchFields = [],
     defaultSort,
+    columnVisibility: enableColumnVisibility = true,
+    defaultHiddenColumns = [],
   } = config;
 
   // State
@@ -27,6 +30,19 @@ export function useDataTable<T>({ data, config = {} }: UseDataTableProps<T>) {
   const [sortField, setSortField] = useState<keyof T | undefined>(defaultSort?.field);
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">(defaultSort?.direction || "asc");
   const [activeFilters, setActiveFilters] = useState<Record<string, string>>({});
+  
+  // Column visibility state
+  const [columnVisibility, setColumnVisibility] = useState<ColumnVisibilityState<T>>(() => {
+    const initialState: ColumnVisibilityState<T> = {};
+    
+    // Set default visibility for all columns
+    columns.forEach(column => {
+      const key = column.accessor as string;
+      initialState[key] = !defaultHiddenColumns.includes(column.accessor);
+    });
+    
+    return initialState;
+  });
 
   // Data processing
   const filteredData = useMemo(() => {
@@ -46,7 +62,10 @@ export function useDataTable<T>({ data, config = {} }: UseDataTableProps<T>) {
     if (filterable && Object.keys(activeFilters).length > 0) {
       result = result.filter((item) => {
         return Object.entries(activeFilters).every(([key, value]) => {
-          return String(item[key as keyof T]) === value;
+          if (!value) return true; // Skip empty filter values
+          
+          const itemValue = String(item[key as keyof T]);
+          return itemValue === value;
         });
       });
     }
@@ -68,8 +87,9 @@ export function useDataTable<T>({ data, config = {} }: UseDataTableProps<T>) {
         comparison = aValue.localeCompare(bValue);
       } else if (typeof aValue === "number" && typeof bValue === "number") {
         comparison = aValue - bValue;
-      } else if (aValue instanceof Date && bValue instanceof Date) {
-        comparison = aValue.getTime() - bValue.getTime();
+      } else if (aValue && bValue && typeof aValue === "object" && typeof bValue === "object" && 
+                 "getTime" in aValue && "getTime" in bValue) {
+        comparison = (aValue as Date).getTime() - (bValue as Date).getTime();
       } else {
         comparison = String(aValue).localeCompare(String(bValue));
       }
@@ -110,7 +130,7 @@ export function useDataTable<T>({ data, config = {} }: UseDataTableProps<T>) {
   const handleFilterChange = (filterKey: string, value: string) => {
     setActiveFilters(prev => {
       const updated = { ...prev };
-      if (updated[filterKey] === value) {
+      if (!value || updated[filterKey] === value) {
         delete updated[filterKey];
       } else {
         updated[filterKey] = value;
@@ -147,6 +167,31 @@ export function useDataTable<T>({ data, config = {} }: UseDataTableProps<T>) {
     setSortDirection(defaultSort?.direction || "asc");
   };
 
+  // Column visibility actions
+  const handleColumnVisibilityChange = (newColumnVisibility: ColumnVisibilityState<T>) => {
+    setColumnVisibility(newColumnVisibility);
+  };
+
+  const showAllColumns = () => {
+    const newVisibility = { ...columnVisibility };
+    columns.forEach(column => {
+      if (column.hideable !== false) {
+        newVisibility[column.accessor as string] = true;
+      }
+    });
+    setColumnVisibility(newVisibility);
+  };
+
+  const hideAllColumns = () => {
+    const newVisibility = { ...columnVisibility };
+    columns.forEach(column => {
+      if (column.hideable !== false) {
+        newVisibility[column.accessor as string] = false;
+      }
+    });
+    setColumnVisibility(newVisibility);
+  };
+
   return {
     // Data
     data: paginatedData,
@@ -169,6 +214,9 @@ export function useDataTable<T>({ data, config = {} }: UseDataTableProps<T>) {
     // Filters
     activeFilters,
     
+    // Column visibility
+    columnVisibility,
+    
     // Actions
     handleSearch,
     handleSort,
@@ -180,12 +228,18 @@ export function useDataTable<T>({ data, config = {} }: UseDataTableProps<T>) {
     resetSort,
     resetAll,
     
+    // Column visibility actions
+    handleColumnVisibilityChange,
+    showAllColumns,
+    hideAllColumns,
+    
     // Config
     config: {
       searchable,
       sortable,
       filterable,
       paginated,
+      columnVisibility: enableColumnVisibility,
     },
   };
 } 

@@ -1,6 +1,6 @@
 "use client";
 
-import { FOCPLogo } from "@/components/ui/ocp/focp-logo";
+import { TaqaLogo } from "@/components/ui/ocp/focp-logo";
 import LoginForm from "@/components/ui/ocp/form/login-form";
 import ImagesCarousel from "@/components/ui/ocp/images-carousel";
 import { motion } from "framer-motion";
@@ -21,7 +21,7 @@ const LoginPage = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
         >
-          <FOCPLogo />
+          <TaqaLogo />
         </motion.div>
         <div className="max-w-md w-full mx-auto mt-16">
           <LoginForm />

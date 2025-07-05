@@ -6,6 +6,8 @@ export interface Column<T> {
   render?: (value: T[keyof T], item: T) => React.ReactNode;
   hidden?: boolean;
   clickable?: boolean;
+  hideable?: boolean;
+  defaultVisible?: boolean;
 }
 
 // Pagination state interface
@@ -69,6 +71,9 @@ export interface SearchBarProps {
   placeholder?: string;
   filters?: FilterGroup[];
   className?: string;
+  activeFilters?: Record<string, string>;
+  onFilterChange?: (filterKey: string, value: string) => void;
+  onClearFilters?: () => void;
 }
 
 // Pagination props
@@ -87,4 +92,25 @@ export interface DataTableConfig<T> {
   pageSize?: number;
   searchFields?: (keyof T)[];
   defaultSort?: SortConfig<T>;
+  columnVisibility?: boolean;
+  defaultHiddenColumns?: (keyof T)[];
+}
+
+// Column visibility state
+export interface ColumnVisibilityState<T> {
+  [key: string]: boolean;
+}
+
+// Enhanced data table props with column visibility
+export interface DataTableProps<T extends Record<string, any>> {
+  data: T[];
+  columns: Column<T>[];
+  config?: DataTableConfig<T>;
+  className?: string;
+  loading?: boolean;
+  error?: Error | null;
+  filters?: FilterGroup[];
+  onRowClick?: (row: T) => void;
+  columnVisibility?: ColumnVisibilityState<T>;
+  onColumnVisibilityChange?: (columnVisibility: ColumnVisibilityState<T>) => void;
 } 
