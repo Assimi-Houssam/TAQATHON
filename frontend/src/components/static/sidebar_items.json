@@ -7,69 +7,36 @@
       "allowedEntityTypes": ["OCP_AGENT", "SUPPLIER"]
     },
     {
-      "titleKey": "pages.anomaly_list",
+      "titleKey": "pages.anomaly_management",
       "icon": "ClipboardList",
-      "url": "/dashboard/purchase-request",
+      "url": "/dashboard/anomalies",
       "allowedEntityTypes": ["OCP_AGENT", "SUPPLIER"],
       "subItems": [
         {
-          "titleKey": "pages.anomaly_create",
-          "url": "/dashboard/purchase-request/create",
-          "parent": "/dashboard/purchase-request",
-          "allowedEntityTypes": ["OCP_AGENT"]
-        },
-        {
-          "titleKey": "pages.anomaly_ongoing",
-          "url": "/dashboard/purchase-request/ongoing",
-          "parent": "/dashboard/purchase-request",
+          "titleKey": "pages.anomaly_list",
+          "url": "/dashboard/anomalies",
+          "parent": "/dashboard/anomalies",
           "allowedEntityTypes": ["OCP_AGENT", "SUPPLIER"]
         },
         {
-          "titleKey": "pages.anomaly_drafts",
-          "url": "/dashboard/purchase-request/drafts",
-          "parent": "/dashboard/purchase-request",
+          "titleKey": "pages.anomaly_create",
+          "url": "/dashboard/anomalies/new",
+          "parent": "/dashboard/anomalies",
           "allowedEntityTypes": ["OCP_AGENT"]
         },
         {
-          "titleKey": "pages.anomaly_pending",
-          "url": "/dashboard/purchase-request/pending",
-          "parent": "/dashboard/purchase-request",
-          "allowedEntityTypes": ["OCP_AGENT"]
-        }
-      ]
-    },
-    {
-      "titleKey": "pages.anomaly_details",
-      "icon": "FileText",
-      "url": "/dashboard/reports",
-      "alertCount": 0,
-      "allowedEntityTypes": ["OCP_AGENT", "SUPPLIER"]
-    },
-    {
-      "titleKey": "pages.maintenance_window",
-      "icon": "MonitorCog",
-      "url": "/dashboard/suppliers",
-      "allowedEntityTypes": ["OCP_AGENT"],
-      "subItems": [
-        {
-          "titleKey": "pages.maintenance_operators",
-          "url": "/dashboard/suppliers/operators",
-          "parent": "/dashboard/suppliers",
-          "allowedEntityTypes": ["OCP_AGENT"]
+          "titleKey": "pages.anomaly_detail",
+          "url": "/dashboard/anomalies/detail",
+          "parent": "/dashboard/anomalies",
+          "allowedEntityTypes": ["OCP_AGENT", "SUPPLIER"]
         },
         {
-          "titleKey": "pages.maintenance_scheduled",
-          "url": "/dashboard/suppliers/pending-verification",
-          "parent": "/dashboard/suppliers",
+          "titleKey": "pages.anomaly_batch_upload",
+          "url": "/dashboard/anomalies/batch-upload",
+          "parent": "/dashboard/anomalies",
           "allowedEntityTypes": ["OCP_AGENT"]
         }
       ]
-    },
-    {
-      "titleKey": "pages.chat",
-      "icon": "MessageSquare",
-      "url": "/dashboard/chat",
-      "allowedEntityTypes": ["OCP_AGENT", "SUPPLIER"]
     }
   ]
 }

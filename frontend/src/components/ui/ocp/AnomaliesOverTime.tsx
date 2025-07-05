@@ -39,12 +39,12 @@ const chartColors = {
   critical: "#EF4444",
 };
 
-const CustomTooltip = ({ active, payload, label }: any) => {
+const CustomTooltip = ({ active, payload, label }: { active?: boolean; payload?: Array<{ name: string; value: number; color: string }>; label?: string }) => {
   if (active && payload && payload.length) {
     return (
       <div className="bg-white border border-gray-200 rounded-lg shadow-lg p-3">
         <div className="text-sm font-medium text-gray-900 mb-2">{label}</div>
-        {payload.map((entry: any, index: number) => (
+        {payload.map((entry: { name: string; value: number; color: string }, index: number) => (
           <div key={index} className="text-xs" style={{ color: entry.color }}>
             {entry.name}: {entry.value}
           </div>

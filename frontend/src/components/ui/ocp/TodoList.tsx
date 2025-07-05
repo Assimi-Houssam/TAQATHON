@@ -179,7 +179,7 @@ const CreateTaskDialog = ({ trigger }: { trigger: React.ReactNode }) => {
       <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>{t("tasks.addNewTask")}</DialogTitle>
+          <DialogTitle>Add New Task</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -253,7 +253,7 @@ export const AddNewTaskButton = () => {
           size="sm"
         >
           <PlusCircle className="h-4 w-4" />
-          {t("tasks.addNewTask")}
+          Add New Task
         </Button>
       }
     />
@@ -341,7 +341,7 @@ export const TodoList = ({ className }: { className?: string }) => {
             <ClipboardList className="w-12 h-12 text-gray-400" />
           </div>
           <h3 className="text-lg font-semibold text-gray-900 mb-2">
-            {t("tasks.noTasks")}
+            No tasks yet
           </h3>
           <p className="text-gray-500 mb-8 max-w-sm">
             Start organizing your work by creating your first task. Click the
@@ -358,7 +358,7 @@ export const TodoList = ({ className }: { className?: string }) => {
                 )}
               >
                 <PlusCircle className="h-5 w-5" />
-                {t("tasks.addNewTask")}
+                Add New Task
               </Button>
             }
           />
@@ -410,7 +410,7 @@ export const TodoList = ({ className }: { className?: string }) => {
             {isLoadingMore ? (
               <Loader2 className="h-4 w-4 animate-spin mr-2" />
             ) : null}
-            {t("tasks.loadMore")}
+            Load More
           </Button>
         )}
       </CardContent>

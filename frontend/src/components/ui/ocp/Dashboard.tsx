@@ -279,7 +279,7 @@ export const Dashboard = () => {
 
   const prepareExportData = () => {
     return {
-      metrics: dashboardMetrics.map((metric: any) => ({
+      metrics: dashboardMetrics.map((metric: { title: string; value: string; subtitle: string }) => ({
         Title: metric.title,
         Value: metric.value,
         Subtitle: metric.subtitle,
