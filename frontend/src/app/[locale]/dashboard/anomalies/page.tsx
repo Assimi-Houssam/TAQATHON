@@ -111,7 +111,7 @@ export default function AnomaliesPage() {
       width: "100px",
       clickable: true,
       render: (value) => (
-        <span className="font-mono text-sm font-medium">{value}</span>
+        <span className="font-mono text-sm font-medium">{value as string}</span>
       ),
     },
     {
@@ -122,7 +122,7 @@ export default function AnomaliesPage() {
       render: (value, anomaly) => (
         <div className="flex items-center gap-2">
           <Wrench className="h-4 w-4 text-muted-foreground" />
-          <span className="font-mono text-sm">{value}</span>
+          <span className="font-mono text-sm">{value as string}</span>
         </div>
       ),
     },
@@ -139,8 +139,8 @@ export default function AnomaliesPage() {
       width: "300px",
       clickable: true,
       render: (value) => (
-        <div className="max-w-xs truncate" title={value || ""}>
-          {value || "No description"}
+        <div className="max-w-xs truncate" title={(value as string) || ""}>
+          {(value as string) || "No description"}
         </div>
       ),
     },
@@ -158,7 +158,7 @@ export default function AnomaliesPage() {
       clickable: true,
       render: (value) => (
         <Badge className={criticiteColors[value as AnomalyCriticite]}>
-          {value}
+          {value as string}
         </Badge>
       ),
     },
@@ -169,7 +169,7 @@ export default function AnomaliesPage() {
       clickable: true,
       render: (value) => (
         <Badge className={statusColors[value as AnomalyStatus]}>
-          {value.replace("_", " ")}
+          {(value as string)?.replace("_", " ")}
         </Badge>
       ),
     },
@@ -270,20 +270,22 @@ export default function AnomaliesPage() {
           <h1 className="text-2xl font-bold text-gray-900">Anomaly Management</h1>
           <p className="text-gray-600 mt-1">Monitor and resolve equipment anomalies</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-3">
           <Button 
             variant="outline" 
             size="sm"
             onClick={() => router.push("/dashboard/anomalies/batch-upload")}
+            className="text-zinc-600 border-zinc-200 hover:bg-zinc-50 hover:border-zinc-300"
           >
-            <FileText className="h-4 w-4 mr-2" />
+            <FileText className="h-4 w-4 mr-1.5" />
             Batch Upload
           </Button>
           <Button 
             size="sm"
             onClick={() => router.push("/dashboard/anomalies/new")}
+            className="bg-blue-600 hover:bg-blue-700 text-white shadow-sm"
           >
-            <Plus className="h-4 w-4 mr-2" />
+            <Plus className="h-4 w-4 mr-1.5" />
             New Anomaly
           </Button>
         </div>
