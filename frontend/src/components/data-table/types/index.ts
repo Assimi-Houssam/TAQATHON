@@ -43,6 +43,7 @@ export interface BaseDataTableProps<T> {
   loading?: boolean;
   error?: Error | null;
   className?: string;
+  onRowClick?: (row: T) => void;
 }
 
 // Unified data table props

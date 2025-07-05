@@ -1,4 +1,5 @@
 import {
+  Table,
   TableBody,
   TableCell,
   TableHead,
@@ -35,6 +36,7 @@ export function BaseDataTable<T>({
   loading = false,
   error = null,
   className,
+  onRowClick,
 }: BaseDataTableProps<T>) {
   const t = useTranslations("dataTable");
 
@@ -55,7 +57,7 @@ export function BaseDataTable<T>({
 
   return (
     <div className="w-full overflow-auto">
-      <table className={cn("w-full caption-bottom text-sm", className)}>
+      <Table className={cn("w-full caption-bottom text-sm", className)}>
         <TableHeader>
           <TableRow className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
             {columns.map((column, index) => (
@@ -134,8 +136,16 @@ export function BaseDataTable<T>({
                   key={index}
                   className={cn(
                     "border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted",
-                    index === data.length - 1 && "border-0"
+                    index === data.length - 1 && "border-0",
+                    onRowClick && "cursor-pointer"
                   )}
+                  onClick={(e) => {
+                    // Only trigger row click if the click wasn't on a button or other interactive element
+                    const target = e.target as HTMLElement;
+                    if (onRowClick && !target.closest('button, a, input, select, textarea')) {
+                      onRowClick(item);
+                    }
+                  }}
                 >
                   {columns.map((column, colIndex) => (
                     <TableCell
@@ -169,7 +179,7 @@ export function BaseDataTable<T>({
             </>
           )}
         </TableBody>
-      </table>
+      </Table>
     </div>
   );
 } 

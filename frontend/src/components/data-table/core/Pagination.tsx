@@ -1,3 +1,4 @@
+import React from "react";
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -20,7 +21,11 @@ export function Pagination({
   const canGoPrevious = currentPage > 1;
   const canGoNext = currentPage < totalPages;
 
-  const handlePageChange = (page: number) => {
+  const handlePageChange = (page: number, event?: React.MouseEvent) => {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
     if (page >= 1 && page <= totalPages) {
       onPageChange(page);
     }
@@ -43,7 +48,7 @@ export function Pagination({
         <Button
           variant="outline"
           size="sm"
-          onClick={() => handlePageChange(1)}
+          onClick={(e) => handlePageChange(1, e)}
           disabled={!canGoPrevious}
           className="hidden sm:flex"
         >
@@ -54,7 +59,7 @@ export function Pagination({
         <Button
           variant="outline"
           size="sm"
-          onClick={() => handlePageChange(currentPage - 1)}
+          onClick={(e) => handlePageChange(currentPage - 1, e)}
           disabled={!canGoPrevious}
         >
           <ChevronLeft className="h-4 w-4" />
@@ -64,7 +69,7 @@ export function Pagination({
         <Button
           variant="outline"
           size="sm"
-          onClick={() => handlePageChange(currentPage + 1)}
+          onClick={(e) => handlePageChange(currentPage + 1, e)}
           disabled={!canGoNext}
         >
           <ChevronRight className="h-4 w-4" />
@@ -74,7 +79,7 @@ export function Pagination({
         <Button
           variant="outline"
           size="sm"
-          onClick={() => handlePageChange(totalPages)}
+          onClick={(e) => handlePageChange(totalPages, e)}
           disabled={!canGoNext}
           className="hidden sm:flex"
         >

@@ -1,12 +1,11 @@
 import { useState, useMemo } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { BaseDataTable } from "./core/BaseDataTable";
 import { SearchBar } from "./core/SearchBar";
 import { Pagination } from "./core/Pagination";
 import { Column, FilterGroup, DataTableConfig } from "./types";
 import { cn } from "@/lib/utils";
 
-interface DataTableProps<T> {
+interface DataTableProps<T extends Record<string, any>> {
   data: T[];
   columns: Column<T>[];
   config?: DataTableConfig<T>;
@@ -31,7 +30,7 @@ interface DataTableProps<T> {
  * 
  * @template T - The data type for table rows
  */
-export function DataTable<T>({
+export function DataTable<T extends Record<string, any>>({
   data,
   columns,
   config = {},
@@ -104,7 +103,9 @@ export function DataTable<T>({
   // Event handlers
   const handleSearch = (term: string) => {
     setSearchTerm(term);
-    setCurrentPage(1); // Reset to first page when searching
+    if (term !== searchTerm) {
+      setCurrentPage(1); // Reset to first page only when search term actually changes
+    }
   };
 
   const handleSort = (field: keyof T) => {
@@ -129,34 +130,19 @@ export function DataTable<T>({
   }, [columns, sortable]);
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className={cn("space-y-4", className)}
-    >
+    <div className={cn("space-y-4", className)}>
       {/* Search Bar */}
       {searchable && (
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-        >
-          <SearchBar
-            onSearch={handleSearch}
-            placeholder="Search..."
-            filters={filterable ? filters : []}
-            className="w-full"
-          />
-        </motion.div>
+        <SearchBar
+          onSearch={handleSearch}
+          placeholder="Search by ID, equipment, system, or description..."
+          filters={filterable ? filters : []}
+          className="w-full"
+        />
       )}
 
       {/* Data Table */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.98 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 0.2 }}
-        className="bg-card rounded-lg border shadow-sm overflow-hidden"
-      >
+      <div className="bg-white rounded-lg border border-zinc-200 overflow-hidden shadow-sm">
         <BaseDataTable
           data={paginatedData}
           columns={processedColumns}
@@ -166,37 +152,28 @@ export function DataTable<T>({
           loading={loading}
           error={error}
           className={className}
+          onRowClick={onRowClick}
         />
 
         {/* Pagination */}
         {paginated && sortedData.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
-            className="border-t p-4"
-          >
+          <div className="border-t border-zinc-200 px-4 py-2.5 bg-zinc-50/50">
             <Pagination
               currentPage={currentPage}
               totalPages={totalPages}
               onPageChange={handlePageChange}
             />
-          </motion.div>
+          </div>
         )}
-      </motion.div>
+      </div>
 
       {/* Results summary */}
       {!loading && !error && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.4 }}
-          className="text-sm text-muted-foreground"
-        >
+        <div className="text-xs text-zinc-500">
           Showing {paginatedData.length} of {sortedData.length} results
           {searchTerm && ` for "${searchTerm}"`}
-        </motion.div>
+        </div>
       )}
-    </motion.div>
+    </div>
   );
 } 
