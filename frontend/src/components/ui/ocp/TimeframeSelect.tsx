@@ -109,7 +109,7 @@ export const TimeframeSelect = ({
           <Button
             variant="outline"
             className={cn(
-              "w-[200px] justify-start text-left font-normal",
+              "w-[120px] justify-start text-left font-normal",
               !dateRange.from && "text-muted-foreground",
               "bg-background/50 backdrop-blur-sm border-border/50 hover:bg-accent/50 transition-all duration-200"
             )}
