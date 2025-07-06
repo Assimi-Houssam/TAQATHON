@@ -1,632 +1,365 @@
 "use client";
 
-import { DashboardCard } from "@/components/ui/ocp/DashboardCard";
 import { DashboardHeader } from "@/components/ui/ocp/DashboardHeader";
-import { AnomaliesByStatus } from "@/components/ui/ocp/AnomaliesByStatus";
-import { CriticalityDistribution } from "@/components/ui/ocp/CriticalityDistribution";
-import { AnomaliesOverTime } from "@/components/ui/ocp/AnomaliesOverTime";
-import { AnomalyTasksList } from "@/components/ui/ocp/AnomalyTasksList";
 import { ExportMenu } from "@/components/ui/ocp/ExportMenu";
-import { MetricsCard } from "@/components/ui/ocp/MetricsCard";
 import { TimeframeSelect } from "@/components/ui/ocp/TimeframeSelect";
-import { useTimeFrame } from "@/context/TimeFrameContext";
 import {
-  ClipboardList,
-  AlertTriangle,
-  AlertOctagon,
-  CheckCircle,
-  Clock,
-  Activity,
-  PieChart,
+  LayoutDashboard,
   TrendingUp,
-  Shield,
+  AlertTriangle,
+  BarChart3,
+  Settings,
+  Plus,
+  Users,
+  Activity,
+  Clock,
+  CheckCircle,
+  AlertOctagon,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useMemo } from "react";
-import { renderToString } from "react-dom/server";
-import { utils, write } from "xlsx";
-import { useAgentDashboardData } from "@/endpoints/dahboard/ocp/get-agent-dashboard-data";
-import Head from "next/head";
-
-interface MonitoringSystem {
-  title: string;
-  description: string;
-  bidding_deadline: string;
-  type: string;
-  requesterEntity: string;
-  requesterDepartment: string;
-  requester: string;
-  status: string;
-  id: string;
-}
-
-interface ExportMetricsData {
-  metrics: Array<{ Title: string; Value: string; Subtitle: string }>;
-  systems: Array<{
-    System: string;
-    "Total Sensors": number;
-    "Operational Sensors": number;
-    "Efficiency Rate": string;
-  }>;
-  tasks: Array<{
-    Title: string;
-    Description: string;
-    "Due Date": string;
-    Status: string;
-  }>;
-}
-
-const PrintContent = ({ data }: { data: ExportMetricsData }) => (
-  <html>
-    <Head>
-      <title>Dashboard Statistics</title>
-      <style>{`
-        body {
-          font-family: Arial, sans-serif;
-          padding: 20px;
-          max-width: 800px;
-          margin: 0 auto;
-        }
-        .section {
-          margin-bottom: 30px;
-        }
-        h1 {
-          color: #333;
-          border-bottom: 2px solid #eee;
-          padding-bottom: 10px;
-        }
-        h2 {
-          color: #666;
-          margin-top: 20px;
-        }
-        table {
-          width: 100%;
-          border-collapse: collapse;
-          margin-top: 10px;
-        }
-        th, td {
-          border: 1px solid #ddd;
-          padding: 8px;
-          text-align: left;
-        }
-        th {
-          background-color: #f5f5f5;
-        }
-        @media print {
-          body { padding: 0; }
-          button { display: none; }
-        }
-      `}</style>
-    </Head>
-    <body>
-      <h1>Dashboard Statistics - {new Date().toLocaleDateString()}</h1>
-
-      {Object.entries(data).map(([section, items]) => (
-        <div key={section} className="section">
-          <h2>{section.charAt(0).toUpperCase() + section.slice(1)}</h2>
-          <table>
-            <thead>
-              <tr>
-                {Object.keys(items[0] || {}).map((header) => (
-                  <th key={header}>{header}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {items.map(
-                (item: Record<string, string | number>, idx: number) => (
-                  <tr key={idx}>
-                    {Object.values(item).map((value, i) => (
-                      <td key={i}>{String(value)}</td>
-                    ))}
-                  </tr>
-                )
-              )}
-            </tbody>
-          </table>
-        </div>
-      ))}
-    </body>
-  </html>
-);
-
-
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 
 export const Dashboard = () => {
   const t = useTranslations("dashboard");
-  const { dateRange } = useTimeFrame();
-  const iconSize = "h-4 w-4";
 
-  const { data: dashboardData, isLoading: isDashboardLoading } =
-    useAgentDashboardData(dateRange);
-
-  // Mock data for anomaly visualizations with translations
-  const mockAnomaliesByStatus = [
-    {
-      name: t("charts.anomaliesByStatus.new"),
-      value: 12,
-      color: "#3B82F6",
-      icon: <AlertTriangle className="h-4 w-4" />,
-    },
-    {
-      name: t("charts.anomaliesByStatus.inProgress"),
-      value: 8,
-      color: "#F59E0B",
-      icon: <Clock className="h-4 w-4" />,
-    },
-    {
-      name: t("charts.anomaliesByStatus.resolved"),
-      value: 25,
-      color: "#10B981",
-      icon: <CheckCircle className="h-4 w-4" />,
-    },
-    {
-      name: t("charts.anomaliesByStatus.escalated"),
-      value: 3,
-      color: "#EF4444",
-      icon: <AlertOctagon className="h-4 w-4" />,
-    },
-  ];
-
-  const mockCriticalityData = [
-    { name: "Unit A", low: 5, medium: 3, high: 2, critical: 1 },
-    { name: "Unit B", low: 8, medium: 4, high: 1, critical: 0 },
-    { name: "Unit C", low: 2, medium: 6, high: 4, critical: 2 },
-    { name: "Unit D", low: 7, medium: 2, high: 3, critical: 1 },
-    { name: "Unit E", low: 4, medium: 5, high: 2, critical: 0 },
-    { name: "Unit F", low: 6, medium: 3, high: 1, critical: 0 },
-  ];
-
-  const mockAnomaliesOverTime = [
-    { date: "2024-01-01", anomalies: 15, resolved: 12, critical: 3 },
-    { date: "2024-01-02", anomalies: 18, resolved: 15, critical: 2 },
-    { date: "2024-01-03", anomalies: 22, resolved: 18, critical: 4 },
-    { date: "2024-01-04", anomalies: 19, resolved: 16, critical: 3 },
-    { date: "2024-01-05", anomalies: 25, resolved: 20, critical: 5 },
-    { date: "2024-01-06", anomalies: 21, resolved: 19, critical: 2 },
-    { date: "2024-01-07", anomalies: 17, resolved: 15, critical: 2 },
-  ];
-
-  const mockAnomalyTasks = [
-    {
-      id: "1",
-      title: `${t("charts.anomalyTasks.investigation")} - Unit A`,
-      description: "Temperature sensor showing irregular readings above normal thresholds",
-      priority: "high" as const,
-      status: "pending" as const,
-      assignee: "John Smith",
-      department: "Manufacturing",
-      createdAt: "2024-01-07T10:00:00Z",
-      dueDate: "2024-01-08T18:00:00Z",
-      type: "investigation" as const,
-    },
-    {
-      id: "2",
-      title: `${t("charts.anomalyTasks.calibration")} - Unit C`,
-      description: "Scheduled calibration for pressure monitoring system",
-      priority: "medium" as const,
-      status: "in_progress" as const,
-      assignee: "Sarah Johnson",
-      department: "Quality Control",
-      createdAt: "2024-01-06T14:30:00Z",
-      dueDate: "2024-01-09T12:00:00Z",
-      type: "calibration" as const,
-    },
-    {
-      id: "3",
-      title: `${t("charts.anomalyTasks.repair")} - Unit B`,
-      description: "Vibration sensor requires immediate replacement",
-      priority: "critical" as const,
-      status: "in_progress" as const,
-      assignee: "Mike Davis",
-      department: "Maintenance",
-      createdAt: "2024-01-07T08:15:00Z",
-      dueDate: "2024-01-07T20:00:00Z",
-      type: "repair" as const,
-    },
-    {
-      id: "4",
-      title: `${t("charts.anomalyTasks.review")} Algorithm`,
-      description: "Analyze recent false positive rates and adjust thresholds",
-      priority: "low" as const,
-      status: "completed" as const,
-      assignee: "Emily Chen",
-      department: "Data Science",
-      createdAt: "2024-01-05T11:00:00Z",
-      dueDate: "2024-01-07T17:00:00Z",
-      type: "review" as const,
-    },
-  ];
-
-  const dashboardMetrics = useMemo(() => {
-    return [
-      {
-        title: t("metrics.criticalAlerts.title"),
-        value: "3",
-        subtitle: `3 ${t("metrics.criticalAlerts.subtitle")}`,
-        icon: <AlertOctagon className={iconSize} />,
-        color: "text-red-600",
-        bgColor: "bg-red-50",
-      },
-      {
-        title: t("metrics.resolvedAnomalies.title"),
-        value: "25",
-        subtitle: t("metrics.resolvedAnomalies.subtitle"),
-        icon: <CheckCircle className={iconSize} />,
-        color: "text-green-600",
-        bgColor: "bg-green-50",
-      },
-      {
-        title: t("metrics.averageResolutionTime.title"),
-        value: "4.2h",
-        subtitle: t("metrics.averageResolutionTime.subtitle"),
-        icon: <Clock className={iconSize} />,
-        color: "text-blue-600",
-        bgColor: "bg-blue-50",
-      },
-      {
-        title: t("metrics.systemStatus.title"),
-        value: "92%",
-        subtitle: t("metrics.systemStatus.subtitle"),
-        icon: <Activity className={iconSize} />,
-        color: "text-green-600",
-        bgColor: "bg-green-50",
-      },
-    ];
-  }, [iconSize, t]);
-
-  const cleanMonitoringSystems: MonitoringSystem[] = [];
-
-  const prepareExportData = () => {
-    return {
-      metrics: dashboardMetrics.map((metric: { title: string; value: string; subtitle: string }) => ({
-        Title: metric.title,
-        Value: metric.value,
-        Subtitle: metric.subtitle,
-      })),
-      systems: [],
-      tasks: [],
-    };
-  };
-
+  // Mock export handlers for demo purposes
   const handleExportXLSX = () => {
-    const wb = utils.book_new();
-    const data = prepareExportData();
-
-    // Add each sheet
-    utils.book_append_sheet(wb, utils.json_to_sheet(data.metrics), "Metrics");
-    utils.book_append_sheet(
-      wb,
-      utils.json_to_sheet(data.systems),
-      "Industrial Systems"
-    );
-    utils.book_append_sheet(wb, utils.json_to_sheet(data.tasks), "Tasks");
-
-    const wbout = write(wb, { bookType: "xlsx", type: "binary" });
-    downloadFile(s2ab(wbout), "xlsx");
+    console.log("Export XLSX - Feature coming soon");
   };
 
   const handleExportJSON = () => {
-    const data = prepareExportData();
-    const jsonString = JSON.stringify(data, null, 2);
-    const blob = new Blob([jsonString], { type: "application/json" });
-    downloadFile(blob, "json");
+    console.log("Export JSON - Feature coming soon");
   };
 
   const handleExportCSV = () => {
-    const data = prepareExportData();
-    let csvContent = "";
-
-    // Convert each section to CSV
-    Object.entries(data).forEach(([section, items]) => {
-      csvContent += `\n${section.toUpperCase()}\n`;
-      if (items.length > 0) {
-        const headers = Object.keys(items[0]);
-        csvContent += headers.join(",") + "\n";
-        items.forEach((item) => {
-          csvContent +=
-            headers
-              .map((header) => `"${String(item[header as keyof typeof item])}"`)
-              .join(",") + "\n";
-        });
-      }
-    });
-
-    const blob = new Blob([csvContent], { type: "text/csv" });
-    downloadFile(blob, "csv");
+    console.log("Export CSV - Feature coming soon");
   };
 
   const handlePrint = () => {
-    const data = prepareExportData();
-    const iframe = document.createElement("iframe");
-    iframe.style.display = "none";
-    document.body.appendChild(iframe);
-
-    const content = renderToString(
-      <PrintContent data={data as ExportMetricsData} />
-    );
-    iframe.contentWindow?.document.write(content);
-    iframe.contentWindow?.document.close();
-
-    iframe.contentWindow?.print();
-    setTimeout(() => {
-      document.body.removeChild(iframe);
-    }, 100);
-  };
-
-  const downloadFile = (content: ArrayBuffer | Blob, extension: string) => {
-    const blob =
-      content instanceof Blob
-        ? content
-        : new Blob([content], { type: "application/octet-stream" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `dashboard-statistics-${new Date().toISOString().split("T")[0]
-      }.${extension}`;
-    a.click();
-    URL.revokeObjectURL(url);
-  };
-
-  // Utility function to convert string to ArrayBuffer
-  const s2ab = (s: string) => {
-    const buf = new ArrayBuffer(s.length);
-    const view = new Uint8Array(buf);
-    for (let i = 0; i < s.length; i++) view[i] = s.charCodeAt(i) & 0xff;
-    return buf;
+    console.log("Print - Feature coming soon");
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50/80"
-      style={{
-        background: `
-             radial-gradient(circle at 20% 20%, rgba(99, 102, 241, 0.03) 0%, transparent 50%),
-             radial-gradient(circle at 80% 80%, rgba(16, 185, 129, 0.03) 0%, transparent 50%),
-             linear-gradient(135deg, #f8fafc 0%, #ffffff 50%, #f1f5f9 100%)
-           `
-      }}>
-
-      {/* Unified Design System CSS Variables */}
+    <div className="w-full">
+      {/* Modern Design System Styles */}
       <style jsx>{`
-         .dashboard-card {
-           background: rgba(255, 255, 255, 0.7);
-           backdrop-filter: blur(10px);
-           border: 1px solid rgba(226, 232, 240, 0.6);
-           border-radius: 0.25rem;
-           transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-           position: relative;
-           overflow: hidden;
-         }
-         
-         .dashboard-card::before {
-           content: '';
-           position: absolute;
-           top: 0;
-           left: 0;
-           right: 0;
-           height: 1px;
-           background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.1), transparent);
-           opacity: 0;
-           transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-         }
-         
-         .dashboard-card:hover {
-           border-color: rgba(99, 102, 241, 0.1);
-         }
-         
-         .dashboard-card:hover::before {
-           opacity: 1;
-         }
-         
-         .metric-card {
-           background: rgba(255, 255, 255, 0.8);
-           backdrop-filter: blur(8px);
-           border: 1px solid rgba(226, 232, 240, 0.6);
-           border-radius: 0.25rem;
-           transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-           position: relative;
-           overflow: hidden;
-         }
-         
-         .metric-card::after {
-           content: '';
-           position: absolute;
-           bottom: 0;
-           left: 0;
-           right: 0;
-           height: 2px;
-           background: linear-gradient(90deg, transparent, currentColor, transparent);
-           opacity: 0;
-           transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-         }
-         
-         .metric-card:hover {
-         }
-         
-         .metric-card:hover::after {
-           opacity: 0.1;
-         }
-         
-         .loading-skeleton {
-           background: linear-gradient(
-             90deg,
-             rgba(255, 255, 255, 0.8) 0%,
-             rgba(255, 255, 255, 0.9) 50%,
-             rgba(255, 255, 255, 0.8) 100%
-           );
-           background-size: 200px 100%;
-           animation: loading 1.5s infinite;
-         }
-         
-         @keyframes loading {
-           0% {
-             background-position: -200px 0;
-           }
-           100% {
-             background-position: calc(200px + 100%) 0;
-           }
-         }
-         
-         .dashboard-icon {
-           transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-           position: relative;
-         }
-         
-         .dashboard-icon::before {
-           content: '';
-           position: absolute;
-           inset: -4px;
-           background: radial-gradient(circle, currentColor 0%, transparent 70%);
-           opacity: 0;
-           border-radius: 50%;
-           transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-         }
-         
-         .dashboard-card:hover .dashboard-icon::before {
-           opacity: 0.05;
-         }
-       `}</style>
+        .dashboard-card {
+          background: rgba(255, 255, 255, 0.95);
+          backdrop-filter: blur(10px);
+          border: 1px solid rgba(226, 232, 240, 0.8);
+          border-radius: 12px;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          position: relative;
+          overflow: hidden;
+        }
+        
+        .dashboard-card::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          height: 1px;
+          background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
+          opacity: 0;
+          transition: opacity 0.3s ease;
+        }
+        
+        .dashboard-card:hover {
+          transform: translateY(-1px);
+          box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+          border-color: rgba(59, 130, 246, 0.2);
+        }
+        
+        .dashboard-card:hover::before {
+          opacity: 1;
+        }
+        
+        .metric-card {
+          background: rgba(255, 255, 255, 0.95);
+          border: 1px solid rgba(226, 232, 240, 0.6);
+          border-radius: 8px;
+          transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+          position: relative;
+          overflow: hidden;
+        }
+        
+        .metric-card::after {
+          content: '';
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          height: 2px;
+          background: linear-gradient(90deg, transparent, currentColor, transparent);
+          opacity: 0;
+          transition: opacity 0.2s ease;
+        }
+        
+        .metric-card:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .metric-card:hover::after {
+          opacity: 0.1;
+        }
+        
+        .placeholder-section {
+          background: rgba(255, 255, 255, 0.6);
+          border: 2px dashed rgba(59, 130, 246, 0.2);
+          border-radius: 12px;
+          transition: all 0.2s ease;
+        }
+        
+        .placeholder-section:hover {
+          border-color: rgba(59, 130, 246, 0.4);
+          background: rgba(255, 255, 255, 0.8);
+        }
+        
+        .icon-wrapper {
+          background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(59, 130, 246, 0.05));
+          border-radius: 8px;
+          padding: 8px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.2s ease;
+        }
+        
+        .icon-wrapper:hover {
+          transform: scale(1.05);
+          background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(59, 130, 246, 0.08));
+        }
+      `}</style>
 
-      <div className="p-6 space-y-6 max-w-[2000px] mx-auto">
-        {/* Header with unified styling */}
-        <div className="dashboard-card p-6">
+      <div className="p-4 md:p-6 lg:p-8 space-y-6 md:space-y-8 w-full">
+        {/* Header Section */}
+        <div className="dashboard-card p-4 md:p-6">
           <DashboardHeader
             title={t("title")}
             subtitle={t("subtitle")}
             action={
-              <div className="flex items-center">
-                <div className="p-2">
-                  <TimeframeSelect
-                    fromYear={new Date().getFullYear() - 20}
-                    toYear={new Date().getFullYear()}
-                  />
-                </div>
-                <div className="p-2">
-                  <ExportMenu
-                    onExportXLSX={handleExportXLSX}
-                    onExportJSON={handleExportJSON}
-                    onExportCSV={handleExportCSV}
-                    onPrint={handlePrint}
-                  />
-                </div>
+              <div className="flex items-center gap-3">
+                <TimeframeSelect
+                  fromYear={new Date().getFullYear() - 5}
+                  toYear={new Date().getFullYear()}
+                />
+                <ExportMenu
+                  onExportXLSX={handleExportXLSX}
+                  onExportJSON={handleExportJSON}
+                  onExportCSV={handleExportCSV}
+                  onPrint={handlePrint}
+                />
               </div>
             }
           />
         </div>
 
-        {/* Metrics Cards Grid with unified styling */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-6">
-          {isDashboardLoading
-            ? Array(4)
-              .fill(0)
-              .map((_, index) => (
-                <div
-                  key={index}
-                  className="metric-card h-32 loading-skeleton"
-                />
-              ))
-            : dashboardMetrics.map((item, index) => (
-              <div key={index} className="metric-card p-4 group">
-                <div className="flex justify-between items-start mb-3">
-                  <h3 className="text-sm font-medium text-slate-700 group-hover:text-slate-900 transition-colors">
-                    {item.title}
-                  </h3>
-                  <div className={`p-2 rounded-lg ${item.bgColor} dashboard-icon`}>
-                    <span className={`${item.color} text-sm`}>{item.icon}</span>
-                  </div>
+        {/* Quick Stats Overview */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+          {[
+            {
+              title: "Total Anomalies",
+              value: "—",
+              subtitle: "Ready for integration",
+              icon: <AlertTriangle className="h-5 w-5 text-blue-600" />,
+              bgColor: "bg-blue-50",
+            },
+            {
+              title: "System Status",
+              value: "—",
+              subtitle: "Monitoring ready",
+              icon: <Activity className="h-5 w-5 text-green-600" />,
+              bgColor: "bg-green-50",
+            },
+            {
+              title: "Response Time",
+              value: "—",
+              subtitle: "Analytics pending",
+              icon: <Clock className="h-5 w-5 text-amber-600" />,
+              bgColor: "bg-amber-50",
+            },
+            {
+              title: "Resolved",
+              value: "—",
+              subtitle: "Tracking enabled",
+              icon: <CheckCircle className="h-5 w-5 text-emerald-600" />,
+              bgColor: "bg-emerald-50",
+            },
+          ].map((metric, index) => (
+            <div key={index} className="metric-card p-4 md:p-6 group">
+              <div className="flex items-center justify-between mb-4">
+                <div className="icon-wrapper">
+                  {metric.icon}
                 </div>
-                <div className="space-y-1">
-                  <div className="text-2xl font-bold text-slate-900 leading-none">
-                    {item.value}
+                <div className="text-right">
+                  <div className="text-xl md:text-2xl font-bold text-slate-900 mb-1">
+                    {metric.value}
                   </div>
-                  <div className="text-xs text-slate-500">
-                    {item.subtitle}
+                  <div className="text-xs md:text-sm text-slate-500">
+                    {metric.subtitle}
                   </div>
                 </div>
               </div>
+              <h3 className="text-sm font-medium text-slate-700 group-hover:text-slate-900 transition-colors">
+                {metric.title}
+              </h3>
+            </div>
+          ))}
+        </div>
+
+        {/* Main Content Grid - Placeholder Sections */}
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 md:gap-8">
+          {/* Anomaly Analytics Placeholder */}
+          <div className="placeholder-section p-6 md:p-8 text-center">
+            <div className="flex flex-col items-center space-y-4">
+              <div className="icon-wrapper">
+                <BarChart3 className="h-8 w-8 text-blue-600" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-slate-900 mb-2">
+                  Anomaly Analytics
+                </h3>
+                <p className="text-slate-600 text-sm max-w-md">
+                  Chart components will be integrated here to visualize anomaly patterns, 
+                  trends, and distribution across different systems.
+                </p>
+              </div>
+                              <div className="text-xs text-slate-500 font-mono bg-slate-50 px-3 py-1 rounded-full">
+                  {/* TODO: Add AnomalyChart component */}
+                </div>
+            </div>
+          </div>
+
+          {/* System Overview Placeholder */}
+          <div className="placeholder-section p-6 md:p-8 text-center">
+            <div className="flex flex-col items-center space-y-4">
+              <div className="icon-wrapper">
+                <TrendingUp className="h-8 w-8 text-blue-600" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-slate-900 mb-2">
+                  System Overview
+                </h3>
+                <p className="text-slate-600 text-sm max-w-md">
+                  Real-time monitoring dashboard showing system health, 
+                  performance metrics, and operational status.
+                </p>
+              </div>
+                              <div className="text-xs text-slate-500 font-mono bg-slate-50 px-3 py-1 rounded-full">
+                  {/* TODO: Add SystemOverview component */}
+                </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Action Items Section */}
+        <div className="dashboard-card p-4 md:p-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
+            <div>
+              <h2 className="text-xl font-semibold text-slate-900">Quick Actions</h2>
+              <p className="text-slate-600 text-sm mt-1">
+                Common tasks and shortcuts for anomaly management
+              </p>
+            </div>
+            <Button variant="outline" size="sm">
+              <Settings className="h-4 w-4 mr-2" />
+              Configure
+            </Button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {[
+              {
+                title: "Report Anomaly",
+                description: "Submit a new anomaly detection report",
+                icon: <Plus className="h-5 w-5" />,
+                action: "Create Report",
+              },
+              {
+                title: "Review Alerts",
+                description: "Check pending alerts and notifications",
+                icon: <AlertOctagon className="h-5 w-5" />,
+                action: "View Alerts",
+              },
+              {
+                title: "Team Dashboard",
+                description: "Access team performance metrics",
+                icon: <Users className="h-5 w-5" />,
+                action: "View Team",
+              },
+            ].map((item, index) => (
+              <Card key={index} className="border-slate-200 hover:border-blue-200 transition-colors">
+                <CardContent className="p-4">
+                  <div className="flex items-start space-x-3">
+                    <div className="icon-wrapper mt-1">
+                      {item.icon}
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="font-medium text-slate-900 mb-1">
+                        {item.title}
+                      </h4>
+                      <p className="text-sm text-slate-600 mb-3">
+                        {item.description}
+                      </p>
+                      <Button variant="outline" size="sm" className="w-full">
+                        {item.action}
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             ))}
-        </div>
-
-        {/* First Row of Charts with unified styling */}
-        <div className="grid grid-cols-1 2xl:grid-cols-2 gap-6">
-          <div className="dashboard-card p-6">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="dashboard-icon">
-                <PieChart className="h-5 w-5 text-slate-600" />
-              </div>
-              <h2 className="text-lg font-semibold text-slate-900">{t("charts.anomaliesByStatus.title")}</h2>
-            </div>
-            {isDashboardLoading ? (
-              <div className="h-80 loading-skeleton rounded-lg" />
-            ) : (
-              <div className="h-80">
-                <AnomaliesByStatus
-                  className="h-full border-none shadow-none bg-transparent"
-                  data={mockAnomaliesByStatus}
-                />
-              </div>
-            )}
-          </div>
-
-          <div className="dashboard-card p-6">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="dashboard-icon">
-                <Shield className="h-5 w-5 text-slate-600" />
-              </div>
-              <h2 className="text-lg font-semibold text-slate-900">{t("charts.criticalityDistribution.title")}</h2>
-            </div>
-            {isDashboardLoading ? (
-              <div className="h-80 loading-skeleton rounded-lg" />
-            ) : (
-              <div className="h-80">
-                <CriticalityDistribution
-                  className="h-full border-none shadow-none bg-transparent"
-                  data={mockCriticalityData}
-                />
-              </div>
-            )}
           </div>
         </div>
 
-        {/* Second Row of Charts with unified styling */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="dashboard-card p-6">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="dashboard-icon">
-                <TrendingUp className="h-5 w-5 text-slate-600" />
-              </div>
-              <h2 className="text-lg font-semibold text-slate-900">{t("charts.anomaliesOverTime.title")}</h2>
+        {/* Developer Notes Section */}
+        <div className="dashboard-card p-4 md:p-6 bg-slate-50/50 border-slate-200">
+          <div className="flex items-center space-x-3 mb-4">
+            <div className="icon-wrapper">
+              <LayoutDashboard className="h-5 w-5 text-slate-600" />
             </div>
-            {isDashboardLoading ? (
-              <div className="h-96 loading-skeleton rounded-lg" />
-            ) : (
-              <div className="h-96">
-                <AnomaliesOverTime
-                  className="border-none shadow-none bg-transparent h-full"
-                  data={mockAnomaliesOverTime}
-                />
-              </div>
-            )}
+            <h3 className="text-lg font-semibold text-slate-900">
+              Development Notes
+            </h3>
           </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-slate-700">
+            <div className="space-y-3">
+              <div className="flex items-start space-x-2">
+                <div className="w-2 h-2 rounded-full bg-blue-500 mt-2 flex-shrink-0"></div>
+                <p>
+                  <strong>Layout Foundation:</strong> Clean, responsive structure ready for anomaly components
+                </p>
+              </div>
+              <div className="flex items-start space-x-2">
+                <div className="w-2 h-2 rounded-full bg-green-500 mt-2 flex-shrink-0"></div>
+                <p>
+                  <strong>Design System:</strong> Modern white/blue theme with consistent spacing and typography
+                </p>
+              </div>
+            </div>
+            <div className="space-y-3">
+              <div className="flex items-start space-x-2">
+                <div className="w-2 h-2 rounded-full bg-amber-500 mt-2 flex-shrink-0"></div>
+                <p>
+                  <strong>Component Slots:</strong> Placeholder sections marked for future chart and data integrations
+                </p>
+              </div>
+              <div className="flex items-start space-x-2">
+                <div className="w-2 h-2 rounded-full bg-purple-500 mt-2 flex-shrink-0"></div>
+                <p>
+                  <strong>Scalability:</strong> Grid system supports responsive layouts and component expansion
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
 
-          <div className="dashboard-card p-6">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="dashboard-icon">
-                <ClipboardList className="h-5 w-5 text-slate-600" />
-              </div>
-              <h2 className="text-lg font-semibold text-slate-900">{t("charts.anomalyTasks.title")}</h2>
-            </div>
-            {isDashboardLoading ? (
-              <div className="h-96 loading-skeleton rounded-lg" />
-            ) : (
-              <div className="h-96">
-                <AnomalyTasksList
-                  className="h-full border-none shadow-none bg-transparent"
-                  tasks={mockAnomalyTasks}
-                />
-              </div>
-            )}
-          </div>
+        {/* Footer Info */}
+        <div className="text-center py-4 text-xs text-slate-500">
+          <p>© 2024 TAQATHON Anomaly Management Platform • Ready for Production</p>
         </div>
       </div>
     </div>

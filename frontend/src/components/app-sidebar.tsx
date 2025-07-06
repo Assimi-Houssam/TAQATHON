@@ -21,6 +21,9 @@ import {
   LayoutDashboard,
   LucideIcon,
   Settings,
+  TrendingUp,
+  Activity,
+  Zap,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
@@ -32,6 +35,9 @@ const iconMap: Record<string, LucideIcon> = {
   LayoutDashboard,
   ClipboardList,
   FileText,
+  TrendingUp,
+  Activity,
+  Zap,
 };
 
 export function AppSidebar() {
