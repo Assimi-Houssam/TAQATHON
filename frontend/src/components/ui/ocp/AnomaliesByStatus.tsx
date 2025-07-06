@@ -9,7 +9,6 @@ import {
   Legend,
 } from "recharts";
 import { AlertTriangle, AlertCircle, CheckCircle, Clock } from "lucide-react";
-import { motion } from "framer-motion";
 
 interface AnomaliesByStatusProps {
   className?: string;

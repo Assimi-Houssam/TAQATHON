@@ -41,12 +41,7 @@ export const DashboardCard = ({
   }
 
   return (
-    <Card
-      className={cn(
-        "overflow-hidden border-zinc-100 transition-all duration-200",
-        className
-      )}
-    >
+    <Card className={cn("overflow-hidden border-zinc-100", className)}>
       <div className="p-6 max-h-full">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-2">

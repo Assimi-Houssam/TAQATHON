@@ -13,7 +13,6 @@ import { SearchResult } from "@/endpoints/search/search";
 import { useIsomorphicLayoutEffect } from "@/hooks/useIsomorphicLayoutEffect";
 import { useKeyboardShortcut } from "@/hooks/useKeyboardShortcut";
 import { cn } from "@/lib/utils";
-import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
 import {
   AlertCircle,
   ArrowUpRight,
@@ -134,25 +133,16 @@ const SearchResultsList = memo(
     results: SearchResult[];
     onResultClick: () => void;
   }) => {
-    const [mounted, setMounted] = useState(false);
-
-    useEffect(() => {
-      setMounted(true);
-    }, []);
-
     return (
-      <LayoutGroup>
-        <motion.ul className="p-2 space-y-3" layout>
-          {results.map((item) => (
-            <SearchResultItem
-              key={item.id}
-              result={item}
-              onClick={onResultClick}
-              shouldAnimate={mounted}
-            />
-          ))}
-        </motion.ul>
-      </LayoutGroup>
+      <ul className="p-2 space-y-3">
+        {results.map((item) => (
+          <SearchResultItem
+            key={item.id}
+            result={item}
+            onClick={onResultClick}
+          />
+        ))}
+      </ul>
     );
   }
 );
@@ -162,22 +152,14 @@ const SearchResultItem = memo(
   ({
     result,
     onClick,
-    shouldAnimate,
   }: {
     result: SearchResult;
     onClick: () => void;
-    shouldAnimate: boolean;
   }) => {
     const Icon = RESULT_ICONS[result.type];
 
     return (
-      <motion.li
-        layout
-        initial={shouldAnimate ? { opacity: 0, y: 10 } : false}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -10 }}
-        transition={{ duration: 0.15 }}
-      >
+      <li>
         <Link
           href={getResultUrl(result)}
           onClick={onClick}
@@ -216,7 +198,7 @@ const SearchResultItem = memo(
             </Badge>
           </div>
         </Link>
-      </motion.li>
+      </li>
     );
   }
 );
@@ -244,7 +226,7 @@ const Pagination = memo(
                 disabled={page <= 1}
                 className="group"
               >
-                <ChevronLeft className="h-4 w-4 mr-1 transition-transform group-hover:-translate-x-0.5" />
+                <ChevronLeft className="h-4 w-4 mr-1" />
                 Previous
               </Button>
             </TooltipTrigger>
@@ -273,7 +255,7 @@ const Pagination = memo(
                 className="group"
               >
                 Next
-                <ChevronRight className="h-4 w-4 ml-1 transition-transform group-hover:translate-x-0.5" />
+                <ChevronRight className="h-4 w-4 ml-1" />
               </Button>
             </TooltipTrigger>
             <TooltipContent>
@@ -413,12 +395,10 @@ const SearchResults = memo(
               className="h-full custom-scrollbar -mx-4 px-4"
               type="always"
             >
-              <AnimatePresence mode="wait" initial={false}>
-                <SearchResultsList
-                  results={results}
-                  onResultClick={onResultClick}
-                />
-              </AnimatePresence>
+              <SearchResultsList
+                results={results}
+                onResultClick={onResultClick}
+              />
             </ScrollArea>
           </div>
 

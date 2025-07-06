@@ -11,7 +11,6 @@ import {
 } from "recharts";
 import { DateRange } from "react-day-picker";
 import { Factory } from "lucide-react";
-import { motion } from "framer-motion";
 import { DepartmentData } from "@/types/dashboard";
 
 interface DepartmentsChartProps {
@@ -21,16 +20,21 @@ interface DepartmentsChartProps {
 }
 
 const chartColors = {
-  bar: "hsl(217.2, 91.2%, 59.8%)",
-  barHover: "hsl(217.2, 91.2%, 65%)",
-  text: "hsl(215.4, 16.3%, 46.9%)",
-  grid: "hsl(215.4, 16.3%, 46.9%, 0.1)",
-  border: "hsl(215.4, 16.3%, 46.9%, 0.2)",
+  bar: "#3B82F6",
+  barHover: "#2563EB",
   tooltip: {
-    background: "hsl(0, 0%, 100%)",
-    border: "hsl(215.4, 16.3%, 46.9%, 0.2)",
-    text: "hsl(215.4, 16.3%, 46.9%)",
+    background: "rgba(255, 255, 255, 0.95)",
+    border: "rgba(148, 163, 184, 0.2)",
   },
+};
+
+const formatValue = (value: number) => {
+  if (value >= 1000000) {
+    return (value / 1000000).toFixed(1) + "M";
+  } else if (value >= 1000) {
+    return (value / 1000).toFixed(1) + "K";
+  }
+  return value.toString();
 };
 
 export const DepartmentsChart = ({
@@ -38,191 +42,75 @@ export const DepartmentsChart = ({
   dateRange,
   data,
 }: DepartmentsChartProps) => {
-  const hasData = data.length > 0;
-  const formatValue = (value: number) => {
-    return value >= 1000 ? `${(value / 1000).toFixed(1)}k` : value.toString();
-  };
-
-  if (dateRange) {
-    console.log(dateRange);
-  }
-
-  if (!hasData) {
+  // Show empty state if no data
+  if (!data || data.length === 0) {
     return (
-      <Card
-        className={cn(
-          "bg-white/50 backdrop-blur-sm border-none overflow-hidden",
-          className
-        )}
-      >
-        <CardContent className="pt-4 p-0 h-[350px] relative">
-          {/* Background Pattern */}
-          {/* <div className="absolute inset-0 opacity-5">
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-100 via-blue-200 to-blue-100" />
-            <div className="h-full w-full bg-[linear-gradient(45deg,transparent_25%,rgba(59,130,246,.1)_50%,transparent_75%,transparent_100%)] bg-[length:20px_20px]" />
-          </div> */}
-
-          {/* Content Container */}
-          <motion.div
-            className="relative h-full flex flex-col items-center justify-center"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            {/* Icon */}
-            <motion.div
-              initial={{ scale: 0.5, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{
-                delay: 0.2,
-                duration: 0.5,
-                type: "spring",
-                stiffness: 100,
-              }}
-              className="mb-4"
-            >
-              <div className="relative">
-                <motion.div
-                  animate={{
-                    rotate: [0, 5, 0, -5, 0],
-                    scale: [1, 1.05, 1],
-                  }}
-                  transition={{
-                    duration: 4,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                  }}
-                  className="relative z-10"
-                >
-                  <Factory className="w-12 h-12 text-blue-600/80" />
-                </motion.div>
-                <motion.div
-                  className="absolute inset-0 bg-blue-500/20 rounded-full blur-xl"
-                  animate={{
-                    scale: [1, 1.2, 1],
-                    opacity: [0.5, 0.8, 0.5],
-                  }}
-                  transition={{
-                    duration: 4,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                  }}
-                />
+      <Card className={cn("w-full", className)}>
+        <CardContent className="p-8 text-center">
+          <div className="space-y-4">
+            <div className="flex justify-center">
+              <div className="p-3 bg-blue-50 rounded-lg">
+                <Factory className="w-12 h-12 text-blue-600" />
               </div>
-            </motion.div>
-
-            {/* Text Content */}
-            <motion.div
-              className="text-center space-y-3 px-4"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3, duration: 0.5 }}
-            >
-              <motion.p
-                className="text-gray-700 font-semibold text-lg"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.4 }}
-              >
+            </div>
+            <div className="text-center space-y-3 px-4">
+              <p className="text-gray-700 font-semibold text-lg">
                 No anomaly data available
-              </motion.p>
-              <motion.p
-                className="text-sm text-gray-500 max-w-xs mx-auto"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.5 }}
-              >
+              </p>
+              <p className="text-sm text-gray-500 max-w-xs mx-auto">
                 Start monitoring your industrial units to track anomaly distribution across departments
-              </motion.p>
-            </motion.div>
-
-            {/* Pulse Indicator */}
-            <motion.div
-              className="mt-6 flex items-center gap-2 text-xs text-blue-600"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.6 }}
-            >
-              <motion.div
-                animate={{ scale: [1, 1.2, 1] }}
-                transition={{ duration: 2, repeat: Infinity }}
-                className="w-2 h-2 bg-blue-500 rounded-full"
-              />
+              </p>
+            </div>
+            <div className="flex justify-center items-center gap-2 text-xs text-blue-600">
+              <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
               <span>Ready to receive monitoring data</span>
-            </motion.div>
-
-            {/* Decorative Elements */}
-            <motion.div
-              className="absolute inset-0 pointer-events-none"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.7, duration: 0.8 }}
-            >
-              <div className="absolute top-0 left-0 w-32 h-32 bg-blue-500/5 rounded-full blur-3xl" />
-              <div className="absolute bottom-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full blur-3xl" />
-              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-20 h-20 bg-blue-500/3 rounded-full blur-2xl" />
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
         </CardContent>
       </Card>
     );
   }
 
+  // Show data chart
   return (
-    <Card
-      className={cn(
-        "bg-white/50 backdrop-blur-sm border border-gray-200/50",
-        className
-      )}
-    >
-      <CardContent className="pt-6 px-4 pb-4">
-        <ResponsiveContainer width="100%" height={350}>
+    <Card className={cn("w-full", className)}>
+      <CardContent className="p-0">
+        <div className="p-6 pb-0">
+          <div className="space-y-2">
+            <h3 className="text-lg font-semibold text-gray-900">
+              Department Distribution
+            </h3>
+            <p className="text-sm text-gray-600">
+              Anomaly distribution across departments
+            </p>
+          </div>
+        </div>
+
+        <ResponsiveContainer width="100%" height={300}>
           <BarChart
             data={data}
-            margin={{ top: 20, right: 30, left: 10, bottom: 35 }}
-            className={cn(
-              "[&_.recharts-cartesian-grid-horizontal_line]:stroke-muted/20",
-              "[&_.recharts-cartesian-grid-vertical_line]:stroke-muted/20",
-              "[&_.recharts-bar-rectangle]:transition-colors duration-200",
-              "font-medium"
-            )}
-            barGap={2}
-            barSize={35}
+            margin={{ top: 20, right: 30, left: 20, bottom: 40 }}
           >
-            <CartesianGrid
-              strokeDasharray="3 3"
-              vertical={true}
-              stroke={chartColors.grid}
-            />
+            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f3f4f6" />
             <XAxis
               dataKey="name"
               fontSize={12}
-              tickLine={true}
-              axisLine={{ stroke: chartColors.border }}
-              angle={-35}
+              tickLine={false}
+              axisLine={false}
+              tick={{ fill: "#6b7280" }}
+              angle={-45}
               textAnchor="end"
-              height={60}
-              tick={{
-                fill: chartColors.text,
-                fontWeight: 600,
-              }}
-              tickMargin={10}
+              height={80}
             />
             <YAxis
               fontSize={12}
-              tickLine={true}
-              axisLine={{ stroke: chartColors.border }}
+              tickLine={false}
+              axisLine={false}
+              tick={{ fill: "#6b7280" }}
               tickFormatter={formatValue}
-              tick={{
-                fill: chartColors.text,
-                fontWeight: 600,
-              }}
-              tickMargin={10}
-              width={50}
-              padding={{ top: 20 }}
+              width={60}
             />
             <Tooltip
-              cursor={false}
               contentStyle={{
                 backgroundColor: chartColors.tooltip.background,
                 border: `1px solid ${chartColors.tooltip.border}`,
@@ -255,14 +143,7 @@ export const DepartmentsChart = ({
               dataKey="requests"
               fill={chartColors.bar}
               radius={[6, 6, 0, 0]}
-              className="hover:fill-[var(--bar-hover-color)]"
-              isAnimationActive={true}
-              animationDuration={1000}
-              style={
-                {
-                  "--bar-hover-color": chartColors.barHover,
-                } as React.CSSProperties
-              }
+              isAnimationActive={false}
             />
           </BarChart>
         </ResponsiveContainer>
