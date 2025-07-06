@@ -13,45 +13,31 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { useUser } from "@/context/user-context";
-import { useGetReports } from "@/endpoints/reports/get-reports";
-import { Report } from "@/types/report";
+
 import { SidebarItem, SidebarTranslationKey } from "@/types/sidebar";
 import {
-  ArrowRightLeft,
-  Building2,
   ClipboardList,
-  PanelLeft as Company,
   FileText,
-  HousePlus,
-  Key,
   LayoutDashboard,
   LucideIcon,
-  MessageSquare,
-  MonitorCog,
   Settings,
-  ShoppingCart,
-  Users,
+  TrendingUp,
+  Activity,
+  Zap,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { MenuItem, SubMenu } from "./ui/ocp/sidebar/menu-item";
-import { ReportStatus } from "@/types/report";
 
 // Add a map of icon names to icon components
 const iconMap: Record<string, LucideIcon> = {
   LayoutDashboard,
-  Company,
-  Building2,
   ClipboardList,
-  Users,
-  ArrowRightLeft,
-  MessageSquare,
-  ShoppingCart,
-  HousePlus,
-  MonitorCog,
   FileText,
-  Key,
+  TrendingUp,
+  Activity,
+  Zap,
 };
 
 export function AppSidebar() {
@@ -76,7 +62,7 @@ export function AppSidebar() {
           title: t(item.titleKey as SidebarTranslationKey),
           icon: iconMap[item.icon] || FileText,
           url: item.url,
-          alertCount: item.alertCount,
+          alertCount: 'alertCount' in item ? (item.alertCount as number) : undefined,
           subItems: item.subItems
             ?.filter((subItem) =>
               subItem.allowedEntityTypes?.includes(user?.entity_type as string)
@@ -104,26 +90,7 @@ export function AppSidebar() {
     }
   }, [userLoading]);
 
-  const { data: reports, isLoading: reportsLoading } = useGetReports({
-    page: 1,
-    limit: 10,
-    search: "",
-    status: "",
-  });
 
-  useEffect(() => {
-    if (!reportsLoading) {
-      const reportsCount = reports?.reports.filter(
-        (report: Report) => report.status === ReportStatus.OPEN
-      ).length;
-      const reportsPageIndex = sidebarItems.findIndex(
-        (item) => item.url === "/dashboard/reports"
-      );
-      if (reportsPageIndex !== -1) {
-        sidebarItems[reportsPageIndex].alertCount = reportsCount;
-      }
-    }
-  }, [reportsLoading, reports]);
 
   const handleOpen = (index: number) => {
     // If clicking the current tab while it's already open, do nothing
@@ -198,12 +165,12 @@ export function AppSidebar() {
         <SidebarGroup className="bg-white">
           <SidebarGroupContent>
             <SidebarMenu
-              className={`px-3 transition-opacity duration-300 ${
+              className={`px-4 py-2 transition-opacity duration-300 ${
                 isLoading || userLoading ? "opacity-0" : "opacity-100"
               }`}
             >
               {sidebarItems.map((item, index) => (
-                <div key={item.title} className="mb-1">
+                <div key={item.title}>
                   <SidebarMenuItem>
                     <MenuItem
                       {...item}
@@ -233,13 +200,13 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        <div className="mt-auto border-t border-gray-100">
+        <div className="mt-auto border-t border-slate-200">
           <button
             onClick={() => router.push("/dashboard/settings")}
-            className="flex items-center gap-3 w-full px-6 py-4 text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-all duration-200 font-medium"
+            className="flex items-center gap-4 w-full px-6 py-4 h-14 text-black hover:text-slate-900 hover:bg-slate-50 transition-all duration-200 font-medium border-l-4 border-l-transparent hover:border-l-slate-200"
           >
-            <Settings className="h-5 w-5 stroke-[1.5px]" />
-            <span className="text-sm">{t("pages.settings")}</span>
+            <Settings className="h-5 w-5 flex-shrink-0" />
+            <span className="text-sm font-medium tracking-wide">{t("pages.settings")}</span>
           </button>
         </div>
       </SidebarContent>

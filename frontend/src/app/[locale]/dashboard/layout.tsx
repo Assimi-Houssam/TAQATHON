@@ -18,16 +18,13 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       <UserProvider>
         <SidebarProvider defaultOpen={true}>
           <NotificationProvider>
-            <AppSidebar />
-            <main className="w-full bg-white">
-              <Navbar />
-              <div className="w-full h-full pt-20">
-                <main className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-background -z-10" />
-                  <div className="relative space-y-8">{children}</div>
-                </main>
-              </div>
-            </main>
+            <Navbar />
+            <div className="flex min-h-[100vh] w-full pt-20">
+              <AppSidebar />
+              <main className="flex-1 w-full overflow-x-hidden">
+                {children}
+              </main>
+            </div>
           </NotificationProvider>
         </SidebarProvider>
       </UserProvider>

@@ -8,7 +8,7 @@ import dynamic from "next/dynamic";
 
 const DashboardComponents = {
   [EntityTypes.OCP_AGENT]: dynamic(
-    () => import("@/components/ui/ocp/OCPDashboard").then((mod) => mod.OCPDashboard)
+    () => import("@/components/ui/ocp/Dashboard").then((mod) => mod.Dashboard)
   ),
   [EntityTypes.SUPPLIER]: dynamic(
     () => import("@/components/ui/ocp/SupplierDashboard").then((mod) => mod.SupplierDashboard)

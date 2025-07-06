@@ -6,7 +6,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ArrowDownToLine } from "lucide-react";
-import { FaFileExport, FaPrint } from "react-icons/fa";
+import { FaFileExcel, FaFileCode, FaFileCsv, FaPrint } from "react-icons/fa";
 
 interface ExportMenuProps {
   onExportXLSX: () => void;
@@ -24,30 +24,30 @@ export const ExportMenu = ({
   <DropdownMenu>
     <DropdownMenuTrigger asChild>
       <Button 
-        className="relative group overflow-hidden bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white shadow-lg shadow-blue-500/20 transition-all duration-300"
+        variant="outline"
+        className="bg-background/50 backdrop-blur-sm border-border/50 hover:bg-accent/50 transition-all duration-200"
       >
-        <span className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 opacity-0 group-hover:opacity-100 transform -skew-x-12 group-hover:animate-shimmer transition-opacity" />
-        <ArrowDownToLine className="h-4 w-4 mr-2" />
-        Export Statistics
+        <ArrowDownToLine className="h-4 w-4 mr-2 opacity-50" />
+        Export
       </Button>
     </DropdownMenuTrigger>
     <DropdownMenuContent 
       align="end" 
-      className="w-56 p-2 bg-white/90 backdrop-blur-xl border-gray-100/50 rounded-xl shadow-xl"
+      className="w-48 p-1 bg-background/95 backdrop-blur-sm border-border/50"
     >
       {[
-        { label: "Export as XLSX", onClick: onExportXLSX, icon: FaFileExport },
-        { label: "Export as JSON", onClick: onExportJSON, icon: FaFileExport },
-        { label: "Export as CSV", onClick: onExportCSV, icon: FaFileExport },
-        { label: "Print Statistics", onClick: onPrint, icon: FaPrint },
+        { label: "Excel", onClick: onExportXLSX, icon: FaFileExcel },
+        { label: "JSON", onClick: onExportJSON, icon: FaFileCode },
+        { label: "CSV", onClick: onExportCSV, icon: FaFileCsv },
+        { label: "Print", onClick: onPrint, icon: FaPrint },
       ].map((item, index) => (
         <DropdownMenuItem
           key={index}
           onClick={item.onClick}
-          className="cursor-pointer px-4 py-2.5 hover:bg-blue-50 rounded-lg transition-colors duration-200 my-0.5"
+          className="cursor-pointer px-3 py-2 hover:bg-accent/50 rounded-sm transition-colors duration-150"
         >
-                      <item.icon className="mr-3 h-4 w-4 text-blue-600" />
-          <span className="text-gray-700">{item.label}</span>
+          <item.icon className="mr-2 h-4 w-4 opacity-50" />
+          <span className="text-sm">{item.label}</span>
         </DropdownMenuItem>
       ))}
     </DropdownMenuContent>

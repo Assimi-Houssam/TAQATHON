@@ -11,7 +11,6 @@ import {
 } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
-import { motion, AnimatePresence } from "framer-motion";
 import { useCallback, useState, useEffect, useRef } from "react";
 
 interface IndustrialSystem {
@@ -29,8 +28,7 @@ const SystemItem = ({ company }: { company: IndustrialSystem }) => {
   return (
     <div
       className={cn(
-        "group relative bg-white/50 rounded-lg border border-gray-100 transition-all duration-200",
-        "hover:border-gray-200 hover:shadow-sm p-4"
+        "group relative bg-white/50 rounded-lg border border-gray-100 p-4"
       )}
     >
       <div className="flex items-center gap-4">
@@ -86,7 +84,7 @@ const SystemItem = ({ company }: { company: IndustrialSystem }) => {
           <div className="mt-2 w-full bg-gray-100 rounded-full h-1.5">
             <div
               className={cn(
-                "h-full rounded-full transition-all duration-500",
+                "h-full rounded-full",
                 Number(efficiency) >= 95
                   ? "bg-green-500"
                   : Number(efficiency) >= 90
@@ -116,117 +114,34 @@ interface TopCompaniesProps {
 }
 
 const LoadingState = () => (
-  <motion.div
-    initial={{ opacity: 0, y: 10 }}
-    animate={{ opacity: 1, y: 0 }}
-    className="flex flex-col items-center justify-center py-8"
-  >
+  <div className="flex flex-col items-center justify-center py-8">
     <p className="text-sm text-gray-500">Loading systems...</p>
-  </motion.div>
+  </div>
 );
 
 const EmptyState = ({ selectedCategory }: { selectedCategory: string }) => (
   <div className="flex flex-col items-center justify-center py-12 px-4 space-y-4 h-full">
-    {/* Background Pattern */}
-    {/* <div className="absolute inset-0 opacity-5">
-      <div className="absolute inset-0 bg-gradient-to-r from-blue-100 via-blue-200 to-blue-100" />
-      <div className="h-full w-full bg-[linear-gradient(45deg,transparent_25%,rgba(59,130,246,.1)_50%,transparent_75%,transparent_100%)] bg-[length:20px_20px]" />
-    </div> */}
-
-    {/* Icon */}
-    <motion.div
-      initial={{ scale: 0.5, opacity: 0 }}
-      animate={{ scale: 1, opacity: 1 }}
-      transition={{
-        delay: 0.2,
-        duration: 0.5,
-        type: "spring",
-        stiffness: 100,
-      }}
-      className="mb-4 relative"
-    >
-      <div className="relative">
-        <motion.div
-          animate={{
-            rotate: [0, 5, 0, -5, 0],
-            scale: [1, 1.05, 1],
-          }}
-          transition={{
-            duration: 4,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-          className="relative z-10"
-        >
-          <Building className="w-12 h-12 text-blue-600/80" />
-        </motion.div>
-        <motion.div
-          className="absolute inset-0 bg-blue-500/20 rounded-full blur-xl"
-          animate={{
-            scale: [1, 1.2, 1],
-            opacity: [0.5, 0.8, 0.5],
-          }}
-          transition={{
-            duration: 4,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        />
+    <div className="flex justify-center mb-4">
+      <div className="p-3 bg-blue-50 rounded-lg">
+        <Building className="w-12 h-12 text-blue-600" />
       </div>
-    </motion.div>
+    </div>
 
-    {/* Text Content */}
-    <motion.div
-      className="text-center space-y-2"
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.3, duration: 0.5 }}
-    >
-      <motion.h3
-        className="text-lg font-semibold text-gray-900"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.4 }}
-      >
+    <div className="text-center space-y-2">
+      <h3 className="text-lg font-semibold text-gray-900">
         No industrial systems found
-      </motion.h3>
-      <motion.p
-        className="text-sm text-gray-500 max-w-sm mx-auto"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.5 }}
-      >
+      </h3>
+      <p className="text-sm text-gray-500 max-w-sm mx-auto">
         {selectedCategory === "all"
           ? "Connect your industrial systems to start monitoring performance metrics and efficiency scores."
           : `No systems found in the "${selectedCategory}" category. Try selecting a different category or connect more systems.`}
-      </motion.p>
-    </motion.div>
+      </p>
+    </div>
 
-    {/* System Status */}
-    <motion.div
-      className="mt-6 flex items-center gap-2 text-xs text-blue-600"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ delay: 0.6 }}
-    >
-      <motion.div
-        animate={{ scale: [1, 1.2, 1] }}
-        transition={{ duration: 2, repeat: Infinity }}
-        className="w-2 h-2 bg-blue-500 rounded-full"
-      />
+    <div className="mt-6 flex items-center gap-2 text-xs text-blue-600">
+      <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
       <span>Ready to connect systems</span>
-    </motion.div>
-
-    {/* Decorative Elements */}
-    <motion.div
-      className="absolute inset-0 pointer-events-none"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ delay: 0.7, duration: 0.8 }}
-    >
-      <div className="absolute top-0 left-0 w-32 h-32 bg-blue-500/5 rounded-full blur-3xl" />
-      <div className="absolute bottom-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full blur-3xl" />
-    </motion.div>
+    </div>
   </div>
 );
 
@@ -277,8 +192,6 @@ const LoadMoreIndicator = ({
   return null;
 };
 
-const AnimatedSystemItem = motion(SystemItem);
-
 const ScrollToTop = ({
   scrollAreaRef,
 }: {
@@ -315,22 +228,15 @@ const ScrollToTop = ({
     }
   };
 
+  if (!showScroll) return null;
+
   return (
-    <AnimatePresence>
-      {showScroll && (
-        <motion.button
-          initial={{ opacity: 0, scale: 0.5 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.5 }}
-          onClick={scrollTop}
-          className="fixed bottom-4 right-4 bg-blue-600 text-white rounded-full p-2 shadow-lg hover:bg-blue-700 transition-colors"
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-        >
-          <ChevronUp className="w-5 h-5" />
-        </motion.button>
-      )}
-    </AnimatePresence>
+    <button
+      onClick={scrollTop}
+      className="fixed bottom-4 right-4 bg-blue-600 text-white rounded-full p-2 shadow-lg hover:bg-blue-700"
+    >
+      <ChevronUp className="w-5 h-5" />
+    </button>
   );
 };
 
@@ -366,15 +272,9 @@ export const TopCompanies = ({
     return (
       <div className="space-y-3">
         {filteredSystems.map((system, index) => (
-          <AnimatedSystemItem
+          <SystemItem
             key={system.name + index}
             company={system}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{
-              duration: 0.3,
-              delay: (index % 10) * 0.05,
-            }}
           />
         ))}
         <LoadMoreIndicator
@@ -400,9 +300,7 @@ export const TopCompanies = ({
           ref={scrollAreaRef as React.RefObject<HTMLDivElement>}
         >
           <div className="px-6">
-            <AnimatePresence mode="popLayout">
-              {renderContent()}
-            </AnimatePresence>
+            {renderContent()}
           </div>
         </ScrollArea>
         <ScrollToTop

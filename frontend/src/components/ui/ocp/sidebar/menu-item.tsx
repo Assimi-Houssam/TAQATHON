@@ -23,9 +23,9 @@ export function MenuItem({
 }: MenuItemProps) {
   if (!url) {
     return (
-      <SidebarMenuButton className="flex items-center gap-2">
-        <Icon className="h-4 w-4 p-5" />
-        <span>{title}</span>
+      <SidebarMenuButton className="flex items-center gap-3 h-14 px-4">
+        <Icon className="h-5 w-5" />
+        <span className="text-sm font-medium">{title}</span>
       </SidebarMenuButton>
     );
   }
@@ -38,37 +38,41 @@ export function MenuItem({
       onClick={() => {
         onClick();
       }}
-      className={` ${
+      className={clsx(
+        "h-14 mb-1 transition-all duration-200 border-l-4",
         isActive
-          ? "bg-blue-400 text-white font-bold"
-          : "hover:bg-zinc-100 hover:text-black"
-      }`}
+          ? "bg-slate-900 text-white font-semibold border-l-blue-400"
+          : "text-black hover:bg-slate-50 hover:text-slate-900 border-l-transparent hover:border-l-slate-200"
+      )}
     >
       <Link
         href={url}
         className={clsx(
-          "flex items-center gap-2 p-5 w-full justify-between",
+          "flex items-center gap-4 px-6 py-4 w-full justify-between h-full",
           isActive &&
-            "hover:bg-blue-400 hover:text-white active:bg-blue-600 active:text-white"
+            "hover:bg-slate-800 hover:text-white active:bg-slate-800 active:text-white"
         )}
         target={external ? "_blank" : undefined}
       >
-        <div className="flex items-center gap-2">
-          <Icon className="size-4" />
-          <span className="flex-1">{title}</span>
+        <div className="flex items-center gap-4">
+          <Icon className="size-5 flex-shrink-0" />
+          <span className="flex-1 text-sm font-medium tracking-wide">{title}</span>
         </div>
-        {showAlertCount && (
-          <Badge variant="destructive" className="ml-2">
-            {alertCount}
-          </Badge>
-        )}
-        {hasSubItems && (
-          <ChevronDown
-            className={`${
-              isActive ? "rotate-180" : ""
-            } transition-all duration-300`}
-          />
-        )}
+        <div className="flex items-center gap-3">
+          {showAlertCount && (
+            <Badge variant="destructive" className="text-xs px-2 py-1">
+              {alertCount}
+            </Badge>
+          )}
+          {hasSubItems && (
+            <ChevronDown
+              className={clsx(
+                "size-4 transition-transform duration-200 flex-shrink-0",
+                isActive ? "rotate-180" : ""
+              )}
+            />
+          )}
+        </div>
       </Link>
     </SidebarMenuButton>
   );
@@ -95,30 +99,30 @@ export const SubMenu: React.FC<SubMenuProps> = ({
         transition: "height 0.3s ease-out",
         overflow: "hidden",
       }}
-      className="ml-6 relative"
+      className="ml-8 relative"
     >
       <div
-                    className="absolute left-0 w-[2px] bg-blue-400"
+        className="absolute left-0 w-[1px] bg-slate-300"
         style={{
-          top: "1.25rem",
-          height: `calc(100% - 2.9rem)`,
+          top: "0.5rem",
+          height: `calc(100% - 1rem)`,
         }}
       ></div>
 
-      <div ref={contentRef} className="space-y-1 w-full">
+      <div className="space-y-1 w-full pt-2">
         {items.map((subItem) => (
-          <SidebarMenuItem className="ml-3" key={subItem.title}>
+          <SidebarMenuItem className="ml-4" key={subItem.title}>
             <SidebarMenuButton
-              className="my-2 text-gray-600 hover:text-black hover:bg-transparent w-full transition-all duration-200"
+              className="text-slate-600 hover:text-black hover:bg-slate-50 w-full transition-all duration-200 h-12"
               asChild
             >
               <Link
                 href={subItem.url}
                 target={external ? "_blank" : undefined}
-                className="w-full flex items-center justify-between px-4 py-2 rounded-lg hover:underline transition-all duration-300 menuItem"
+                className="w-full flex items-center justify-between px-4 py-3 transition-all duration-200 h-full"
               >
-                <span>{subItem.title}</span>
-                <ChevronRight className="w-2" />
+                <span className="text-sm font-medium tracking-wide">{subItem.title}</span>
+                <ChevronRight className="w-4 h-4 flex-shrink-0" />
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>

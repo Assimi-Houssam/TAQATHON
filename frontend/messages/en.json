@@ -240,35 +240,28 @@
   },
   "sidebar": {
     "pages": {
-      "dashboard": "Dashboard",
-      "anomaly_list": "Anomaly List",
-      "anomaly_details": "Anomaly Details",
-      "anomaly_create": "Create Anomaly",
-      "anomaly_ongoing": "Active Anomalies",
-      "anomaly_drafts": "Draft Anomalies",
-      "anomaly_pending": "Pending Review",
-      "maintenance_window": "Maintenance Window",
-      "maintenance_operators": "Maintenance Operators",
-      "maintenance_scheduled": "Scheduled Maintenance",
-      "chat": "Chat",
-      "companies": "Companies",
-      "operators": "Operators",
-      "pending_verification": "Pending Verification",
-      "suppliers": "Suppliers",
-      "logs": "Logs",
-      "agents": "Agents",
-      "bids": "Bids",
-      "purchase_request": "Purchase Request",
-      "purchase_request_create": "Create",
-      "purchase_request_drafts": "Drafts",
-      "purchase_request_ongoing": "On Going",
-      "purchase_request_pending": "Pending For Approval",
-      "purchase_request_history": "History",
-      "register_company": "Register Company",
-      "forms": "Forms Control",
-      "paperwork": "Paperwork",
+      "overview": "Overview",
+      "anomaly_management": "Anomaly Management",
+      "anomaly_list": "List View",
+      "anomaly_create": "New Anomaly",
+      "anomaly_detail": "Detail View",
+      "anomaly_batch_upload": "Batch Upload",
+      "analytics": "Analytics",
+      "performance_metrics": "Performance Metrics",
+      "trend_analysis": "Trend Analysis",
+      "predictive_insights": "Predictive Insights",
       "reports": "Reports",
-      "keycloak": "Keycloak",
+      "system_reports": "System Reports",
+      "compliance_reports": "Compliance Reports",
+      "custom_reports": "Custom Reports",
+      "monitoring": "Monitoring",
+      "real_time_monitoring": "Real-time Monitoring",
+      "alert_management": "Alert Management",
+      "system_health": "System Health",
+      "integrations": "Integrations",
+      "api_management": "API Management",
+      "data_connectors": "Data Connectors",
+      "third_party_tools": "Third-party Tools",
       "settings": "Settings"
     }
   },
@@ -570,11 +563,27 @@
     "clearAllConfirmation": "This action cannot be undone. All your answers will be cleared."
   },
   "dashboard": {
-    "title": "Main Dashboard",
+    "title": "Industrial Monitoring Dashboard",
     "subtitle": "Monitor and analyze anomalies in industrial systems",
     "titleKey": "title",
     "subtitleKey": "subtitle",
     "metrics": {
+      "criticalAlerts": {
+        "title": "Critical Alerts",
+        "subtitle": "new anomalies detected"
+      },
+      "resolvedAnomalies": {
+        "title": "Resolved Anomalies",
+        "subtitle": "Successfully resolved"
+      },
+      "averageResolutionTime": {
+        "title": "Average Resolution Time",
+        "subtitle": "Hours to resolve"
+      },
+      "systemStatus": {
+        "title": "System Status",
+        "subtitle": "Units operating normally"
+      },
       "systems": {
         "title": "Industrial Systems",
         "value": "1,250",
@@ -619,6 +628,56 @@
         "loadMore": "Load More Tasks"
       }
     },
+    "charts": {
+      "anomaliesByStatus": {
+        "title": "Anomalies by Status",
+        "new": "New",
+        "inProgress": "In Progress",
+        "resolved": "Resolved",
+        "escalated": "Escalated"
+      },
+      "criticalityDistribution": {
+        "title": "Criticality Distribution",
+        "low": "Low",
+        "medium": "Medium",
+        "high": "High",
+        "critical": "Critical"
+      },
+      "anomaliesOverTime": {
+        "title": "Anomalies Over Time",
+        "anomalies": "Anomalies",
+        "resolved": "Resolved",
+        "critical": "Critical"
+      },
+      "anomalyTasks": {
+        "title": "Anomaly Tasks (Maintenance Window)",
+        "investigation": "Investigation",
+        "calibration": "Calibration",
+        "repair": "Repair",
+        "review": "Review"
+      }
+    },
+    "tasks": {
+      "priorities": {
+        "low": "Low",
+        "medium": "Medium",
+        "high": "High",
+        "critical": "Critical"
+      },
+      "statuses": {
+        "pending": "Pending",
+        "in_progress": "In Progress",
+        "completed": "Completed",
+        "cancelled": "Cancelled"
+      },
+      "types": {
+        "investigation": "Investigation",
+        "calibration": "Calibration",
+        "repair": "Repair",
+        "review": "Review",
+        "maintenance": "Maintenance"
+      }
+    },
     "departments": {
       "title": "Anomaly Distribution by Industrial Unit",
       "noData": "No data available for the selected time frame",
@@ -642,12 +701,6 @@
       "noCompaniesCategory": "No systems found in the \"{category}\" category",
       "noCompaniesRegistered": "No systems have been registered yet",
       "loadMore": "No more systems to load"
-    },
-    "tasks": {
-      "title": "Tasks Overview",
-      "addNewTask": "Add New Task",
-      "noTasks": "No tasks available",
-      "loadMore": "Load More Tasks"
     },
     "export": {
       "title": "Export Statistics",

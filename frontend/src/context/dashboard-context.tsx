@@ -4,7 +4,7 @@ import { EntityTypes } from "@/types/entities/enums/index.enum";
 import { createContext, useContext, ReactNode } from "react";
 
 interface DashboardConfig {
-  component: () => Promise<{ OCPDashboard?: React.ComponentType; SupplierDashboard?: React.ComponentType }>;
+  component: () => Promise<{ Dashboard?: React.ComponentType; SupplierDashboard?: React.ComponentType }>;
   metrics: string[];
   features: string[];
 }
@@ -15,7 +15,7 @@ interface DashboardContextType {
 
 const dashboardConfigs: Record<EntityTypes, DashboardConfig> = {
   [EntityTypes.OCP_AGENT]: {
-    component: () => import("@/components/ui/ocp/OCPDashboard"),
+    component: () => import("@/components/ui/ocp/Dashboard"),
     metrics: ["companies", "suppliers", "bids", "agents", "purchaseRequests"],
     features: ["departments", "ongoingPurchases", "topCompanies", "tasks"],
   },

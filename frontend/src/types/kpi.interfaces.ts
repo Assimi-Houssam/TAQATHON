@@ -221,7 +221,7 @@ export interface ChartDataPoint {
   name: string;
   value: number;
   color?: string;
-  [key: string]: any;
+  [key: string]: string | number | undefined;
 }
 
 export interface TimeSeriesDataPoint {

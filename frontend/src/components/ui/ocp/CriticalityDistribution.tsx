@@ -11,7 +11,6 @@ import {
   Legend,
 } from "recharts";
 import { AlertTriangle, AlertCircle, Shield } from "lucide-react";
-import { motion } from "framer-motion";
 
 interface CriticalityDistributionProps {
   className?: string;
@@ -31,15 +30,15 @@ const chartColors = {
   critical: "#991B1B",
 };
 
-const CustomTooltip = ({ active, payload, label }: any) => {
+const CustomTooltip = ({ active, payload, label }: { active?: boolean; payload?: Array<{ name: string; value: number; color: string }>; label?: string }) => {
   if (active && payload && payload.length) {
-    const total = payload.reduce((sum: number, entry: any) => sum + entry.value, 0);
+    const total = payload.reduce((sum: number, entry: { value: number }) => sum + entry.value, 0);
     
     return (
       <div className="bg-white border border-gray-200 rounded-lg shadow-lg p-3">
         <div className="text-sm font-medium text-gray-900 mb-2">{label}</div>
         <div className="text-xs text-gray-600 mb-2">Total: {total}</div>
-        {payload.map((entry: any, index: number) => (
+        {payload.map((entry: { name: string; value: number; color: string }, index: number) => (
           <div key={index} className="text-xs" style={{ color: entry.color }}>
             {entry.name}: {entry.value}
           </div>

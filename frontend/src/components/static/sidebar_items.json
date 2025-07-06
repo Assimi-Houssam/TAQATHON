@@ -1,75 +1,146 @@
 {
   "items": [
     {
-      "titleKey": "pages.dashboard",
+      "titleKey": "pages.overview",
       "icon": "LayoutDashboard",
       "url": "/dashboard",
       "allowedEntityTypes": ["OCP_AGENT", "SUPPLIER"]
     },
     {
-      "titleKey": "pages.anomaly_list",
+      "titleKey": "pages.anomaly_management",
       "icon": "ClipboardList",
-      "url": "/dashboard/purchase-request",
+      "url": "/dashboard/anomalies",
       "allowedEntityTypes": ["OCP_AGENT", "SUPPLIER"],
       "subItems": [
         {
-          "titleKey": "pages.anomaly_create",
-          "url": "/dashboard/purchase-request/create",
-          "parent": "/dashboard/purchase-request",
-          "allowedEntityTypes": ["OCP_AGENT"]
-        },
-        {
-          "titleKey": "pages.anomaly_ongoing",
-          "url": "/dashboard/purchase-request/ongoing",
-          "parent": "/dashboard/purchase-request",
+          "titleKey": "pages.anomaly_list",
+          "url": "/dashboard/anomalies",
+          "parent": "/dashboard/anomalies",
           "allowedEntityTypes": ["OCP_AGENT", "SUPPLIER"]
         },
         {
-          "titleKey": "pages.anomaly_drafts",
-          "url": "/dashboard/purchase-request/drafts",
-          "parent": "/dashboard/purchase-request",
+          "titleKey": "pages.anomaly_create",
+          "url": "/dashboard/anomalies/new",
+          "parent": "/dashboard/anomalies",
           "allowedEntityTypes": ["OCP_AGENT"]
         },
         {
-          "titleKey": "pages.anomaly_pending",
-          "url": "/dashboard/purchase-request/pending",
-          "parent": "/dashboard/purchase-request",
+          "titleKey": "pages.anomaly_detail",
+          "url": "/dashboard/anomalies/detail",
+          "parent": "/dashboard/anomalies",
+          "allowedEntityTypes": ["OCP_AGENT", "SUPPLIER"]
+        },
+        {
+          "titleKey": "pages.anomaly_batch_upload",
+          "url": "/dashboard/anomalies/batch-upload",
+          "parent": "/dashboard/anomalies",
           "allowedEntityTypes": ["OCP_AGENT"]
         }
       ]
     },
     {
-      "titleKey": "pages.anomaly_details",
-      "icon": "FileText",
-      "url": "/dashboard/reports",
-      "alertCount": 0,
-      "allowedEntityTypes": ["OCP_AGENT", "SUPPLIER"]
+      "titleKey": "pages.analytics",
+      "icon": "TrendingUp",
+      "url": "/dashboard/analytics",
+      "allowedEntityTypes": ["OCP_AGENT", "SUPPLIER"],
+      "subItems": [
+        {
+          "titleKey": "pages.performance_metrics",
+          "url": "/dashboard/analytics/performance",
+          "parent": "/dashboard/analytics",
+          "allowedEntityTypes": ["OCP_AGENT", "SUPPLIER"]
+        },
+        {
+          "titleKey": "pages.trend_analysis",
+          "url": "/dashboard/analytics/trends",
+          "parent": "/dashboard/analytics",
+          "allowedEntityTypes": ["OCP_AGENT", "SUPPLIER"]
+        },
+        {
+          "titleKey": "pages.predictive_insights",
+          "url": "/dashboard/analytics/predictions",
+          "parent": "/dashboard/analytics",
+          "allowedEntityTypes": ["OCP_AGENT"]
+        }
+      ]
     },
     {
-      "titleKey": "pages.maintenance_window",
-      "icon": "MonitorCog",
-      "url": "/dashboard/suppliers",
+      "titleKey": "pages.reports",
+      "icon": "FileText",
+      "url": "/dashboard/reports",
+      "allowedEntityTypes": ["OCP_AGENT", "SUPPLIER"],
+      "subItems": [
+        {
+          "titleKey": "pages.system_reports",
+          "url": "/dashboard/reports/system",
+          "parent": "/dashboard/reports",
+          "allowedEntityTypes": ["OCP_AGENT", "SUPPLIER"]
+        },
+        {
+          "titleKey": "pages.compliance_reports",
+          "url": "/dashboard/reports/compliance",
+          "parent": "/dashboard/reports",
+          "allowedEntityTypes": ["OCP_AGENT"]
+        },
+        {
+          "titleKey": "pages.custom_reports",
+          "url": "/dashboard/reports/custom",
+          "parent": "/dashboard/reports",
+          "allowedEntityTypes": ["OCP_AGENT"]
+        }
+      ]
+    },
+    {
+      "titleKey": "pages.monitoring",
+      "icon": "Activity",
+      "url": "/dashboard/monitoring",
+      "allowedEntityTypes": ["OCP_AGENT", "SUPPLIER"],
+      "subItems": [
+        {
+          "titleKey": "pages.real_time_monitoring",
+          "url": "/dashboard/monitoring/realtime",
+          "parent": "/dashboard/monitoring",
+          "allowedEntityTypes": ["OCP_AGENT", "SUPPLIER"]
+        },
+        {
+          "titleKey": "pages.alert_management",
+          "url": "/dashboard/monitoring/alerts",
+          "parent": "/dashboard/monitoring",
+          "allowedEntityTypes": ["OCP_AGENT", "SUPPLIER"]
+        },
+        {
+          "titleKey": "pages.system_health",
+          "url": "/dashboard/monitoring/health",
+          "parent": "/dashboard/monitoring",
+          "allowedEntityTypes": ["OCP_AGENT"]
+        }
+      ]
+    },
+    {
+      "titleKey": "pages.integrations",
+      "icon": "Zap",
+      "url": "/dashboard/integrations",
       "allowedEntityTypes": ["OCP_AGENT"],
       "subItems": [
         {
-          "titleKey": "pages.maintenance_operators",
-          "url": "/dashboard/suppliers/operators",
-          "parent": "/dashboard/suppliers",
+          "titleKey": "pages.api_management",
+          "url": "/dashboard/integrations/api",
+          "parent": "/dashboard/integrations",
           "allowedEntityTypes": ["OCP_AGENT"]
         },
         {
-          "titleKey": "pages.maintenance_scheduled",
-          "url": "/dashboard/suppliers/pending-verification",
-          "parent": "/dashboard/suppliers",
+          "titleKey": "pages.data_connectors",
+          "url": "/dashboard/integrations/connectors",
+          "parent": "/dashboard/integrations",
+          "allowedEntityTypes": ["OCP_AGENT"]
+        },
+        {
+          "titleKey": "pages.third_party_tools",
+          "url": "/dashboard/integrations/tools",
+          "parent": "/dashboard/integrations",
           "allowedEntityTypes": ["OCP_AGENT"]
         }
       ]
-    },
-    {
-      "titleKey": "pages.chat",
-      "icon": "MessageSquare",
-      "url": "/dashboard/chat",
-      "allowedEntityTypes": ["OCP_AGENT", "SUPPLIER"]
     }
   ]
 }

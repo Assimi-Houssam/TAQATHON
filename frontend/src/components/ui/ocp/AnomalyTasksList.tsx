@@ -347,7 +347,7 @@ export const AnomalyTasksList = ({ className, tasks, onTaskUpdate }: AnomalyTask
               {filterButtons.map((filter) => (
                 <button
                   key={filter.value}
-                  onClick={() => setFilterStatus(filter.value as any)}
+                  onClick={() => setFilterStatus(filter.value as 'all' | 'pending' | 'in_progress' | 'completed')}
                   className={cn(
                     "px-2 py-1 text-xs rounded transition-colors",
                     filterStatus === filter.value
@@ -367,7 +367,7 @@ export const AnomalyTasksList = ({ className, tasks, onTaskUpdate }: AnomalyTask
               <span className="text-xs text-gray-500">Priority:</span>
               <select
                 value={filterPriority}
-                onChange={(e) => setFilterPriority(e.target.value as any)}
+                onChange={(e) => setFilterPriority(e.target.value as 'all' | 'low' | 'medium' | 'high' | 'critical')}
                 className="text-xs border-0 bg-transparent focus:outline-none text-gray-700"
               >
                 {priorityOptions.map((option) => (

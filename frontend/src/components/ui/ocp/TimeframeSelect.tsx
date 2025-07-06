@@ -1,10 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { startOfMonth, endOfMonth } from "date-fns"
-import { safeFormat } from "@/lib/utils/date"
-import { CalendarIcon, ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
-import { DateRange } from "react-day-picker"
+import { startOfMonth, endOfMonth, format } from "date-fns"
+import { CalendarIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
@@ -13,7 +11,6 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 import { useTimeFrame } from "@/context/TimeFrameContext"
-import { Separator } from "@/components/ui/separator"
 
 interface TimeframeSelectProps {
   className?: string;
@@ -23,155 +20,117 @@ interface TimeframeSelectProps {
 
 export const TimeframeSelect = ({
   className,
-  fromYear = 2024,
+  fromYear = new Date().getFullYear() - 20,
   toYear = new Date().getFullYear(),
 }: TimeframeSelectProps) => {
   const { dateRange, setDateRange } = useTimeFrame();
-  const [localRange, setLocalRange] = React.useState({
-    startMonth: dateRange.from?.getMonth() || new Date().getMonth(),
-    startYear: dateRange.from?.getFullYear() || new Date().getFullYear(),
-    endMonth: dateRange.to?.getMonth() || new Date().getMonth(),
-    endYear: dateRange.to?.getFullYear() || new Date().getFullYear(),
-  });
+  const [open, setOpen] = React.useState(false);
 
+  // Generate year and month options
+  const years = Array.from({ length: toYear - fromYear + 1 }, (_, i) => fromYear + i);
   const months = [
-    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+    { value: 0, label: "Jan" }, { value: 1, label: "Feb" }, { value: 2, label: "Mar" },
+    { value: 3, label: "Apr" }, { value: 4, label: "May" }, { value: 5, label: "Jun" },
+    { value: 6, label: "Jul" }, { value: 7, label: "Aug" }, { value: 8, label: "Sep" },
+    { value: 9, label: "Oct" }, { value: 10, label: "Nov" }, { value: 11, label: "Dec" }
   ];
 
-  const handleRangeChange = (
-    type: 'startMonth' | 'startYear' | 'endMonth' | 'endYear',
-    value: number
-  ) => {
+  // Current selected values
+  const fromMonth = dateRange.from?.getMonth() ?? new Date().getMonth();
+  const selectedFromYear = dateRange.from?.getFullYear() ?? new Date().getFullYear();
+  const toMonth = dateRange.to?.getMonth() ?? new Date().getMonth();
+  const selectedToYear = dateRange.to?.getFullYear() ?? new Date().getFullYear();
+
+  const handleDateChange = (type: 'from' | 'to', year: number, month: number) => {
+    const newDate = type === 'from' 
+      ? startOfMonth(new Date(year, month))
+      : endOfMonth(new Date(year, month));
+    
     const newRange = {
-      ...localRange,
-      [type]: value
+      from: type === 'from' ? newDate : dateRange.from,
+      to: type === 'to' ? newDate : dateRange.to
     };
 
-    const fromDate = startOfMonth(new Date(newRange.startYear, newRange.startMonth));
-    const toDate = endOfMonth(new Date(newRange.endYear, newRange.endMonth));
-
-    if (fromDate > toDate) {
-      if (type.startsWith('start')) {
-        newRange.endMonth = newRange.startMonth;
-        newRange.endYear = newRange.startYear;
+    // Ensure from date is not after to date
+    if (newRange.from && newRange.to && newRange.from > newRange.to) {
+      if (type === 'from') {
+        newRange.to = endOfMonth(new Date(year, month));
       } else {
-        newRange.startMonth = newRange.endMonth;
-        newRange.startYear = newRange.endYear;
+        newRange.from = startOfMonth(new Date(year, month));
       }
     }
 
-    setLocalRange(newRange);
-    setDateRange({
-      from: startOfMonth(new Date(newRange.startYear, newRange.startMonth)),
-      to: endOfMonth(new Date(newRange.endYear, newRange.endMonth))
-    });
+    setDateRange(newRange);
   };
 
-  const formatDateRange = (range: DateRange) => {
-    if (!range.from || !range.to) return "Select date range";
-    return `${safeFormat(range.from, "MMM yyyy", "Invalid")} - ${safeFormat(range.to, "MMM yyyy", "Invalid")}`;
-  }
-
-  const DateSelector = ({ isStart }: { isStart: boolean }) => {
-    const currentMonth = isStart ? localRange.startMonth : localRange.endMonth;
-    const currentYear = isStart ? localRange.startYear : localRange.endYear;
+  const formatDateRange = () => {
+    if (!dateRange.from || !dateRange.to) return "Select period";
     
-    return (
-      <div className="space-y-4 select-none">
-        <div className="flex items-center justify-between px-2">
-          <h3 className="font-medium text-sm text-muted-foreground">
-            {isStart ? "From" : "To"}
-          </h3>
-          <div className="flex items-center space-x-2">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-6 w-6"
-              onClick={() => handleRangeChange(
-                isStart ? 'startYear' : 'endYear',
-                currentYear - 1
-              )}
-              disabled={currentYear <= fromYear}
-            >
-              <ChevronLeftIcon className="h-3 w-3" />
-            </Button>
-            <span className="font-medium min-w-[4rem] text-center">
-              {currentYear}
-            </span>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-6 w-6"
-              onClick={() => handleRangeChange(
-                isStart ? 'startYear' : 'endYear',
-                currentYear + 1
-              )}
-              disabled={currentYear >= toYear}
-            >
-              <ChevronRightIcon className="h-3 w-3" />
-            </Button>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-4 gap-1">
-          {months.map((month, index) => (
-            <Button
-              key={month}
-              variant="ghost"
-              size="sm"
-              className={cn(
-                "h-8 px-2",
-                currentMonth === index && "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground",
-                "transition-all duration-200"
-              )}
-              onClick={() => handleRangeChange(
-                isStart ? 'startMonth' : 'endMonth',
-                index
-              )}
-            >
-              {month}
-            </Button>
-          ))}
-        </div>
-      </div>
-    );
+    const fromStr = format(dateRange.from, "MMM yyyy");
+    const toStr = format(dateRange.to, "MMM yyyy");
+    
+    return fromStr === toStr ? fromStr : `${fromStr} - ${toStr}`;
   };
+
+  const DateSelector = ({ type, year, month }: { type: 'from' | 'to', year: number, month: number }) => (
+    <div className="space-y-3">
+      <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+        {type === 'from' ? 'From' : 'To'}
+      </div>
+      
+      <div className="space-y-2">
+        <select
+          value={year}
+          onChange={(e) => handleDateChange(type, parseInt(e.target.value), month)}
+          className="w-full px-3 py-2 text-sm border border-border rounded-md bg-background focus:outline-none focus:ring-2 focus:ring-primary/20"
+        >
+          {years.map((y) => (
+            <option key={y} value={y}>{y}</option>
+          ))}
+        </select>
+        
+        <select
+          value={month}
+          onChange={(e) => handleDateChange(type, year, parseInt(e.target.value))}
+          className="w-full px-3 py-2 text-sm border border-border rounded-md bg-background focus:outline-none focus:ring-2 focus:ring-primary/20"
+        >
+          {months.map((m) => (
+            <option key={m.value} value={m.value}>{m.label}</option>
+          ))}
+        </select>
+      </div>
+    </div>
+  );
 
   return (
-    <div className={cn("flex flex-col sm:flex-row gap-2", className)}>
-      <Popover>
+    <div className={cn("flex", className)}>
+      <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
             variant="outline"
             className={cn(
-              "w-[280px] justify-start text-left font-normal",
-              !dateRange && "text-muted-foreground",
-              "hover:bg-accent hover:text-accent-foreground transition-colors"
+              "w-[120px] justify-start text-left font-normal",
+              !dateRange.from && "text-muted-foreground",
+              "bg-background/50 backdrop-blur-sm border-border/50 hover:bg-accent/50 transition-all duration-200"
             )}
           >
-            <CalendarIcon className="mr-2 h-4 w-4" />
-            {formatDateRange(dateRange)}
+            <CalendarIcon className="mr-2 h-4 w-4 opacity-50" />
+            <span className="truncate">{formatDateRange()}</span>
           </Button>
         </PopoverTrigger>
         <PopoverContent 
-          className="w-[32rem] p-4"
+          className="w-80 p-4 bg-background/95 backdrop-blur-sm border-border/50" 
           align="start"
         >
-          <div className="grid grid-cols-2 gap-10">
-            <DateSelector isStart={true} />
-            <DateSelector isStart={false} />
+          <div className="grid grid-cols-2 gap-4">
+            <DateSelector type="from" year={selectedFromYear} month={fromMonth} />
+            <DateSelector type="to" year={selectedToYear} month={toMonth} />
           </div>
-
-          <Separator className="my-2" />
           
-          <div className="flex justify-between text-sm text-muted-foreground">
-            <p>
-              From: {safeFormat(new Date(localRange.startYear, localRange.startMonth), "MMM yyyy", "Invalid")}
-            </p>
-            <p>
-              To: {safeFormat(new Date(localRange.endYear, localRange.endMonth), "MMM yyyy", "Invalid")}
-            </p>
+          <div className="mt-4 pt-3 border-t border-border/50">
+            <div className="text-xs text-muted-foreground text-center">
+              {format(dateRange.from || new Date(), "MMM yyyy")} to {format(dateRange.to || new Date(), "MMM yyyy")}
+            </div>
           </div>
         </PopoverContent>
       </Popover>

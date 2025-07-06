@@ -39,7 +39,7 @@ const UserIcon = () => {
     <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>
         <div className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity px-2 py-1 rounded-lg hover:bg-gray-100">
-          <Avatar className="focus-visible:ring-0 focus-visible:ring-transparent size-12 border border-gray-200 aspect-square object-cover">
+          <Avatar className="focus-visible:ring-0 focus-visible:ring-transparent size-10 border border-gray-200 aspect-square object-cover">
             <AvatarImage
               className="object-cover"
               src={

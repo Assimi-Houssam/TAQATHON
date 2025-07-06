@@ -64,8 +64,8 @@ export async function middleware(request: NextRequest) {
   // Check if the path is allowed
   const isAllowedPath = ALLOWED_PATHS.some((allowedPath) => {
     if (allowedPath === "/dashboard") {
-      // For dashboard, only allow exact match, no sub-routes
-      return actualPath === allowedPath;
+      // For dashboard, allow exact match and all sub-routes
+      return actualPath === allowedPath || actualPath.startsWith(allowedPath + "/");
     }
     // For other paths, allow sub-routes
     return actualPath === allowedPath || actualPath.startsWith(allowedPath + "/");

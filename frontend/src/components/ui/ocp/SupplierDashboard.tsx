@@ -221,7 +221,7 @@ export const SupplierDashboard = () => {
           action={
             <div className="flex items-center gap-4">
               <TimeframeSelect
-                fromYear={new Date().getFullYear() - 20}
+                fromYear={new Date().getFullYear() - 10}
                 toYear={new Date().getFullYear()}
               />
               <ExportMenu
