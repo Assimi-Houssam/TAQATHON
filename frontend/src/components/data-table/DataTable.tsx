@@ -234,7 +234,7 @@ export function DataTable<T extends Record<string, any>>({
     <div className={`space-y-4 ${className}`}>
       {/* Search and Filter Controls */}
       <div className="flex flex-col gap-4">
-        <div className="flex items-center justify-between">
+        <div className="flex gap-3 items-center">
           {/* Left side - Search */}
           <div className="flex items-center gap-2">
             {/* Search */}
@@ -245,7 +245,7 @@ export function DataTable<T extends Record<string, any>>({
                   placeholder={searchPlaceholder}
                   value={searchTerm}
                   onChange={(e) => handleSearch(e.target.value)}
-                  className="pl-10 w-[600px]"
+                  className="pl-10 w-[300px]"
                 />
               </div>
             )}
@@ -260,10 +260,10 @@ export function DataTable<T extends Record<string, any>>({
                 onOpenChange={(open) => setOpenDropdown(open ? 'filter' : null)}
               >
                 <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="sm">
+                  <Button className="" variant="outline" size="sm">
                     <Filter className="h-4 w-4 mr-2" />
                     Filter
-                    {Object.keys(activeFilters).length > 0 && (
+                    {Object.keys(activeFilters).length >= 0 && (
                       <Badge variant="secondary" className="ml-2">
                         {Object.keys(activeFilters).length}
                       </Badge>
