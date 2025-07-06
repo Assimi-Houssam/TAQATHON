@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma.service';
 import { CreateAnomalieDto } from './dto/anomalie.dto';
+import { ForceStopDto } from './dto/forceStop.dto';
 
 @Injectable()
 export class AnomalyService {
@@ -188,7 +189,7 @@ export class AnomalyService {
     const updatedAnomaly = await this.Prisma.anomaly.update({
       where: { id: id },
       data: {
-        status: 'resolved',
+        status: 'CLOSED',
         resolution_date: new Date(),
         rex_entrie: {
           create: {
@@ -251,7 +252,7 @@ export class AnomalyService {
     return updateMaintenacneWinodw;
   }
 
-  async resolveAnomaly(id: string) {
+  async markAsTreated(id: string) {
     const anomaly = await this.Prisma.anomaly.findUnique({
       where: { id: id },
       include: {
@@ -275,11 +276,11 @@ export class AnomalyService {
         "La durée d'intervention n'est pas définie, veuillez la remplir avant de résoudre l'anomalie",
       );
     }
-    const updatedAnomaly = await this.Prisma.anomaly.update({
+     await this.Prisma.anomaly.update({
       where: { id: id },
       data: {
-        status: 'traited',
-        resolution_date: new Date(),
+        status: 'TRAITED',
+        date_traitement: new Date(),
       },
     });
 
@@ -298,6 +299,12 @@ export class AnomalyService {
     };
   }
 
+    extractHours = (duration: string): number => {
+      if (!duration) return 0;
+      const match = duration.match(/\d+/); 
+      return match ? parseInt(match[0]) : 0;
+    };
+
   async anomalyToMaintenanceWindow(anomalyId: string) {
     const anomaly = await this.Prisma.anomaly.findUnique({
       where: { id: anomalyId },
@@ -307,18 +314,13 @@ export class AnomalyService {
       throw new Error('Anomaly not found');
     }
 
-    if (anomaly.status !== 'traited') {
+    if (anomaly.status !== 'TRAITED') {
       throw new Error(
         'Anomaly must be in "traited" status to be attached to a maintenance window',
       );
     }
 
-    const extractHours = (duration: string): number => {
-      if (!duration) return 0;
-      const match = duration.match(/\d+/); 
-      return match ? parseInt(match[0]) : 0;
-    };
-    const requiredHours = extractHours(anomaly.duree_intervention || '0');
+    const requiredHours = this.extractHours(anomaly.duree_intervention || '0');
     const maintenanceWindows = await this.Prisma.maintenance_window.findMany({
       where: {
         date_debut_arret: {
@@ -330,7 +332,7 @@ export class AnomalyService {
       },
     });
     const suitableWindow = maintenanceWindows.find((window) => {
-      const windowHours = extractHours(window.duree_heure || '0');
+      const windowHours = this.extractHours(window.duree_heure || '0');
       return windowHours >= requiredHours;
     });
     if (!suitableWindow) {
@@ -353,8 +355,74 @@ export class AnomalyService {
       maintenanceWindow: suitableWindow,
     };
   }
+
+
+  async forceStopAnomaly(data : ForceStopDto){
+    const { date_debut_arret, date_fin_arret, titlte, duree_jour, duree_heure } =
+      data;
+    if (!date_debut_arret || !date_fin_arret) {
+      throw new Error('Start and end dates are required');
+    }
+
+    const dateDebutArret = new Date(date_debut_arret);
+    const dateFinArret = new Date(date_fin_arret);
+  
+    const forceStopentrie =  await this.Prisma.maintenance_window.create({
+      data: {
+        date_debut_arret: dateDebutArret,
+        date_fin_arret: dateFinArret,
+        titlte,
+        duree_jour,
+        duree_heure
+      }
+    });
+    if (!forceStopentrie) {
+      throw new Error('Failed to create force stop entry');
+    }
+    const dureHeur = this.extractHours(duree_heure || '0');
+    const automatedAssignment = await this.autoAssigmentAnomalyToMaintenanceWindowForceStop(forceStopentrie.id, dureHeur);
+
+  }
+
+  
+  
+  async autoAssigmentAnomalyToMaintenanceWindowForceStop(maintenanceId : string, dureHeur: number) {
+    const maintenance_window =  await this.Prisma.maintenance_window.findMany({
+      where: { 
+      id: {
+        not: maintenanceId
+      }
+      },
+      include: {
+        anomaly: true,
+      },
+    });
+    if (!maintenance_window || maintenance_window.length === 0) {
+      throw new Error('No maintenance windows found');
+    }
+    for (const window of maintenance_window) {
+      for (const anomaly of window.anomaly) {
+        const requiredHours = this.extractHours(anomaly.duree_intervention || '0');
+          if (requiredHours <= dureHeur) {
+            await this.Prisma.anomaly.update({
+              where: { id: anomaly.id },
+              data: {
+                maintenance_window: {
+                  connect: { id: window.id },
+                },
+              },
+            });
+          }
+      }
+    }
+
+  }
+
+
+
 }
 
 //  when status is traite with  attach with -> the action plan  chanfe to traite and attach it to a maintenance window
 // does not become traiter auto until a evry feild is full and will beoome traiete manulemnet
 // save time between the date detection and the date traitement
+// confedence with data 
