@@ -111,11 +111,18 @@ export function ColumnVisibilityToggle<T>({
         {/* Individual column toggles */}
         {hideableColumns.map((column) => {
           const isVisible = columnVisibility[column.id] !== false;
+          const toggleColumn = () => {
+            handleToggleColumn(column.id, !isVisible);
+          };
+          
           return (
             <DropdownMenuItem
               key={column.id}
-              onClick={(e) => e.preventDefault()}
-              className="cursor-default"
+              onClick={(e) => {
+                e.preventDefault();
+                toggleColumn();
+              }}
+              className="cursor-pointer"
             >
               <div className="flex items-center w-full">
                 <Checkbox
@@ -129,6 +136,10 @@ export function ColumnVisibilityToggle<T>({
                 <label
                   htmlFor={`column-${column.id}`}
                   className="flex-1 cursor-pointer"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                  }}
                 >
                   {column.header}
                 </label>
