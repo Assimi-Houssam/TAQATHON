@@ -165,12 +165,12 @@ export function AppSidebar() {
         <SidebarGroup className="bg-white">
           <SidebarGroupContent>
             <SidebarMenu
-              className={`px-3 transition-opacity duration-300 ${
+              className={`px-4 py-2 transition-opacity duration-300 ${
                 isLoading || userLoading ? "opacity-0" : "opacity-100"
               }`}
             >
               {sidebarItems.map((item, index) => (
-                <div key={item.title} className="mb-1">
+                <div key={item.title}>
                   <SidebarMenuItem>
                     <MenuItem
                       {...item}
@@ -200,13 +200,13 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        <div className="mt-auto border-t border-gray-100">
+        <div className="mt-auto border-t border-slate-200">
           <button
             onClick={() => router.push("/dashboard/settings")}
-            className="flex items-center gap-3 w-full px-6 py-4 text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-all duration-200 font-medium"
+            className="flex items-center gap-4 w-full px-6 py-4 h-14 text-black hover:text-slate-900 hover:bg-slate-50 transition-all duration-200 font-medium border-l-4 border-l-transparent hover:border-l-slate-200"
           >
-            <Settings className="h-5 w-5 stroke-[1.5px]" />
-            <span className="text-sm">{t("pages.settings")}</span>
+            <Settings className="h-5 w-5 flex-shrink-0" />
+            <span className="text-sm font-medium tracking-wide">{t("pages.settings")}</span>
           </button>
         </div>
       </SidebarContent>
