@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Eye, Edit, AlertTriangle, FileText, Wrench } from "lucide-react";
+import { Plus, AlertTriangle, FileText, Wrench } from "lucide-react";
 import { DataTable } from "@/components/data-table";
 import { Column, DataTableConfig } from "@/components/data-table/types";
 import { useRouter } from "next/navigation";
@@ -18,12 +18,12 @@ const mockAnomalies: Anomaly[] = [
     equipment: "Main Pressure Sensor (PS-001)",
     description: "Irregular pressure readings detected in main pipeline",
     date_apparition: "2024-01-15T08:30:00Z",
-    process_safety: 4,
+    process_safety: 3,
     fiabilite_integrite: 3,
     disponibilite: 3,
     criticality: 10,
     origin: "Oracle",
-    status: "Pending_Feedback",
+    status: "New",
     created_at: "2024-01-15T08:30:00Z",
     updated_at: "2024-01-15T08:30:00Z"
   },
@@ -38,7 +38,7 @@ const mockAnomalies: Anomaly[] = [
     disponibilite: 3,
     criticality: 8,
     origin: "APM",
-    status: "Pending_Scheduling",
+    status: "In Progress",
     feedback_at: "2024-01-15T10:00:00Z",
     created_at: "2024-01-15T09:15:00Z",
     updated_at: "2024-01-15T10:00:00Z"
@@ -54,7 +54,7 @@ const mockAnomalies: Anomaly[] = [
     disponibilite: 5,
     criticality: 14,
     origin: "IBM Maximo",
-    status: "Scheduled",
+    status: "In Progress",
     feedback_at: "2024-01-14T15:00:00Z",
     scheduling_ready_at: "2024-01-14T16:00:00Z",
     scheduled_at: "2024-01-14T17:00:00Z",
@@ -72,7 +72,7 @@ const mockAnomalies: Anomaly[] = [
     disponibilite: 3,
     criticality: 7,
     origin: "EMC",
-    status: "Pending_Feedback",
+    status: "New",
     created_at: "2024-01-16T07:45:00Z",
     updated_at: "2024-01-16T07:45:00Z"
   },
@@ -87,7 +87,7 @@ const mockAnomalies: Anomaly[] = [
     disponibilite: 4,
     criticality: 11,
     origin: "Oracle",
-    status: "Pending_Scheduling",
+    status: "In Progress",
     feedback_at: "2024-01-16T12:00:00Z",
     created_at: "2024-01-16T11:20:00Z",
     updated_at: "2024-01-16T12:00:00Z"
@@ -123,7 +123,7 @@ const mockAnomalies: Anomaly[] = [
     disponibilite: 3,
     criticality: 8,
     origin: "IBM Maximo",
-    status: "Pending_Feedback",
+    status: "New",
     created_at: "2024-01-16T16:45:00Z",
     updated_at: "2024-01-16T16:45:00Z"
   },
@@ -138,7 +138,7 @@ const mockAnomalies: Anomaly[] = [
     disponibilite: 3,
     criticality: 12,
     origin: "EMC",
-    status: "Resolved",
+    status: "Closed",
     feedback_at: "2024-01-12T11:00:00Z",
     scheduling_ready_at: "2024-01-12T12:00:00Z",
     scheduled_at: "2024-01-12T13:00:00Z",
@@ -157,7 +157,7 @@ const mockAnomalies: Anomaly[] = [
     disponibilite: 2,
     criticality: 8,
     origin: "Oracle",
-    status: "Pending_Feedback",
+    status: "New",
     created_at: "2024-01-16T14:30:00Z",
     updated_at: "2024-01-16T14:30:00Z"
   },
@@ -172,7 +172,7 @@ const mockAnomalies: Anomaly[] = [
     disponibilite: 2,
     criticality: 4,
     origin: "APM",
-    status: "Resolved",
+    status: "Closed",
     feedback_at: "2024-01-11T10:00:00Z",
     scheduling_ready_at: "2024-01-11T11:00:00Z",
     scheduled_at: "2024-01-11T12:00:00Z",
@@ -191,7 +191,7 @@ const mockAnomalies: Anomaly[] = [
     disponibilite: 4,
     criticality: 13,
     origin: "IBM Maximo",
-    status: "Pending_Feedback",
+    status: "New",
     created_at: "2024-01-17T12:10:00Z",
     updated_at: "2024-01-17T12:10:00Z"
   },
@@ -206,7 +206,7 @@ const mockAnomalies: Anomaly[] = [
     disponibilite: 3,
     criticality: 8,
     origin: "EMC",
-    status: "Pending_Scheduling",
+    status: "In Progress",
     feedback_at: "2024-01-17T16:00:00Z",
     created_at: "2024-01-17T15:25:00Z",
     updated_at: "2024-01-17T16:00:00Z"
@@ -217,12 +217,12 @@ const mockAnomalies: Anomaly[] = [
     equipment: "Oil Pump (OP-013)",
     description: "Oil pressure low in main lubrication circuit",
     date_apparition: "2024-01-18T11:50:00Z",
-    process_safety: 4,
+    process_safety: 1,
     fiabilite_integrite: 3,
     disponibilite: 3,
-    criticality: 10,
+    criticality: 7,
     origin: "Oracle",
-    status: "Resolved",
+    status: "Closed",
     feedback_at: "2024-01-18T12:30:00Z",
     scheduling_ready_at: "2024-01-18T13:00:00Z",
     scheduled_at: "2024-01-18T14:00:00Z",
@@ -241,7 +241,7 @@ const mockAnomalies: Anomaly[] = [
     disponibilite: 2,
     criticality: 5,
     origin: "APM",
-    status: "Pending_Feedback",
+    status: "New",
     created_at: "2024-01-18T08:15:00Z",
     updated_at: "2024-01-18T08:15:00Z"
   },
@@ -276,7 +276,7 @@ const mockAnomalies: Anomaly[] = [
     disponibilite: 2,
     criticality: 9,
     origin: "EMC",
-    status: "Scheduled",
+    status: "In Progress",
     feedback_at: "2024-01-20T14:00:00Z",
     scheduling_ready_at: "2024-01-20T14:30:00Z",
     scheduled_at: "2024-01-20T15:00:00Z",
@@ -294,7 +294,7 @@ const mockAnomalies: Anomaly[] = [
     disponibilite: 2,
     criticality: 5,
     origin: "Oracle",
-    status: "Resolved",
+    status: "Closed",
     feedback_at: "2024-01-20T15:00:00Z",
     scheduling_ready_at: "2024-01-20T15:30:00Z",
     scheduled_at: "2024-01-20T16:00:00Z",
@@ -313,7 +313,7 @@ const mockAnomalies: Anomaly[] = [
     disponibilite: 4,
     criticality: 13,
     origin: "APM",
-    status: "Pending_Feedback",
+    status: "New",
     created_at: "2024-01-21T10:30:00Z",
     updated_at: "2024-01-21T10:30:00Z"
   },
@@ -328,7 +328,7 @@ const mockAnomalies: Anomaly[] = [
     disponibilite: 3,
     criticality: 11,
     origin: "IBM Maximo",
-    status: "Pending_Scheduling",
+    status: "In Progress",
     feedback_at: "2024-01-21T17:30:00Z",
     created_at: "2024-01-21T17:05:00Z",
     updated_at: "2024-01-21T17:30:00Z"
@@ -344,7 +344,7 @@ const mockAnomalies: Anomaly[] = [
     disponibilite: 3,
     criticality: 8,
     origin: "EMC",
-    status: "Pending_Feedback",
+    status: "New",
     created_at: "2024-01-22T09:45:00Z",
     updated_at: "2024-01-22T09:45:00Z"
   },
@@ -359,7 +359,7 @@ const mockAnomalies: Anomaly[] = [
     disponibilite: 3,
     criticality: 10,
     origin: "Oracle",
-    status: "Scheduled",
+    status: "In Progress",
     feedback_at: "2024-01-22T12:00:00Z",
     scheduling_ready_at: "2024-01-22T12:30:00Z",
     scheduled_at: "2024-01-22T13:00:00Z",
@@ -377,7 +377,7 @@ const mockAnomalies: Anomaly[] = [
     disponibilite: 3,
     criticality: 8,
     origin: "APM",
-    status: "Pending_Feedback",
+    status: "New",
     created_at: "2024-01-23T08:20:00Z",
     updated_at: "2024-01-23T08:20:00Z"
   },
@@ -392,7 +392,7 @@ const mockAnomalies: Anomaly[] = [
     disponibilite: 4,
     criticality: 14,
     origin: "IBM Maximo",
-    status: "Pending_Scheduling",
+    status: "In Progress",
     feedback_at: "2024-01-23T15:00:00Z",
     created_at: "2024-01-23T14:45:00Z",
     updated_at: "2024-01-23T15:00:00Z"
@@ -408,7 +408,7 @@ const mockAnomalies: Anomaly[] = [
     disponibilite: 3,
     criticality: 9,
     origin: "EMC",
-    status: "Resolved",
+    status: "Closed",
     feedback_at: "2024-01-24T08:00:00Z",
     scheduling_ready_at: "2024-01-24T08:30:00Z",
     scheduled_at: "2024-01-24T09:00:00Z",
@@ -427,7 +427,7 @@ const mockAnomalies: Anomaly[] = [
     disponibilite: 2,
     criticality: 5,
     origin: "Oracle",
-    status: "Pending_Feedback",
+    status: "New",
     created_at: "2024-01-24T16:30:00Z",
     updated_at: "2024-01-24T16:30:00Z"
   },
@@ -437,12 +437,12 @@ const mockAnomalies: Anomaly[] = [
     equipment: "Boiler Feed Pump (BFP-026)",
     description: "Boiler feed pump cavitation detected during startup",
     date_apparition: "2024-01-25T06:45:00Z",
-    process_safety: 4,
+    process_safety: 3,
     fiabilite_integrite: 4,
     disponibilite: 3,
     criticality: 11,
     origin: "APM",
-    status: "Scheduled",
+    status: "In Progress",
     feedback_at: "2024-01-25T07:30:00Z",
     scheduling_ready_at: "2024-01-25T08:00:00Z",
     scheduled_at: "2024-01-25T08:30:00Z",
@@ -664,33 +664,7 @@ const columns: Column<Anomaly>[] = [
     enableSorting: true,
     enableHiding: true, // Can be hidden
   },
-  {
-    id: "actions",
-    header: "Actions",
-    cell: ({ row }) => (
-      <div className="flex items-center justify-center gap-1">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => viewAnomaly(row.original)}
-          className="h-8 w-8 p-0 text-zinc-500 hover:text-zinc-700 hover:bg-zinc-100 rounded-md"
-        >
-          <Eye className="h-4 w-4" />
-        </Button>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => editAnomaly(row.original)}
-          className="h-8 w-8 p-0 text-zinc-500 hover:text-zinc-700 hover:bg-zinc-100 rounded-md"
-        >
-          <Edit className="h-4 w-4" />
-        </Button>
-      </div>
-    ),
-    size: 100,
-    enableSorting: false,
-    enableHiding: false, // Always visible
-  },
+
   {
     id: "criticality_indicator",
     header: "",
@@ -735,7 +709,6 @@ const config: DataTableConfig<Anomaly> = {
     status: true,
     date_apparition: false, // Hidden by default
     origin: false, // Hidden by default
-    actions: true,
     criticality_indicator: true, // Always visible, now last
   },
 };
@@ -746,10 +719,8 @@ const filters = [
     key: "status",
     label: "Status",
     options: [
-      { value: "Pending_Feedback", label: "Pending Feedback" },
-      { value: "Pending_Scheduling", label: "Pending Scheduling" },
-      { value: "Scheduled", label: "Scheduled" },
-      { value: "Resolved", label: "Resolved" },
+      { value: "New", label: "New" },
+      { value: "In Progress", label: "In Progress" },
       { value: "Closed", label: "Closed" },
     ],
   },
@@ -767,29 +738,15 @@ const filters = [
     key: "origin",
     label: "Origin",
     options: [
-      { value: "Sensor Malfunction", label: "Sensor Malfunction" },
-      { value: "Calibration Drift", label: "Calibration Drift" },
-      { value: "Mechanical Wear", label: "Mechanical Wear" },
-      { value: "Equipment Aging", label: "Equipment Aging" },
-      { value: "Grid Instability", label: "Grid Instability" },
-      { value: "Pump Efficiency Loss", label: "Pump Efficiency Loss" },
-      { value: "Dust Accumulation", label: "Dust Accumulation" },
-      { value: "Filter Saturation", label: "Filter Saturation" },
-      { value: "Valve Blockage", label: "Valve Blockage" },
+      { value: "Oracle", label: "Oracle" },
+      { value: "APM", label: "APM" },
+      { value: "IBM Maximo", label: "IBM Maximo" },
+      { value: "EMC", label: "EMC" },
     ],
   },
 ];
 
-// Action handlers
-const viewAnomaly = (anomaly: Anomaly) => {
-  console.log("View anomaly:", anomaly);
-  // Navigate to anomaly detail page
-};
 
-const editAnomaly = (anomaly: Anomaly) => {
-  console.log("Edit anomaly:", anomaly);
-  // Navigate to edit page or open modal
-};
 
 export default function AnomaliesPage() {
   const router = useRouter();

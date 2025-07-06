@@ -16,6 +16,8 @@ interface ColumnVisibilityToggleProps<T> {
   columns: Column<T>[];
   columnVisibility: ColumnVisibilityState<T>;
   onColumnVisibilityChange: (columnVisibility: ColumnVisibilityState<T>) => void;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 /**
@@ -31,6 +33,8 @@ export function ColumnVisibilityToggle<T>({
   columns,
   columnVisibility,
   onColumnVisibilityChange,
+  open,
+  onOpenChange,
 }: ColumnVisibilityToggleProps<T>) {
   const hideableColumns = columns.filter(col => col.enableHiding !== false);
   
@@ -66,7 +70,10 @@ export function ColumnVisibilityToggle<T>({
   };
 
   return (
-    <DropdownMenu>
+    <DropdownMenu 
+      open={open}
+      onOpenChange={onOpenChange}
+    >
       <DropdownMenuTrigger asChild>
         <Button variant="outline" size="sm">
           <Settings className="h-4 w-4 mr-2" />

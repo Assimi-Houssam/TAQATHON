@@ -48,10 +48,8 @@ export interface Anomaly {
 
   // Lifecycle status
   status: 
-    | 'Pending_Feedback'
-    | 'Pending_Scheduling'
-    | 'Scheduled'
-    | 'Resolved'
+    | 'New'
+    | 'In Progress'
     | 'Closed';
 
   // Status tracking fields
@@ -89,20 +87,16 @@ export interface LegacyAnomaly {
 
 // UI-specific types
 export type AnomalyStatus = 
-  | 'Pending_Feedback'
-  | 'Pending_Scheduling'
-  | 'Scheduled'
-  | 'Resolved'
+  | 'New'
+  | 'In Progress'
   | 'Closed';
 
 export type AnomalyCriticality = 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
 
 // Status transition rules
 export const STATUS_TRANSITIONS: Record<AnomalyStatus, AnomalyStatus[]> = {
-  'Pending_Feedback': ['Pending_Scheduling', 'Closed'],
-  'Pending_Scheduling': ['Scheduled', 'Pending_Feedback'],
-  'Scheduled': ['Resolved', 'Pending_Scheduling'],
-  'Resolved': ['Closed', 'Pending_Scheduling'],
+  'New': ['In Progress', 'Closed'],
+  'In Progress': ['Closed'],
   'Closed': []
 };
 
@@ -129,10 +123,8 @@ export const getStatusColor = (status: AnomalyStatus): string => {
 
 export const getStatusLabel = (status: AnomalyStatus): string => {
   switch (status) {
-    case 'Pending_Feedback': return 'Pending Feedback';
-    case 'Pending_Scheduling': return 'Pending Scheduling';
-    case 'Scheduled': return 'Scheduled';
-    case 'Resolved': return 'Resolved';
+    case 'New': return 'New';
+    case 'In Progress': return 'In Progress';
     case 'Closed': return 'Closed';
     default: return status;
   }

@@ -20,53 +20,35 @@ interface TimelineEvent {
 export function AnomalyTimeline({ anomaly, className }: AnomalyTimelineProps) {
   const getTimelineEvents = (anomaly: Anomaly): TimelineEvent[] => {
     const currentStatusIndex = [
-      'Pending_Feedback',
-      'Pending_Scheduling', 
-      'Scheduled',
-      'Resolved',
+      'New',
+      'In Progress',
       'Closed'
     ].indexOf(anomaly.status);
 
     return [
       {
-        status: 'Pending_Feedback',
+        status: 'New',
         timestamp: anomaly.created_at,
         label: 'Reported',
-        description: 'Anomaly reported and awaiting feedback',
+        description: 'Anomaly reported and awaiting review',
         icon: AlertTriangle,
         completed: currentStatusIndex >= 0
       },
       {
-        status: 'Pending_Scheduling',
-        timestamp: anomaly.feedback_at,
-        label: 'Feedback Received',
-        description: 'Feedback received, awaiting scheduling',
-        icon: Clock,
+        status: 'In Progress',
+        timestamp: anomaly.feedback_at || anomaly.scheduled_at,
+        label: 'In Progress',
+        description: 'Maintenance In Progress for resolution',
+        icon: Calendar,
         completed: currentStatusIndex >= 1
       },
       {
-        status: 'Scheduled',
-        timestamp: anomaly.scheduled_at,
-        label: 'Scheduled',
-        description: `Maintenance scheduled${anomaly.maintenance_window_label ? ` for ${anomaly.maintenance_window_label}` : ''}`,
-        icon: Calendar,
-        completed: currentStatusIndex >= 2
-      },
-      {
-        status: 'Resolved',
-        timestamp: anomaly.resolved_at,
-        label: 'Resolved',
-        description: 'Maintenance completed, anomaly resolved',
-        icon: Wrench,
-        completed: currentStatusIndex >= 3
-      },
-      {
         status: 'Closed',
-        timestamp: anomaly.closed_at,
+        timestamp: anomaly.resolved_at || anomaly.closed_at,
         label: 'Closed',
-        description: 'Anomaly closed and archived',
+        description: 'Anomaly resolved and closed',
         icon: CheckCircle,
-        completed: currentStatusIndex >= 4
+        completed: currentStatusIndex >= 2
       }
     ];
   };

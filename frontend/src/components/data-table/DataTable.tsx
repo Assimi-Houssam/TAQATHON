@@ -73,6 +73,7 @@ export function DataTable<T extends Record<string, any>>({
     defaultSort ? { key: String(defaultSort.field), direction: defaultSort.direction } : null
   );
   const [activeFilters, setActiveFilters] = useState<Record<string, string>>({});
+  const [openDropdown, setOpenDropdown] = useState<'filter' | 'column' | null>(null);
 
   // Column visibility state management
   const [internalColumnVisibility, setInternalColumnVisibility] = useState<ColumnVisibilityState<T>>(() => {
@@ -138,13 +139,42 @@ export function DataTable<T extends Record<string, any>>({
     });
   }, [filteredData, sortConfig, enableSorting]);
 
-  // Pagination logic
-  const paginatedData = useMemo(() => {
+  // Pagination logic with consistent height - always render pageSize rows
+  const paginatedData = useMemo((): (T | (T & { __isFakeRow: boolean }))[] => {
     if (!enablePagination) return sortedData;
     
     const startIndex = (currentPage - 1) * pageSize;
     const endIndex = startIndex + pageSize;
-    return sortedData.slice(startIndex, endIndex);
+    const pageData = sortedData.slice(startIndex, endIndex);
+    
+    // Always ensure exactly pageSize rows are rendered on every page
+    const emptyRowsNeeded = pageSize - pageData.length;
+    
+    if (emptyRowsNeeded > 0 && pageData.length > 0) {
+      // Create fake rows based on the structure of the first real row
+      const templateRow = pageData[0];
+      const fakeRows = Array(emptyRowsNeeded).fill(null).map((_, index) => {
+        const fakeRow = { ...templateRow } as any;
+        
+        // Override with placeholder values
+        Object.keys(fakeRow).forEach(key => {
+          if (key === 'id') {
+            fakeRow[key] = `fake-${startIndex + pageData.length + index}`;
+          } else if (typeof fakeRow[key] === 'string') {
+            fakeRow[key] = '';
+          } else if (typeof fakeRow[key] === 'number') {
+            fakeRow[key] = null;
+          }
+        });
+        
+        fakeRow.__isFakeRow = true;
+        return fakeRow as T & { __isFakeRow: boolean };
+      });
+      
+      return [...pageData, ...fakeRows];
+    }
+    
+    return pageData;
   }, [sortedData, currentPage, pageSize, enablePagination]);
 
   const totalPages = Math.ceil(sortedData.length / pageSize);
@@ -205,6 +235,7 @@ export function DataTable<T extends Record<string, any>>({
       {/* Search and Filter Controls */}
       <div className="flex flex-col gap-4">
         <div className="flex items-center justify-between">
+          {/* Left side - Search */}
           <div className="flex items-center gap-2">
             {/* Search */}
             {enableSearch && (
@@ -214,14 +245,20 @@ export function DataTable<T extends Record<string, any>>({
                   placeholder={searchPlaceholder}
                   value={searchTerm}
                   onChange={(e) => handleSearch(e.target.value)}
-                  className="pl-10 w-64"
+                  className="pl-10 w-[600px]"
                 />
               </div>
             )}
-            
+          </div>
+          
+          {/* Right side - Filter and Column Controls */}
+          <div className="flex items-center gap-2">
             {/* Filter Dropdown */}
             {enableFilters && filters.length > 0 && (
-              <DropdownMenu>
+              <DropdownMenu 
+                open={openDropdown === 'filter'}
+                onOpenChange={(open) => setOpenDropdown(open ? 'filter' : null)}
+              >
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" size="sm">
                     <Filter className="h-4 w-4 mr-2" />
@@ -283,6 +320,8 @@ export function DataTable<T extends Record<string, any>>({
                 columns={columns}
                 columnVisibility={columnVisibility}
                 onColumnVisibilityChange={handleColumnVisibilityChange}
+                open={openDropdown === 'column'}
+                onOpenChange={(open) => setOpenDropdown(open ? 'column' : null)}
               />
             )}
           </div>
@@ -322,14 +361,16 @@ export function DataTable<T extends Record<string, any>>({
         <Table>
           <TableHeader>
             <TableRow>
-              {visibleColumns.map((column) => (
+              {visibleColumns.map((column, index) => (
                 <TableHead 
                   key={column.id}
                   className={`${column.enableSorting ? 'cursor-pointer hover:bg-muted/50' : ''}`}
                   onClick={() => column.enableSorting && handleSort(column.id)}
                   style={{ width: column.size ? `${column.size}px` : undefined }}
                 >
-                  <div className="flex items-center gap-2">
+                  <div className={`flex items-center gap-2 ${
+                    index === visibleColumns.length - 1 ? 'justify-end' : 'justify-center'
+                  }`}>
                     {column.header}
                     {enableSorting && sortConfig?.key === column.id && (
                       <span className="text-xs">
@@ -354,25 +395,30 @@ export function DataTable<T extends Record<string, any>>({
                 </TableCell>
               </TableRow>
             ) : (
-              paginatedData.map((row, index) => (
-                <TableRow 
-                  key={`row-${index}`}
-                  className={`${onRowClick ? "cursor-pointer hover:bg-muted/50" : ""} ${rowClassName ? rowClassName(row) : ""}`}
-                  onClick={() => onRowClick?.(row)}
-                >
-                  {visibleColumns.map((column) => (
-                    <TableCell key={`${index}-${column.id}`}>
-                      {column.cell ? (
-                        column.cell({ row: { original: row } })
-                      ) : (
-                        <div>
-                          {column.accessorKey ? String(row[column.accessorKey]) : ''}
-                        </div>
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
+              paginatedData.map((row, index) => {
+                // Handle fake disabled rows
+                const isFakeRow = row && typeof row === 'object' && '__isFakeRow' in row;
+                
+                return (
+                  <TableRow 
+                    key={isFakeRow ? `fake-row-${index}` : `row-${index}`}
+                    className={`${!isFakeRow && onRowClick ? "cursor-pointer hover:bg-muted/50" : ""} ${!isFakeRow && rowClassName ? rowClassName(row as T) : ""} ${isFakeRow ? "opacity-30 pointer-events-none" : ""}`}
+                    onClick={() => !isFakeRow && onRowClick?.(row as T)}
+                  >
+                    {visibleColumns.map((column) => (
+                      <TableCell key={`${index}-${column.id}`}>
+                        {column.cell ? (
+                          column.cell({ row: { original: row as T } })
+                        ) : (
+                          <div>
+                            {column.accessorKey ? String((row as T)[column.accessorKey]) : ''}
+                          </div>
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                );
+              })
             )}
           </TableBody>
         </Table>
