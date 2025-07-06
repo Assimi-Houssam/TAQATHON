@@ -62,12 +62,15 @@ export function DataTable<T extends Record<string, any>>({
     searchPlaceholder = config.searchPlaceholder ?? "Search...",
     searchableColumns = config.searchableColumns ?? [],
     defaultColumnVisibility = config.defaultColumnVisibility ?? {},
+    defaultSort = config.defaultSort,
   } = config;
 
   // Internal state
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' } | null>(null);
+  const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' } | null>(
+    defaultSort ? { key: String(defaultSort.field), direction: defaultSort.direction } : null
+  );
   const [activeFilters, setActiveFilters] = useState<Record<string, string>>({});
 
   // Column visibility state management

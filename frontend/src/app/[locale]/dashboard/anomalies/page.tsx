@@ -22,7 +22,7 @@ const mockAnomalies: Anomaly[] = [
     fiabilite_integrite: 3,
     disponibilite: 3,
     criticality: 10,
-    origin: "Sensor Malfunction",
+    origin: "Oracle",
     status: "Pending_Feedback",
     created_at: "2024-01-15T08:30:00Z",
     updated_at: "2024-01-15T08:30:00Z"
@@ -37,7 +37,7 @@ const mockAnomalies: Anomaly[] = [
     fiabilite_integrite: 3,
     disponibilite: 3,
     criticality: 8,
-    origin: "Calibration Drift",
+    origin: "APM",
     status: "Pending_Scheduling",
     feedback_at: "2024-01-15T10:00:00Z",
     created_at: "2024-01-15T09:15:00Z",
@@ -53,7 +53,7 @@ const mockAnomalies: Anomaly[] = [
     fiabilite_integrite: 4,
     disponibilite: 5,
     criticality: 14,
-    origin: "Mechanical Wear",
+    origin: "IBM Maximo",
     status: "Scheduled",
     feedback_at: "2024-01-14T15:00:00Z",
     scheduling_ready_at: "2024-01-14T16:00:00Z",
@@ -71,7 +71,7 @@ const mockAnomalies: Anomaly[] = [
     fiabilite_integrite: 2,
     disponibilite: 3,
     criticality: 7,
-    origin: "Valve Blockage",
+    origin: "EMC",
     status: "Pending_Feedback",
     created_at: "2024-01-16T07:45:00Z",
     updated_at: "2024-01-16T07:45:00Z"
@@ -86,7 +86,7 @@ const mockAnomalies: Anomaly[] = [
     fiabilite_integrite: 3,
     disponibilite: 4,
     criticality: 11,
-    origin: "Grid Instability",
+    origin: "Oracle",
     status: "Pending_Scheduling",
     feedback_at: "2024-01-16T12:00:00Z",
     created_at: "2024-01-16T11:20:00Z",
@@ -102,7 +102,7 @@ const mockAnomalies: Anomaly[] = [
     fiabilite_integrite: 2,
     disponibilite: 2,
     criticality: 5,
-    origin: "Equipment Aging",
+    origin: "APM",
     status: "Closed",
     feedback_at: "2024-01-13T14:00:00Z",
     scheduling_ready_at: "2024-01-13T15:00:00Z",
@@ -122,7 +122,7 @@ const mockAnomalies: Anomaly[] = [
     fiabilite_integrite: 2,
     disponibilite: 3,
     criticality: 8,
-    origin: "Pump Efficiency Loss",
+    origin: "IBM Maximo",
     status: "Pending_Feedback",
     created_at: "2024-01-16T16:45:00Z",
     updated_at: "2024-01-16T16:45:00Z"
@@ -137,7 +137,7 @@ const mockAnomalies: Anomaly[] = [
     fiabilite_integrite: 4,
     disponibilite: 3,
     criticality: 12,
-    origin: "Dust Accumulation",
+    origin: "EMC",
     status: "Resolved",
     feedback_at: "2024-01-12T11:00:00Z",
     scheduling_ready_at: "2024-01-12T12:00:00Z",
@@ -156,7 +156,7 @@ const mockAnomalies: Anomaly[] = [
     fiabilite_integrite: 3,
     disponibilite: 2,
     criticality: 8,
-    origin: "Mechanical Wear",
+    origin: "Oracle",
     status: "Pending_Feedback",
     created_at: "2024-01-16T14:30:00Z",
     updated_at: "2024-01-16T14:30:00Z"
@@ -171,7 +171,7 @@ const mockAnomalies: Anomaly[] = [
     fiabilite_integrite: 1,
     disponibilite: 2,
     criticality: 4,
-    origin: "Filter Saturation",
+    origin: "APM",
     status: "Resolved",
     feedback_at: "2024-01-11T10:00:00Z",
     scheduling_ready_at: "2024-01-11T11:00:00Z",
@@ -190,7 +190,7 @@ const mockAnomalies: Anomaly[] = [
     fiabilite_integrite: 4,
     disponibilite: 4,
     criticality: 13,
-    origin: "Seal Failure",
+    origin: "IBM Maximo",
     status: "Pending_Feedback",
     created_at: "2024-01-17T12:10:00Z",
     updated_at: "2024-01-17T12:10:00Z"
@@ -205,7 +205,7 @@ const mockAnomalies: Anomaly[] = [
     fiabilite_integrite: 3,
     disponibilite: 3,
     criticality: 8,
-    origin: "Chemical Dosing Error",
+    origin: "EMC",
     status: "Pending_Scheduling",
     feedback_at: "2024-01-17T16:00:00Z",
     created_at: "2024-01-17T15:25:00Z",
@@ -221,7 +221,7 @@ const mockAnomalies: Anomaly[] = [
     fiabilite_integrite: 3,
     disponibilite: 3,
     criticality: 10,
-    origin: "Pump Wear",
+    origin: "Oracle",
     status: "Resolved",
     feedback_at: "2024-01-18T12:30:00Z",
     scheduling_ready_at: "2024-01-18T13:00:00Z",
@@ -240,7 +240,7 @@ const mockAnomalies: Anomaly[] = [
     fiabilite_integrite: 2,
     disponibilite: 2,
     criticality: 5,
-    origin: "Network Issues",
+    origin: "APM",
     status: "Pending_Feedback",
     created_at: "2024-01-18T08:15:00Z",
     updated_at: "2024-01-18T08:15:00Z"
@@ -255,7 +255,7 @@ const mockAnomalies: Anomaly[] = [
     fiabilite_integrite: 3,
     disponibilite: 3,
     criticality: 9,
-    origin: "Compressor Capacity",
+    origin: "IBM Maximo",
     status: "Closed",
     feedback_at: "2024-01-19T17:00:00Z",
     scheduling_ready_at: "2024-01-19T17:30:00Z",
@@ -275,7 +275,7 @@ const mockAnomalies: Anomaly[] = [
     fiabilite_integrite: 3,
     disponibilite: 2,
     criticality: 9,
-    origin: "Motor Overload",
+    origin: "EMC",
     status: "Scheduled",
     feedback_at: "2024-01-20T14:00:00Z",
     scheduling_ready_at: "2024-01-20T14:30:00Z",
@@ -293,7 +293,7 @@ const mockAnomalies: Anomaly[] = [
     fiabilite_integrite: 2,
     disponibilite: 2,
     criticality: 5,
-    origin: "Lamp Degradation",
+    origin: "Oracle",
     status: "Resolved",
     feedback_at: "2024-01-20T15:00:00Z",
     scheduling_ready_at: "2024-01-20T15:30:00Z",
@@ -312,7 +312,7 @@ const mockAnomalies: Anomaly[] = [
     fiabilite_integrite: 4,
     disponibilite: 4,
     criticality: 13,
-    origin: "Valve Control Issues",
+    origin: "APM",
     status: "Pending_Feedback",
     created_at: "2024-01-21T10:30:00Z",
     updated_at: "2024-01-21T10:30:00Z"
@@ -327,7 +327,7 @@ const mockAnomalies: Anomaly[] = [
     fiabilite_integrite: 3,
     disponibilite: 3,
     criticality: 11,
-    origin: "Battery Degradation",
+    origin: "IBM Maximo",
     status: "Pending_Scheduling",
     feedback_at: "2024-01-21T17:30:00Z",
     created_at: "2024-01-21T17:05:00Z",
@@ -343,7 +343,7 @@ const mockAnomalies: Anomaly[] = [
     fiabilite_integrite: 3,
     disponibilite: 3,
     criticality: 8,
-    origin: "Gearbox Wear",
+    origin: "EMC",
     status: "Pending_Feedback",
     created_at: "2024-01-22T09:45:00Z",
     updated_at: "2024-01-22T09:45:00Z"
@@ -358,7 +358,7 @@ const mockAnomalies: Anomaly[] = [
     fiabilite_integrite: 4,
     disponibilite: 3,
     criticality: 10,
-    origin: "Bearing Failure",
+    origin: "Oracle",
     status: "Scheduled",
     feedback_at: "2024-01-22T12:00:00Z",
     scheduling_ready_at: "2024-01-22T12:30:00Z",
@@ -376,7 +376,7 @@ const mockAnomalies: Anomaly[] = [
     fiabilite_integrite: 2,
     disponibilite: 3,
     criticality: 8,
-    origin: "Pump Calibration",
+    origin: "APM",
     status: "Pending_Feedback",
     created_at: "2024-01-23T08:20:00Z",
     updated_at: "2024-01-23T08:20:00Z"
@@ -391,7 +391,7 @@ const mockAnomalies: Anomaly[] = [
     fiabilite_integrite: 5,
     disponibilite: 4,
     criticality: 14,
-    origin: "Spring Failure",
+    origin: "IBM Maximo",
     status: "Pending_Scheduling",
     feedback_at: "2024-01-23T15:00:00Z",
     created_at: "2024-01-23T14:45:00Z",
@@ -407,7 +407,7 @@ const mockAnomalies: Anomaly[] = [
     fiabilite_integrite: 4,
     disponibilite: 3,
     criticality: 9,
-    origin: "Fouling Buildup",
+    origin: "EMC",
     status: "Resolved",
     feedback_at: "2024-01-24T08:00:00Z",
     scheduling_ready_at: "2024-01-24T08:30:00Z",
@@ -426,7 +426,7 @@ const mockAnomalies: Anomaly[] = [
     fiabilite_integrite: 2,
     disponibilite: 2,
     criticality: 5,
-    origin: "Display Hardware",
+    origin: "Oracle",
     status: "Pending_Feedback",
     created_at: "2024-01-24T16:30:00Z",
     updated_at: "2024-01-24T16:30:00Z"
@@ -441,7 +441,7 @@ const mockAnomalies: Anomaly[] = [
     fiabilite_integrite: 4,
     disponibilite: 3,
     criticality: 11,
-    origin: "Suction Issues",
+    origin: "APM",
     status: "Scheduled",
     feedback_at: "2024-01-25T07:30:00Z",
     scheduling_ready_at: "2024-01-25T08:00:00Z",
@@ -459,7 +459,7 @@ const mockAnomalies: Anomaly[] = [
     fiabilite_integrite: 3,
     disponibilite: 2,
     criticality: 8,
-    origin: "Sensor Drift",
+    origin: "IBM Maximo",
     status: "Closed",
     feedback_at: "2024-01-25T14:00:00Z",
     scheduling_ready_at: "2024-01-25T14:30:00Z",
@@ -470,6 +470,19 @@ const mockAnomalies: Anomaly[] = [
     updated_at: "2024-01-25T17:30:00Z"
   }
 ];
+
+// Helper function to calculate red color opacity based on value (1-5 scale)
+const getRedOpacity = (value: number): string => {
+  // Group values: 1=transparent, 2&3=medium red, 4&5=high red
+  if (value === 1) {
+    return 'transparent';
+  } else if (value === 2 || value === 3) {
+    return 'rgba(239, 68, 68, 0.25)'; // 25% red for values 2 and 3
+  } else if (value === 4 || value === 5) {
+    return 'rgba(239, 68, 68, 0.5)'; // 50% red for values 4 and 5
+  }
+  return 'transparent'; // fallback
+};
 
 // Column definitions using new components - reordered and enhanced
 const columns: Column<Anomaly>[] = [
@@ -522,7 +535,10 @@ const columns: Column<Anomaly>[] = [
     accessorKey: "process_safety",
     cell: ({ row }) => (
       <div className="flex items-center justify-center">
-        <div className="w-8 h-8 rounded-lg bg-zinc-100 flex items-center justify-center">
+        <div 
+          className="w-8 h-8 rounded-lg flex items-center justify-center"
+          style={{ backgroundColor: getRedOpacity(row.original.process_safety) }}
+        >
           <span className="text-sm font-medium text-zinc-900">
             {row.original.process_safety}
           </span>
@@ -539,7 +555,10 @@ const columns: Column<Anomaly>[] = [
     accessorKey: "fiabilite_integrite",
     cell: ({ row }) => (
       <div className="flex items-center justify-center">
-        <div className="w-8 h-8 rounded-lg bg-zinc-100 flex items-center justify-center">
+        <div 
+          className="w-8 h-8 rounded-lg flex items-center justify-center"
+          style={{ backgroundColor: getRedOpacity(row.original.fiabilite_integrite) }}
+        >
           <span className="text-sm font-medium text-zinc-900">
             {row.original.fiabilite_integrite}
           </span>
@@ -556,7 +575,10 @@ const columns: Column<Anomaly>[] = [
     accessorKey: "disponibilite",
     cell: ({ row }) => (
       <div className="flex items-center justify-center">
-        <div className="w-8 h-8 rounded-lg bg-zinc-100 flex items-center justify-center">
+        <div 
+          className="w-8 h-8 rounded-lg flex items-center justify-center"
+          style={{ backgroundColor: getRedOpacity(row.original.disponibilite) }}
+        >
           <span className="text-sm font-medium text-zinc-900">
             {row.original.disponibilite}
           </span>
@@ -669,6 +691,11 @@ const config: DataTableConfig<Anomaly> = {
   pageSize: 10,
   searchPlaceholder: "Search anomalies...",
   searchableColumns: ["code", "equipment", "description", "origin"],
+  // Default sorting: Critical anomalies first (highest criticality first)
+  defaultSort: {
+    field: "criticality",
+    direction: "desc", // Descending order (highest criticality first)
+  },
   // Default visible columns (most important ones in new order)
   defaultColumnVisibility: {
     code: true,
