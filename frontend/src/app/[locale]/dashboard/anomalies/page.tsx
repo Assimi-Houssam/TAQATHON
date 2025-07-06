@@ -760,22 +760,12 @@ export default function AnomaliesPage() {
           <p className="text-zinc-600 mt-1">Monitor equipment anomalies with detailed criticality assessment</p>
         </div>
         <div className="flex gap-3">
-          <Button 
-            variant="outline" 
-            size="sm"
-            onClick={() => router.push("/dashboard/anomalies/batch-upload")}
-            className="text-zinc-600 border-zinc-300 hover:bg-zinc-50 hover:border-zinc-400 font-medium"
-          >
-            <FileText className="h-4 w-4 mr-2" />
-            Batch Upload
-          </Button>
-          <Button 
-            size="sm"
+        <Button 
             onClick={() => router.push("/dashboard/anomalies/new")}
-            className="bg-blue-600 hover:bg-blue-700 text-white font-medium shadow-sm"
+            className="bg-blue-600 hover:bg-blue-700 text-white flex items-center gap-2"
           >
-            <Plus className="h-4 w-4 mr-2" />
-            New Anomaly
+            <Plus className="w-4 h-4" />
+            Add Anomalies
           </Button>
         </div>
       </div>
