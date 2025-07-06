@@ -156,9 +156,9 @@ export function AppSidebar() {
             isLoading || userLoading ? "opacity-0" : "opacity-100"
           }`}
         >
-          <div className="md:p-6 p-2">
+          {/* <div className="md:p-6 p-2">
             <Logo />
-          </div>
+          </div> */}
         </div>
       </SidebarHeader>
       <SidebarContent className="bg-white flex flex-col justify-between h-full">

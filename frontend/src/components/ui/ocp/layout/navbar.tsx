@@ -34,9 +34,9 @@ const Navbar = () => {
           onClick={() => toggleSidebar()}
         />
         <Logo />
-        <div className="xl:flex hidden items-center gap-16">
+        {/* <div className="xl:flex hidden items-center gap-16">
           <SearchBar />
-        </div>
+        </div> */}
       </div>
       <div className="flex flex-row-reverse items-center gap-4">
         <UserIcon />

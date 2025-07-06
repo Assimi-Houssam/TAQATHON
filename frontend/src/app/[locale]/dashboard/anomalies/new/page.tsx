@@ -9,30 +9,31 @@ import { Textarea } from "@/components/ui/textarea";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
 } from "@/components/ui/select";
 import { useState, useEffect, useRef } from "react";
-import { 
-  ArrowLeft, 
-  ArrowRight, 
-  Send, 
-  Upload, 
-  CheckCircle, 
-  Loader2, 
-  Star, 
-  Plus, 
-  X, 
+import {
+  ArrowLeft,
+  ArrowRight,
+  Send,
+  Upload,
+  CheckCircle,
+  Loader2,
+  Star,
+  Plus,
+  X,
   Download,
   FileText,
   AlertTriangle,
   AlertCircle,
   Info,
-  FileSpreadsheet
+  FileSpreadsheet,
+  ChevronDown
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -43,11 +44,11 @@ interface FormData {
   description: string;
   date_apparition: string;
   origin: string;
-  
+
   // Step 2 - Secondary
   code: string;
   file?: File;
-  
+
   // Step 4 - AI Generated
   process_safety: number;
   fiabilite_integrite: number;
@@ -83,20 +84,26 @@ export default function AddAnomaliesPage() {
   const t = useTranslations("sidebar.pages");
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  
+
   // New Anomaly Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
+
   // Batch Upload State
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const [previewRecords, setPreviewRecords] = useState<PreviewRecord[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [showPreview, setShowPreview] = useState(false);
-  
+  const [isDragOver, setIsDragOver] = useState(false);
+  const [uploadComplete, setUploadComplete] = useState(false);
+  const [isRequiredFieldsOpen, setIsRequiredFieldsOpen] = useState(true);
+  const [selectedMethod, setSelectedMethod] = useState<'batch' | 'single' | null>(null);
+  const [isBatchModalOpen, setIsBatchModalOpen] = useState(false);
+  const [batchCurrentStep, setBatchCurrentStep] = useState(1);
+
   const [formData, setFormData] = useState<FormData>({
     equipment: "",
     description: "",
@@ -139,12 +146,36 @@ export default function AddAnomaliesPage() {
       num_equipments: "",
       unite: "Production Unit C",
       systeme: "Vibration Monitoring",
-      descreption_anomalie: "Missing equipment number",
-      origine: "Unknown",
+      descreption_anomalie: "Excessive vibration detected in pump bearing",
+      origine: "Mechanical Wear",
       section_proprietaire: "",
       Criticite: "HIGH",
       status: "invalid",
-      errors: ["Equipment number is required", "Owner section is required"]
+      errors: ["Equipment number missing", "Owner section required"]
+    },
+    {
+      id: "4",
+      num_equipments: "EQ-004",
+      unite: "Production Unit D",
+      systeme: "Flow Control",
+      descreption_anomalie: "Flow rate below minimum threshold",
+      origine: "Blockage",
+      section_proprietaire: "Operations",
+      Criticite: "INVALID_VALUE",
+      status: "invalid",
+      errors: ["Criticality must be LOW, MEDIUM, or HIGH"]
+    },
+    {
+      id: "5",
+      num_equipments: "EQ-005",
+      unite: "",
+      systeme: "Safety System",
+      descreption_anomalie: "Emergency stop button not responding",
+      origine: "Electrical Issue",
+      section_proprietaire: "Safety",
+      Criticite: "HIGH",
+      status: "invalid",
+      errors: ["Unit field cannot be empty"]
     }
   ];
 
@@ -157,7 +188,7 @@ export default function AddAnomaliesPage() {
 
   const validateStep1 = () => {
     const newErrors: Record<string, string> = {};
-    
+
     if (!formData.equipment.trim()) {
       newErrors.equipment = "Equipment name is required";
     }
@@ -170,7 +201,7 @@ export default function AddAnomaliesPage() {
     if (!formData.origin) {
       newErrors.origin = "Origin is required";
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -179,11 +210,11 @@ export default function AddAnomaliesPage() {
     if (currentStep === 1 && !validateStep1()) {
       return;
     }
-    
+
     if (currentStep === 2) {
       setCurrentStep(3);
       setIsLoading(true);
-      
+
       setTimeout(() => {
         setFormData(prev => ({
           ...prev,
@@ -207,7 +238,7 @@ export default function AddAnomaliesPage() {
 
   const handleSubmit = async () => {
     setIsSubmitting(true);
-    
+
     try {
       await new Promise(resolve => setTimeout(resolve, 2000));
       console.log("Submitting anomaly:", formData);
@@ -234,51 +265,76 @@ export default function AddAnomaliesPage() {
   // Batch Upload Functions
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
-    
+    processFiles(files);
+  };
+
+  const processFiles = (files: File[]) => {
     files.forEach(file => {
+      // Validate file type
+      const validTypes = ['text/csv', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.ms-excel'];
+      if (!validTypes.includes(file.type)) {
+        alert(`Invalid file type: ${file.name}. Please upload CSV or Excel files.`);
+        return;
+      }
+
       const newFile: UploadedFile = {
         id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
         name: file.name,
         size: file.size,
         status: 'pending'
       };
-      
+
       setUploadedFiles(prev => [...prev, newFile]);
-      
+
       setTimeout(() => {
-        setUploadedFiles(prev => prev.map(f => 
+        setUploadedFiles(prev => prev.map(f =>
           f.id === newFile.id ? { ...f, status: 'processing' } : f
         ));
-        
+
         setTimeout(() => {
-          setUploadedFiles(prev => prev.map(f => 
-            f.id === newFile.id 
-              ? { 
-                  ...f, 
-                  status: 'success',
-                  recordsTotal: 25,
-                  recordsProcessed: 25,
-                  recordsValid: 22,
-                  recordsInvalid: 3
-                }
+          setUploadedFiles(prev => prev.map(f =>
+            f.id === newFile.id
+              ? {
+                ...f,
+                status: 'success',
+                recordsTotal: 25,
+                recordsProcessed: 25,
+                recordsValid: 22,
+                recordsInvalid: 3
+              }
               : f
           ));
           setPreviewRecords(mockPreviewRecords);
           setShowPreview(true);
+          setIsRequiredFieldsOpen(false); // Auto-close required fields when preview shows
+          
+          // Auto-advance to step 2 after a short delay when file processing is complete
+          setTimeout(() => {
+            if (isBatchModalOpen && batchCurrentStep === 1) {
+              setBatchCurrentStep(2);
+            }
+          }, 1000);
         }, 2000);
       }, 1000);
     });
   };
 
-  const handleUpload = () => {
+    const handleUpload = () => {
     setIsUploading(true);
     setUploadProgress(0);
+    setIsRequiredFieldsOpen(false); // Auto-close required fields when upload starts
+    
+    // Auto-advance to step 3 in batch modal if open
+    if (isBatchModalOpen && batchCurrentStep === 2) {
+      setBatchCurrentStep(3);
+    }
     
     const interval = setInterval(() => {
       setUploadProgress(prev => {
         if (prev >= 100) {
           clearInterval(interval);
           setIsUploading(false);
+          setUploadComplete(true);
           return 100;
         }
         return prev + 10;
@@ -296,6 +352,17 @@ export default function AddAnomaliesPage() {
 
   const handleDownloadTemplate = () => {
     console.log("Downloading template...");
+    // Create a sample CSV template
+    const csvContent = "num_equipments,descreption_anomalie,section_proprietaire,Criticite,unite,systeme,origine,fiablite_integrite,disponsibilite,process_safty\nEQ-001,Pressure sensor showing irregular readings,Production,HIGH,Production Unit A,Pressure Control System,Sensor Malfunction,3,4,2\nEQ-002,Temperature fluctuations outside normal range,Maintenance,MEDIUM,Production Unit B,Temperature Control,Calibration Drift,2,3,1";
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'anomaly_template.csv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
   };
 
   const formatFileSize = (bytes: number) => {
@@ -331,6 +398,41 @@ export default function AddAnomaliesPage() {
     resetForm();
   };
 
+  const openBatchModal = () => {
+    setIsBatchModalOpen(true);
+    setBatchCurrentStep(1);
+    setUploadedFiles([]);
+    setPreviewRecords([]);
+    setShowPreview(false);
+    setUploadComplete(false);
+    setIsRequiredFieldsOpen(true);
+  };
+
+  const closeBatchModal = () => {
+    setIsBatchModalOpen(false);
+    setBatchCurrentStep(1);
+    setUploadedFiles([]);
+    setPreviewRecords([]);
+    setShowPreview(false);
+    setUploadComplete(false);
+  };
+
+  const handleBatchNext = () => {
+    if (batchCurrentStep === 1 && uploadedFiles.length === 0) {
+      alert("Please upload at least one file before proceeding.");
+      return;
+    }
+    if (batchCurrentStep < 3) {
+      setBatchCurrentStep(batchCurrentStep + 1);
+    }
+  };
+
+  const handleBatchPrevious = () => {
+    if (batchCurrentStep > 1) {
+      setBatchCurrentStep(batchCurrentStep - 1);
+    }
+  };
+
   const StepIndicator = () => (
     <div className="flex items-center justify-center mb-6">
       {[1, 2, 3, 4].map((step) => (
@@ -350,6 +452,49 @@ export default function AddAnomaliesPage() {
               className={cn(
                 "w-12 h-0.5 mx-2 transition-all duration-300",
                 step < currentStep ? "bg-blue-600" : "bg-gray-200"
+              )}
+            />
+          )}
+        </div>
+      ))}
+    </div>
+  );
+
+  const BatchStepIndicator = () => (
+    <div className="flex items-center justify-center mb-8">
+      {[
+        { number: 1, icon: Upload, label: "Upload" },
+        { number: 2, icon: CheckCircle, label: "Review" },
+        { number: 3, icon: Send, label: "Complete" }
+      ].map((step, index) => (
+        <div key={step.number} className="flex items-center">
+          <div className="flex flex-col items-center">
+            <div
+              className={cn(
+                "w-10 h-10 rounded-xl flex items-center justify-center text-sm font-medium transition-all duration-300 border-2",
+                step.number <= batchCurrentStep
+                  ? "bg-blue-600 text-white border-blue-600 shadow-lg shadow-blue-200"
+                  : "bg-white text-gray-400 border-gray-200 hover:border-gray-300"
+              )}
+            >
+              {step.number < batchCurrentStep ? (
+                <CheckCircle className="w-4 h-4" />
+              ) : (
+                <step.icon className="w-4 h-4" />
+              )}
+            </div>
+            <span className={cn(
+              "text-xs font-medium mt-1.5 transition-colors duration-300",
+              step.number <= batchCurrentStep ? "text-blue-600" : "text-gray-400"
+            )}>
+              {step.label}
+            </span>
+          </div>
+          {index < 2 && (
+            <div
+              className={cn(
+                "w-16 h-px mx-3 transition-all duration-300",
+                step.number < batchCurrentStep ? "bg-blue-600" : "bg-gray-200"
               )}
             />
           )}
@@ -381,7 +526,7 @@ export default function AddAnomaliesPage() {
 
   return (
     <div className="container mx-auto px-4 py-6">
-      <div className="mb-8 pb-6 border-b border-gray-200">
+            <div className="mb-8 pb-6 border-b border-gray-200">
         <div className="flex items-center gap-3 mb-4">
           <Button 
             variant="ghost" 
@@ -400,304 +545,98 @@ export default function AddAnomaliesPage() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold text-gray-900 mb-1">Add Anomalies</h1>
-            <p className="text-sm text-gray-600">Upload multiple anomalies using CSV or Excel files, or add individual anomalies</p>
+            <p className="text-sm text-gray-600">Choose your preferred method to add anomalies to the system</p>
           </div>
-          <Button 
-            onClick={openModal}
-            className="bg-blue-600 hover:bg-blue-700 text-white flex items-center gap-2"
-          >
-            <Plus className="w-4 h-4" />
-            Add Single Anomaly
-          </Button>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Upload Section */}
-        <div className="lg:col-span-2 space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Upload className="h-5 w-5" />
-                Batch File Upload
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <Alert>
-                <Info className="h-4 w-4" />
-                <AlertDescription>
-                  Upload CSV or Excel files containing anomaly data. Make sure your files follow the required format.
-                </AlertDescription>
-              </Alert>
-              
-              <div className="flex gap-4">
-                <Button 
-                  variant="outline"
-                  onClick={() => fileInputRef.current?.click()}
-                  className="flex-1"
-                >
-                  <Upload className="h-4 w-4 mr-2" />
-                  Select Files
-                </Button>
-                <Button 
-                  variant="outline"
-                  onClick={handleDownloadTemplate}
-                >
-                  <Download className="h-4 w-4 mr-2" />
-                  Download Template
-                </Button>
+      {/* Method Selection Cards */}
+      <div className="mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Card 
+            className={cn(
+              "border-2 border-dashed transition-colors cursor-pointer group",
+              selectedMethod === 'batch' 
+                ? "border-blue-500 bg-blue-50" 
+                : "border-gray-200 hover:border-blue-300"
+            )}
+            onClick={() => {
+              setSelectedMethod('batch');
+              openBatchModal();
+            }}
+          >
+            <CardContent className="p-6 text-center">
+              <div className={cn(
+                "w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 transition-colors",
+                selectedMethod === 'batch' 
+                  ? "bg-blue-600 text-white" 
+                  : "bg-blue-100 text-blue-600 group-hover:bg-blue-200"
+              )}>
+                <FileSpreadsheet className="w-8 h-8" />
               </div>
-              
-              <Input
-                ref={fileInputRef}
-                type="file"
-                accept=".csv,.xlsx,.xls"
-                multiple
-                onChange={handleFileSelect}
-                className="hidden"
-              />
-              
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
-                <FileSpreadsheet className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-600 mb-2">Drag and drop files here or click "Select Files"</p>
-                <p className="text-sm text-gray-500">Supported formats: CSV, Excel (.xlsx, .xls)</p>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Batch Upload</h3>
+              <p className="text-sm text-gray-600 mb-4">Upload multiple anomalies at once using CSV or Excel files</p>
+              <div className="flex items-center justify-center gap-2 text-sm text-gray-500">
+                <span>•</span>
+                <span>Faster for multiple records</span>
+                <span>•</span>
+                <span>Template provided</span>
               </div>
-            </CardContent>
-          </Card>
-
-          {/* Uploaded Files */}
-          {uploadedFiles.length > 0 && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Uploaded Files</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {uploadedFiles.map((file) => (
-                    <div key={file.id} className="flex items-center justify-between p-3 border rounded-lg">
-                      <div className="flex items-center gap-3">
-                        <FileText className="h-5 w-5 text-gray-500" />
-                        <div>
-                          <p className="font-medium">{file.name}</p>
-                          <p className="text-sm text-gray-500">{formatFileSize(file.size)}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        {file.status === 'pending' && (
-                          <Badge variant="secondary">Pending</Badge>
-                        )}
-                        {file.status === 'processing' && (
-                          <Badge variant="outline">Processing...</Badge>
-                        )}
-                        {file.status === 'success' && (
-                          <div className="flex items-center gap-2">
-                            <CheckCircle className="h-4 w-4 text-green-500" />
-                            <span className="text-sm text-gray-600">
-                              {file.recordsValid}/{file.recordsTotal} valid
-                            </span>
-                          </div>
-                        )}
-                        {file.status === 'error' && (
-                          <div className="flex items-center gap-2">
-                            <AlertCircle className="h-4 w-4 text-red-500" />
-                            <Badge variant="destructive">Error</Badge>
-                          </div>
-                        )}
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleRemoveFile(file.id)}
-                        >
-                          <X className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Preview Section */}
-          {showPreview && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center justify-between">
-                  <span>Data Preview</span>
-                  <div className="flex gap-2">
-                    <Badge variant="outline" className="bg-green-50">
-                      {validRecords.length} Valid
-                    </Badge>
-                    <Badge variant="outline" className="bg-red-50">
-                      {invalidRecords.length} Invalid
-                    </Badge>
-                  </div>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {previewRecords.map((record) => (
-                    <div key={record.id} className={`p-4 border rounded-lg ${
-                      record.status === 'valid' ? 'border-green-200 bg-green-50' : 
-                      record.status === 'invalid' ? 'border-red-200 bg-red-50' : 
-                      'border-yellow-200 bg-yellow-50'
-                    }`}>
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-2">
-                            {record.status === 'valid' && <CheckCircle className="h-4 w-4 text-green-500" />}
-                            {record.status === 'invalid' && <AlertCircle className="h-4 w-4 text-red-500" />}
-                            {record.status === 'warning' && <AlertTriangle className="h-4 w-4 text-yellow-500" />}
-                            <span className="font-medium">{record.num_equipments}</span>
-                          </div>
-                          <p className="text-sm text-gray-600 mb-2">{record.descreption_anomalie}</p>
-                          <div className="flex gap-2">
-                            <Badge variant="outline">{record.Criticite}</Badge>
-                            <Badge variant="outline">{record.unite}</Badge>
-                            <Badge variant="outline">{record.systeme}</Badge>
-                          </div>
-                          {record.errors && record.errors.length > 0 && (
-                            <div className="mt-2">
-                              <p className="text-sm font-medium text-red-700">Errors:</p>
-                              <ul className="text-sm text-red-600 list-disc list-inside">
-                                {record.errors.map((error, idx) => (
-                                  <li key={idx}>{error}</li>
-                                ))}
-                              </ul>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          )}
-        </div>
-
-        {/* Sidebar */}
-        <div className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Upload Summary</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">Files uploaded:</span>
-                  <span className="text-sm font-medium">{uploadedFiles.length}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">Total records:</span>
-                  <span className="text-sm font-medium">{previewRecords.length}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">Valid records:</span>
-                  <span className="text-sm font-medium text-green-600">{validRecords.length}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">Invalid records:</span>
-                  <span className="text-sm font-medium text-red-600">{invalidRecords.length}</span>
-                </div>
-              </div>
-              
-              {isUploading && (
-                <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span>Uploading...</span>
-                    <span>{uploadProgress}%</span>
-                  </div>
-                  <Progress value={uploadProgress} className="w-full" />
+              {selectedMethod === 'batch' && (
+                <div className="mt-4">
+                  <Badge className="bg-blue-600 text-white">Selected</Badge>
                 </div>
               )}
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Required Fields</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2 text-sm">
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-                  <span>num_equipments</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-                  <span>descreption_anomalie</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-                  <span>section_proprietaire</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-                  <span>Criticite</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
-                  <span>unite</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
-                  <span>systeme</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
-                  <span>origine</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
-                  <span>fiablite_integrite</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
-                  <span>disponsibilite</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
-                  <span>process_safty</span>
-                </div>
+          <Card 
+            className={cn(
+              "border-2 border-dashed transition-colors cursor-pointer group",
+              selectedMethod === 'single' 
+                ? "border-green-500 bg-green-50" 
+                : "border-gray-200 hover:border-green-300"
+            )}
+            onClick={() => {
+              setSelectedMethod('single');
+              openModal();
+            }}
+          >
+            <CardContent className="p-6 text-center">
+              <div className={cn(
+                "w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 transition-colors",
+                selectedMethod === 'single' 
+                  ? "bg-green-600 text-white" 
+                  : "bg-green-100 text-green-600 group-hover:bg-green-200"
+              )}>
+                <Plus className="w-8 h-8" />
               </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Single Anomaly</h3>
+              <p className="text-sm text-gray-600 mb-4">Add one anomaly at a time with guided form</p>
+              <div className="flex items-center justify-center gap-2 text-sm text-gray-500">
+                <span>•</span>
+                <span>Step-by-step guidance</span>
+                <span>•</span>
+                <span>AI-powered analysis</span>
+              </div>
+              {selectedMethod === 'single' && (
+                <div className="mt-4">
+                  <Badge className="bg-green-600 text-white">Selected</Badge>
+                </div>
+              )}
             </CardContent>
           </Card>
-
-          {validRecords.length > 0 && (
-            <Card>
-              <CardContent className="pt-6">
-                <Button 
-                  onClick={handleUpload}
-                  disabled={isUploading}
-                  className="w-full"
-                >
-                  {isUploading ? (
-                    <>
-                      <Upload className="h-4 w-4 mr-2" />
-                      Uploading...
-                    </>
-                  ) : (
-                    <>
-                      <Upload className="h-4 w-4 mr-2" />
-                      Upload {validRecords.length} Valid Records
-                    </>
-                  )}
-                </Button>
-              </CardContent>
-            </Card>
-          )}
         </div>
       </div>
 
       {/* Individual Anomaly Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div 
+          <div
             className="absolute inset-0 bg-black/50 backdrop-blur-sm"
             onClick={closeModal}
           />
-          
+
           <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-300">
             <div className="sticky top-0 bg-white border-b border-gray-200 rounded-t-2xl p-6">
               <div className="flex items-center justify-between">
@@ -727,7 +666,7 @@ export default function AddAnomaliesPage() {
                       <h3 className="text-lg font-semibold text-gray-900 mb-2">Mandatory Information</h3>
                       <p className="text-sm text-gray-600">Please provide the required details about the anomaly</p>
                     </div>
-                    
+
                     <div>
                       <Label htmlFor="equipment" className="text-sm font-medium text-gray-700">
                         Equipment Name *
@@ -819,7 +758,7 @@ export default function AddAnomaliesPage() {
                       <h3 className="text-lg font-semibold text-gray-900 mb-2">Additional Details</h3>
                       <p className="text-sm text-gray-600">Optional information to enhance your report</p>
                     </div>
-                    
+
                     <div>
                       <Label htmlFor="code" className="text-sm font-medium text-gray-700">
                         Code (Optional)
@@ -904,16 +843,16 @@ export default function AddAnomaliesPage() {
                     </div>
 
                     <div className="grid gap-4">
-                      <RatingDisplay 
-                        value={formData.process_safety} 
+                      <RatingDisplay
+                        value={formData.process_safety}
                         label="Process Safety"
                       />
-                      <RatingDisplay 
-                        value={formData.fiabilite_integrite} 
+                      <RatingDisplay
+                        value={formData.fiabilite_integrite}
                         label="Reliability & Integrity"
                       />
-                      <RatingDisplay 
-                        value={formData.disponibilite} 
+                      <RatingDisplay
+                        value={formData.disponibilite}
                         label="Availability"
                       />
                     </div>
@@ -921,7 +860,7 @@ export default function AddAnomaliesPage() {
                     <div className="bg-blue-50 rounded-lg p-4">
                       <h4 className="font-medium text-blue-900 mb-2">Summary</h4>
                       <p className="text-sm text-blue-800">
-                        Based on the analysis, this anomaly has been classified with the above criticality scores. 
+                        Based on the analysis, this anomaly has been classified with the above criticality scores.
                         Please review and confirm to submit the anomaly report.
                       </p>
                     </div>
@@ -972,6 +911,361 @@ export default function AddAnomaliesPage() {
                     )}
                   </div>
                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Batch Upload Modal */}
+      {isBatchModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div 
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            onClick={closeBatchModal}
+          />
+          
+          <div className="relative bg-white rounded-2xl shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-300 border border-gray-100">
+            <div className="sticky top-0 bg-white/95 backdrop-blur-sm border-b border-gray-100 rounded-t-2xl p-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center">
+                    <FileSpreadsheet className="w-5 h-5 text-blue-600" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-semibold text-gray-900">Batch Upload</h2>
+                    <p className="text-sm text-gray-500">Upload multiple anomalies using CSV or Excel files</p>
+                  </div>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={closeBatchModal}
+                  className="h-8 w-8 p-0 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all duration-200"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+
+            <div className="p-5">
+              <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-100">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                    <span className="text-sm font-semibold text-blue-600">{batchCurrentStep}</span>
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900">
+                      {batchCurrentStep === 1 ? "Upload Your Files" :
+                       batchCurrentStep === 2 ? "Review Your Data" :
+                       uploadComplete ? "Upload Complete" : "Uploading Data"}
+                    </h3>
+                    <p className="text-xs text-gray-500">
+                      {batchCurrentStep === 1 ? "Upload CSV or Excel files containing your anomaly data" :
+                       batchCurrentStep === 2 ? "Confirm the validation results before uploading" :
+                       uploadComplete ? "Successfully processed your anomaly records" : "Processing your anomaly records..."}
+                    </p>
+                  </div>
+                </div>
+                <div className="text-xs text-gray-400 font-medium">
+                  Step {batchCurrentStep} of 3
+                </div>
+              </div>
+
+              <BatchStepIndicator />
+
+              <div className="space-y-6">
+                {/* Step 1: Upload Files */}
+                {batchCurrentStep === 1 && (
+                  <div className="space-y-6">
+
+                    <div className="max-w-2xl mx-auto space-y-5">
+                      <div className="flex justify-center">
+                        <Button 
+                          onClick={handleDownloadTemplate}
+                          variant="outline"
+                          size="sm"
+                          className="h-10 px-4 border-2 border-dashed border-gray-300 hover:border-blue-400 hover:bg-blue-50 transition-all duration-200 rounded-lg"
+                        >
+                          <Download className="h-4 w-4 mr-2 text-blue-600" />
+                          <span className="font-medium">Download Template</span>
+                        </Button>
+                      </div>
+
+                      <div className="relative">
+                        <Input
+                          ref={fileInputRef}
+                          type="file"
+                          accept=".csv,.xlsx,.xls"
+                          multiple
+                          onChange={handleFileSelect}
+                          className="hidden"
+                        />
+                        
+                        <div 
+                          className={cn(
+                            "group border-2 border-dashed rounded-2xl p-12 text-center transition-all duration-300 cursor-pointer relative overflow-hidden",
+                            isDragOver 
+                              ? "border-blue-400 bg-blue-50 scale-[1.01]" 
+                              : "border-gray-200 hover:border-blue-300 hover:bg-gray-50"
+                          )}
+                          onDragOver={(e) => {
+                            e.preventDefault();
+                            setIsDragOver(true);
+                          }}
+                          onDragLeave={(e) => {
+                            e.preventDefault();
+                            setIsDragOver(false);
+                          }}
+                          onDrop={(e) => {
+                            e.preventDefault();
+                            setIsDragOver(false);
+                            const files = Array.from(e.dataTransfer.files);
+                            processFiles(files);
+                          }}
+                          onClick={() => fileInputRef.current?.click()}
+                        >
+                          <div className={cn(
+                            "w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-4 transition-all duration-300",
+                            isDragOver 
+                              ? "bg-blue-600 text-white shadow-lg shadow-blue-200" 
+                              : "bg-gray-100 text-gray-400 group-hover:bg-blue-100 group-hover:text-blue-600"
+                          )}>
+                            <Upload className="w-6 h-6" />
+                          </div>
+                          <h4 className={cn(
+                            "text-lg font-semibold mb-2 transition-colors duration-300",
+                            isDragOver ? "text-blue-700" : "text-gray-900"
+                          )}>
+                            {isDragOver ? "Drop files here" : "Drag & drop files"}
+                          </h4>
+                          <p className="text-gray-500 text-sm mb-4">or click to browse your computer</p>
+                          <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-white rounded-lg border border-gray-200 shadow-sm">
+                            <FileSpreadsheet className="w-4 h-4 text-gray-400" />
+                            <span className="text-xs text-gray-600">CSV, XLSX, XLS files</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {uploadedFiles.length > 0 && (
+                        <div className="space-y-3">
+                          <div className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                            <FileText className="w-4 h-4" />
+                            Uploaded Files ({uploadedFiles.length})
+                          </div>
+                          <div className="space-y-2">
+                            {uploadedFiles.map((file) => (
+                              <div key={file.id} className={cn(
+                                "flex items-center justify-between p-3 rounded-xl border transition-all duration-200",
+                                file.status === 'success' ? "bg-green-50 border-green-200" :
+                                file.status === 'processing' ? "bg-blue-50 border-blue-200" :
+                                "bg-gray-50 border-gray-200"
+                              )}>
+                                <div className="flex items-center gap-3">
+                                  <div className={cn(
+                                    "w-8 h-8 rounded-lg flex items-center justify-center",
+                                    file.status === 'processing' ? "bg-blue-100" :
+                                    file.status === 'success' ? "bg-green-100" :
+                                    "bg-gray-100"
+                                  )}>
+                                    {file.status === 'processing' ? (
+                                      <Loader2 className="h-4 w-4 text-blue-600 animate-spin" />
+                                    ) : file.status === 'success' ? (
+                                      <CheckCircle className="h-4 w-4 text-green-600" />
+                                    ) : (
+                                      <FileText className="h-4 w-4 text-gray-600" />
+                                    )}
+                                  </div>
+                                  <div>
+                                    <p className="font-medium text-gray-900 text-sm">{file.name}</p>
+                                    <p className="text-xs text-gray-500">{formatFileSize(file.size)}</p>
+                                  </div>
+                                </div>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => handleRemoveFile(file.id)}
+                                  className="h-7 w-7 p-0 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all duration-200"
+                                >
+                                  <X className="h-3.5 w-3.5" />
+                                </Button>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Step 2: Review Results */}
+                {batchCurrentStep === 2 && (
+                  <div className="space-y-6">
+
+                    <div className="max-w-2xl mx-auto space-y-5">
+                      <div className="grid grid-cols-3 gap-4">
+                        <div className="text-center p-4 bg-white rounded-2xl border-2 border-gray-100 hover:border-gray-200 transition-all duration-200">
+                          <div className="w-8 h-8 bg-gray-100 rounded-xl flex items-center justify-center mx-auto mb-3">
+                            <FileText className="w-4 h-4 text-gray-600" />
+                          </div>
+                          <div className="text-2xl font-bold text-gray-900 mb-1">{previewRecords.length}</div>
+                          <div className="text-gray-600 font-medium text-sm">Total Records</div>
+                        </div>
+                        <div className="text-center p-4 bg-white rounded-2xl border-2 border-blue-100 hover:border-blue-200 transition-all duration-200">
+                          <div className="w-8 h-8 bg-blue-100 rounded-xl flex items-center justify-center mx-auto mb-3">
+                            <CheckCircle className="w-4 h-4 text-blue-600" />
+                          </div>
+                          <div className="text-2xl font-bold text-blue-600 mb-1">{validRecords.length}</div>
+                          <div className="text-blue-700 font-medium text-sm">Valid Records</div>
+                        </div>
+                        <div className="text-center p-4 bg-white rounded-2xl border-2 border-gray-100 hover:border-gray-200 transition-all duration-200">
+                          <div className="w-8 h-8 bg-gray-100 rounded-xl flex items-center justify-center mx-auto mb-3">
+                            <AlertCircle className="w-4 h-4 text-gray-600" />
+                          </div>
+                          <div className="text-2xl font-bold text-gray-600 mb-1">{invalidRecords.length}</div>
+                          <div className="text-gray-700 font-medium text-sm">Invalid Records</div>
+                        </div>
+                      </div>
+
+                      {invalidRecords.length === 0 ? (
+                        <div className="text-center p-6 bg-blue-50 rounded-2xl border-2 border-blue-200">
+                          <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+                            <CheckCircle className="w-6 h-6 text-blue-600" />
+                          </div>
+                          <h4 className="text-lg font-semibold text-gray-900 mb-2">All Records Valid</h4>
+                          <p className="text-gray-600 text-sm">Ready to upload {validRecords.length} anomaly records</p>
+                        </div>
+                      ) : (
+                        <div className="text-center p-6 bg-gray-50 rounded-2xl border-2 border-gray-200">
+                          <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+                            <AlertTriangle className="w-6 h-6 text-gray-600" />
+                          </div>
+                          <h4 className="text-lg font-semibold text-gray-900 mb-2">Validation Errors Found</h4>
+                          <p className="text-gray-600 text-sm mb-3">
+                            {validRecords.length} records ready, {invalidRecords.length} need corrections
+                          </p>
+                          <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-white rounded-lg border border-gray-200">
+                            <Info className="w-4 h-4 text-gray-500" />
+                            <span className="text-xs text-gray-600">
+                              {(() => {
+                                const errorTypes = invalidRecords.flatMap(r => r.errors || []);
+                                const missingFields = errorTypes.filter(e => e.includes('missing') || e.includes('empty')).length;
+                                const invalidValues = errorTypes.filter(e => e.includes('must be') || e.includes('INVALID')).length;
+                                
+                                if (missingFields > 0 && invalidValues > 0) {
+                                  return `${missingFields} missing fields, ${invalidValues} invalid values`;
+                                } else if (missingFields > 0) {
+                                  return `${missingFields} required fields missing`;
+                                } else if (invalidValues > 0) {
+                                  return `${invalidValues} invalid format values`;
+                                } else {
+                                  return 'Check data format and try again';
+                                }
+                              })()}
+                            </span>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Step 3: Upload Complete */}
+                {batchCurrentStep === 3 && (
+                  <div className="space-y-6">
+                    {!uploadComplete ? (
+                      <div className="text-center space-y-5">
+                        <div className="space-y-4">
+                          <div className="relative">
+                            <div className="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto relative">
+                              <div className="absolute inset-0 bg-blue-200 rounded-2xl animate-ping opacity-30"></div>
+                              <Upload className="w-8 h-8 text-blue-600 relative z-10" />
+                            </div>
+                          </div>
+                          <div>
+                            <h3 className="text-2xl font-semibold text-gray-900 mb-2">Uploading Your Data</h3>
+                            <p className="text-gray-500 text-sm">Processing {validRecords.length} anomaly records...</p>
+                          </div>
+                        </div>
+
+                        <div className="max-w-md mx-auto space-y-3">
+                          <div className="relative">
+                            <Progress value={uploadProgress} className="w-full h-2 bg-gray-100" />
+                            <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full opacity-20 animate-pulse" 
+                                 style={{ width: `${uploadProgress}%` }}></div>
+                          </div>
+                          <div className="flex justify-between items-center text-sm">
+                            <span className="text-gray-600">Progress</span>
+                            <span className="font-semibold text-blue-600">{uploadProgress}% complete</span>
+                          </div>
+                          <div className="flex justify-between items-center text-xs text-gray-500">
+                            <span>Records processed</span>
+                            <span>{Math.round((uploadProgress / 100) * validRecords.length)} of {validRecords.length}</span>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="text-center space-y-6">
+                        <div className="relative">
+                          <div className="w-20 h-20 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto relative">
+                            <div className="absolute inset-0 bg-blue-200 rounded-2xl animate-ping opacity-30"></div>
+                            <CheckCircle className="w-10 h-10 text-blue-600 relative z-10" />
+                          </div>
+                        </div>
+                        
+                        <div className="space-y-3">
+                          <h3 className="text-2xl font-semibold text-gray-900">Upload Complete!</h3>
+                          <p className="text-gray-600 text-sm">
+                            Successfully uploaded <span className="font-semibold text-blue-600">{validRecords.length}</span> anomaly records
+                          </p>
+                        </div>
+
+                        <div className="max-w-xs mx-auto space-y-3">
+                          <Button 
+                            onClick={() => {
+                              closeBatchModal();
+                              router.push("/dashboard/anomalies");
+                            }}
+                            className="w-full h-10 text-sm font-semibold bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-lg shadow-blue-200 transition-all duration-200 rounded-xl"
+                            size="default"
+                          >
+                            <CheckCircle className="w-4 h-4 mr-2" />
+                            View Your Anomalies
+                          </Button>
+                          <Button 
+                            variant="outline"
+                            onClick={() => {
+                              setBatchCurrentStep(1);
+                              setUploadComplete(false);
+                              setUploadedFiles([]);
+                              setPreviewRecords([]);
+                              setShowPreview(false);
+                            }}
+                            className="w-full h-10 border-2 border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-all duration-200 rounded-xl"
+                            size="default"
+                          >
+                            <Plus className="w-4 h-4 mr-2" />
+                            Upload More Files
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Navigation Buttons */}
+                {batchCurrentStep === 2 && (
+                  <div className="flex justify-center pt-8 border-t border-gray-100">
+                    <Button
+                      onClick={handleUpload}
+                      className="px-8 py-3 text-base font-semibold transition-all duration-200 rounded-xl shadow-lg bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-blue-200"
+                      size="default"
+                    >
+                      <Send className="w-4 h-4 mr-2" />
+                      Upload {validRecords.length} Records
+                    </Button>
+                  </div>
+                )}
               </div>
             </div>
           </div>
