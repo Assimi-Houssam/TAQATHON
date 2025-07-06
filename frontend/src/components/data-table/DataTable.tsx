@@ -279,28 +279,37 @@ export function DataTable<T extends Record<string, any>>({
                       <p className="text-sm font-medium mb-2">{filterGroup.label}</p>
                       {filterGroup.options.map((option) => {
                         const isActive = activeFilters[filterGroup.key] === option.value;
+                        const toggleFilter = () => {
+                          if (isActive) {
+                            handleFilterChange(filterGroup.key, "");
+                          } else {
+                            handleFilterChange(filterGroup.key, option.value);
+                          }
+                        };
+                        
                         return (
                           <DropdownMenuItem
                             key={`${filterGroup.key}-${option.value}`}
-                            onClick={(e) => e.preventDefault()}
-                            className="cursor-default"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              toggleFilter();
+                            }}
+                            className="cursor-pointer"
                           >
                             <div className="flex items-center w-full">
                               <Checkbox
                                 id={`${filterGroup.key}-${option.value}`}
                                 checked={isActive}
-                                onCheckedChange={(checked) => {
-                                  if (checked) {
-                                    handleFilterChange(filterGroup.key, option.value);
-                                  } else {
-                                    handleFilterChange(filterGroup.key, "");
-                                  }
-                                }}
+                                onCheckedChange={toggleFilter}
                                 className="mr-2"
                               />
                               <label
                                 htmlFor={`${filterGroup.key}-${option.value}`}
                                 className="flex-1 cursor-pointer text-sm"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                }}
                               >
                                 {option.label}
                               </label>
