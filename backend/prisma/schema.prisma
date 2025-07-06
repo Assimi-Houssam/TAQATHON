@@ -23,44 +23,81 @@ model user {
 
 model anomaly {
   id          String   @id @default(cuid())
-  num_equipments String
+  num_equipments String?
+  duree_intervention String?
   unite      String?
   systeme   String?
   descreption_anomalie String?
   date_detection DateTime @default(now())
   origine String?
+  resolution_date DateTime?
   section_proprietaire String?
   fiablite_integrite String?
   disponsibilite String?
   process_safty String?
   Criticite String?
-  equipement_id String? @unique
-  equipement   equipement? @relation(fields: [equipement_id], references: [id]) 
-  atachments_id String? @unique
-  atachments   attachments? @relation(fields: [atachments_id], references: [id])
-  rex_id String? @unique
-  rex_entrie   rex_entrie? @relation(fields: [rex_id], references: [id])
+  status String?
+  rex_entrie   rex_entrie? 
+  action_plan  action_plan[]
+  atachments attachments[]
+  trained Boolean?
+  created_at DateTime @default(now())
+  maintenance_window_id String?@unique
+  maintenance_window maintenance_window? @relation(fields: [maintenance_window_id], references: [id])
 }
 
-model equipement {
-  id          String   @id @default(cuid())
-  name        String?
-  location   String?
-  tag_number String?
-  description String
-  anomalies   anomaly?
-}
+
 
 model attachments {
   id          String   @id @default(cuid())
   file_name   String?
   file_path   String?
-  anomalies anomaly[]
+  anomaly_id  String? 
+  anomaly     anomaly? @relation(fields: [anomaly_id], references: [id])
+}
+
+model action_plan {
+  id          String   @id @default(cuid())
+  Action String?
+  responsable String?
+  pdrs_disponible String?
+  resource_intern String?
+  resource_extern String?
+  status String?
+  anomaly_id String?
+  anomaly     anomaly? @relation(fields: [anomaly_id], references: [id])
+}
+
+model maintenance_window {
+  id          String   @id @default(cuid())
+  titlte String?
+  date_debut_arret DateTime?
+  date_fin_arret DateTime?
+  duree_jour String?
+  duree_heure String?
+  anomaly anomaly[]
+}
+
+model maintenance_files{
+  id          String   @id @default(cuid())
+  file_name   String?
+  file_path   String?
 }
 
 model rex_entrie {
   id          String   @id @default(cuid())
   summary     String?
   docment_path String?
-  anomalies anomaly?
+  anomalies_id String? @unique
+  anomalies   anomaly? @relation(fields: [anomalies_id], references: [id])
 }
+
+
+// sugeestion dial  old experience  we can use  gpt api
+
+
+// json fEILD FOR  action plan 
+
+// crtice is about the rank but need to  have a gap between them 
+
+
