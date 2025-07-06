@@ -980,18 +980,6 @@ export default function AddAnomaliesPage() {
                   <div className="space-y-6">
 
                     <div className="max-w-2xl mx-auto space-y-5">
-                      <div className="flex justify-center">
-                        <Button 
-                          onClick={handleDownloadTemplate}
-                          variant="outline"
-                          size="sm"
-                          className="h-10 px-4 border-2 border-dashed border-gray-300 hover:border-blue-400 hover:bg-blue-50 transition-all duration-200 rounded-lg"
-                        >
-                          <Download className="h-4 w-4 mr-2 text-blue-600" />
-                          <span className="font-medium">Download Template</span>
-                        </Button>
-                      </div>
-
                       <div className="relative">
                         <Input
                           ref={fileInputRef}
@@ -1025,6 +1013,21 @@ export default function AddAnomaliesPage() {
                           }}
                           onClick={() => fileInputRef.current?.click()}
                         >
+                          <div className="absolute top-4 right-4">
+                            <Button 
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDownloadTemplate();
+                              }}
+                              variant="ghost"
+                              size="sm"
+                              className="h-8 px-3 text-xs font-medium text-gray-500 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200 rounded-lg"
+                            >
+                              <Download className="h-3 w-3 mr-1.5" />
+                              Template
+                            </Button>
+                          </div>
+                          
                           <div className={cn(
                             "w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-4 transition-all duration-300",
                             isDragOver 
