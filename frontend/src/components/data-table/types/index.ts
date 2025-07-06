@@ -1,7 +1,14 @@
 // Base column definition interface
 export interface Column<T> {
+  id: string;
   header: string;
-  accessor: keyof T;
+  accessorKey?: keyof T;
+  cell?: (params: { row: { original: T } }) => React.ReactNode;
+  size?: number;
+  enableSorting?: boolean;
+  enableHiding?: boolean;
+  // Legacy support
+  accessor?: keyof T;
   width?: string;
   render?: (value: T[keyof T], item: T) => React.ReactNode;
   hidden?: boolean;
@@ -85,11 +92,20 @@ export interface PaginationProps {
 
 // Data table configuration
 export interface DataTableConfig<T> {
+  enableSearch?: boolean;
+  enableSorting?: boolean;
+  enableFilters?: boolean;
+  enablePagination?: boolean;
+  enableColumnVisibility?: boolean;
+  pageSize?: number;
+  searchPlaceholder?: string;
+  searchableColumns?: string[];
+  defaultColumnVisibility?: Record<string, boolean>;
+  // Legacy support
   searchable?: boolean;
   sortable?: boolean;
   filterable?: boolean;
   paginated?: boolean;
-  pageSize?: number;
   searchFields?: (keyof T)[];
   defaultSort?: SortConfig<T>;
   columnVisibility?: boolean;

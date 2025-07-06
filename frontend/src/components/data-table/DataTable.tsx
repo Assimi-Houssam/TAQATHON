@@ -1,13 +1,14 @@
-import { useState, useMemo } from "react";
-import { BaseDataTable } from "./core/BaseDataTable";
-import { SearchBar } from "./core/SearchBar";
-import { Pagination } from "./core/Pagination";
-import { ColumnVisibilityToggle } from "./core/ColumnVisibilityToggle";
-import { Column, FilterGroup, DataTableConfig, ColumnVisibilityState, DataTableProps } from "./types";
-import { cn } from "@/lib/utils";
-import { Search, Filter, X } from "lucide-react";
-import { Input } from "@/components/ui/input";
+import React, { useState, useMemo } from "react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -18,21 +19,25 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
+import { Search, Filter, X, ChevronLeft, ChevronRight } from "lucide-react";
+import { DataTableProps, FilterGroup, ColumnVisibilityState } from "./types";
+import { ColumnVisibilityToggle } from "./core/ColumnVisibilityToggle";
+import { TableLoading } from "./utils/TableLoading";
+import { TableError } from "./utils/TableError";
+import { TableEmpty } from "./utils/TableEmpty";
 
 /**
- * DataTable - Complete data table component with all features
+ * Enhanced DataTable component with comprehensive features
  * 
  * Features:
- * - Search and filtering with multiple filter support
+ * - Search functionality
+ * - Advanced filtering with dropdowns
  * - Column visibility controls
- * - Sorting (client-side)
  * - Pagination
- * - Loading, error, and empty states
+ * - Sorting
+ * - Loading and error states
+ * - Empty state handling
  * - Responsive design
- * - Animations
- * - Customizable configuration
- * 
- * @template T - The data type for table rows
  */
 export function DataTable<T extends Record<string, any>>({
   data,
@@ -46,49 +51,43 @@ export function DataTable<T extends Record<string, any>>({
   columnVisibility: externalColumnVisibility,
   onColumnVisibilityChange: externalOnColumnVisibilityChange,
 }: DataTableProps<T>) {
+  // Extract configuration with defaults
   const {
-    searchable = true,
-    sortable = true,
-    filterable = true,
-    paginated = true,
-    pageSize = 10,
-    searchFields = [],
-    defaultSort,
-    columnVisibility: enableColumnVisibility = true,
-    defaultHiddenColumns = [],
+    enableSearch = config.searchable ?? true,
+    enableSorting = config.sortable ?? true,
+    enableFilters = config.filterable ?? true,
+    enablePagination = config.paginated ?? true,
+    enableColumnVisibility = config.columnVisibility ?? true,
+    pageSize = config.pageSize ?? 10,
+    searchPlaceholder = config.searchPlaceholder ?? "Search...",
+    searchableColumns = config.searchableColumns ?? [],
+    defaultColumnVisibility = config.defaultColumnVisibility ?? {},
   } = config;
 
-  // Initialize column visibility state
-  const [internalColumnVisibility, setInternalColumnVisibility] = useState<ColumnVisibilityState<T>>(() => {
-    const initialState: ColumnVisibilityState<T> = {};
-    
-    // Set default visibility for all columns
-    columns.forEach(column => {
-      const key = column.accessor as string;
-      initialState[key] = !defaultHiddenColumns.includes(column.accessor);
-    });
-    
-    return initialState;
-  });
-
-  // Use external column visibility state if provided, otherwise use internal state
-  const columnVisibility = externalColumnVisibility || internalColumnVisibility;
-  const handleColumnVisibilityChange = externalOnColumnVisibilityChange || setInternalColumnVisibility;
-
-  // State management
+  // Internal state
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [sortField, setSortField] = useState<keyof T | undefined>(defaultSort?.field);
-  const [sortDirection, setSortDirection] = useState<"asc" | "desc">(defaultSort?.direction || "asc");
+  const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' } | null>(null);
   const [activeFilters, setActiveFilters] = useState<Record<string, string>>({});
+
+  // Column visibility state management
+  const [internalColumnVisibility, setInternalColumnVisibility] = useState<ColumnVisibilityState<T>>(() => {
+    const initial: ColumnVisibilityState<T> = {};
+    columns.forEach(column => {
+      initial[column.id] = defaultColumnVisibility[column.id] ?? true;
+    });
+    return initial;
+  });
+
+  const columnVisibility = externalColumnVisibility || internalColumnVisibility;
+  const handleColumnVisibilityChange = externalOnColumnVisibilityChange || setInternalColumnVisibility;
 
   // Filter columns based on visibility
   const visibleColumns = useMemo(() => {
     if (!enableColumnVisibility) return columns;
     
     return columns.filter(column => {
-      const key = column.accessor as string;
-      return columnVisibility[key] !== false;
+      return columnVisibility[column.id] !== false;
     });
   }, [columns, columnVisibility, enableColumnVisibility]);
 
@@ -97,17 +96,17 @@ export function DataTable<T extends Record<string, any>>({
     let result = data;
     
     // Apply search filter
-    if (searchable && searchTerm) {
+    if (enableSearch && searchTerm) {
       result = result.filter((item) => {
-        const fieldsToSearch = searchFields.length > 0 ? searchFields : Object.keys(item) as (keyof T)[];
+        const fieldsToSearch = searchableColumns.length > 0 ? searchableColumns : Object.keys(item);
         return fieldsToSearch.some((field) =>
-          String(item[field]).toLowerCase().includes(searchTerm.toLowerCase())
+          String(item[field as keyof T]).toLowerCase().includes(searchTerm.toLowerCase())
         );
       });
     }
     
     // Apply custom filters
-    if (filterable && Object.keys(activeFilters).length > 0) {
+    if (enableFilters && Object.keys(activeFilters).length > 0) {
       result = result.filter((item) => {
         return Object.entries(activeFilters).every(([key, value]) => {
           if (!value) return true; // Skip empty filter values
@@ -119,74 +118,57 @@ export function DataTable<T extends Record<string, any>>({
     }
     
     return result;
-  }, [data, searchTerm, searchable, searchFields, filterable, activeFilters]);
+  }, [data, searchTerm, enableSearch, searchableColumns, enableFilters, activeFilters]);
 
+  // Sorting logic
   const sortedData = useMemo(() => {
-    if (!sortable || !sortField) return filteredData;
-
+    if (!enableSorting || !sortConfig) return filteredData;
+    
     return [...filteredData].sort((a, b) => {
-      const aValue = a[sortField];
-      const bValue = b[sortField];
-
-      if (aValue === bValue) return 0;
+      const aValue = a[sortConfig.key as keyof T];
+      const bValue = b[sortConfig.key as keyof T];
       
-      let comparison = 0;
-      if (typeof aValue === "string" && typeof bValue === "string") {
-        comparison = aValue.localeCompare(bValue);
-      } else if (typeof aValue === "number" && typeof bValue === "number") {
-        comparison = aValue - bValue;
-      } else if (aValue && bValue && typeof aValue === "object" && typeof bValue === "object" && 
-                 "getTime" in aValue && "getTime" in bValue) {
-        comparison = (aValue as Date).getTime() - (bValue as Date).getTime();
-      } else {
-        comparison = String(aValue).localeCompare(String(bValue));
-      }
-
-      return sortDirection === "asc" ? comparison : -comparison;
+      if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
+      if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
+      return 0;
     });
-  }, [filteredData, sortField, sortDirection, sortable]);
+  }, [filteredData, sortConfig, enableSorting]);
 
+  // Pagination logic
   const paginatedData = useMemo(() => {
-    if (!paginated) return sortedData;
+    if (!enablePagination) return sortedData;
     
     const startIndex = (currentPage - 1) * pageSize;
     const endIndex = startIndex + pageSize;
     return sortedData.slice(startIndex, endIndex);
-  }, [sortedData, currentPage, pageSize, paginated]);
+  }, [sortedData, currentPage, pageSize, enablePagination]);
 
   const totalPages = Math.ceil(sortedData.length / pageSize);
 
   // Event handlers
-  const handleSearch = (term: string) => {
-    setSearchTerm(term);
-    if (term !== searchTerm) {
-      setCurrentPage(1); // Reset to first page only when search term actually changes
-    }
+  const handleSearch = (value: string) => {
+    setSearchTerm(value);
+    setCurrentPage(1); // Reset to first page when searching
   };
 
-  const handleSort = (field: keyof T) => {
-    if (sortField === field) {
-      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
-    } else {
-      setSortField(field);
-      setSortDirection("asc");
-    }
-  };
-
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
+  const handleSort = (columnId: string) => {
+    if (!enableSorting) return;
+    
+    setSortConfig(current => {
+      if (current?.key === columnId) {
+        return current.direction === 'asc' 
+          ? { key: columnId, direction: 'desc' }
+          : null;
+      }
+      return { key: columnId, direction: 'asc' };
+    });
   };
 
   const handleFilterChange = (filterKey: string, value: string) => {
-    setActiveFilters(prev => {
-      const updated = { ...prev };
-      if (!value || updated[filterKey] === value) {
-        delete updated[filterKey];
-      } else {
-        updated[filterKey] = value;
-      }
-      return updated;
-    });
+    setActiveFilters(prev => ({
+      ...prev,
+      [filterKey]: value
+    }));
     setCurrentPage(1); // Reset to first page when filtering
   };
 
@@ -195,71 +177,61 @@ export function DataTable<T extends Record<string, any>>({
     setCurrentPage(1);
   };
 
-  // Make columns sortable based on config
-  const processedColumns = useMemo(() => {
-    return visibleColumns.map(column => ({
-      ...column,
-      clickable: sortable && (column.clickable !== false),
-    }));
-  }, [visibleColumns, sortable]);
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  // Render loading state
+  if (loading) {
+    return <TableLoading columns={columns.length} />;
+  }
+
+  // Render error state
+  if (error) {
+    return <TableError message={error.message || 'An error occurred'} />;
+  }
+
+  // Render empty state
+  if (data.length === 0) {
+    return <TableEmpty />;
+  }
 
   return (
-    <div className={cn("space-y-4", className)}>
-      {/* Top Controls */}
-      <div className="flex flex-col gap-3">
-        {/* Search Input and Action Buttons Row */}
-        <div className="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
-          <div className="flex-1">
-            {/* Search Input Only */}
-            {searchable && (
+    <div className={`space-y-4 ${className}`}>
+      {/* Search and Filter Controls */}
+      <div className="flex flex-col gap-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            {/* Search */}
+            {enableSearch && (
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="Search by ID, equipment, system, or description..."
+                  placeholder={searchPlaceholder}
                   value={searchTerm}
                   onChange={(e) => handleSearch(e.target.value)}
-                  className="pl-10"
+                  className="pl-10 w-64"
                 />
               </div>
             )}
-          </div>
-          
-          {/* Action Buttons Container */}
-          <div className="flex items-center gap-2 flex-shrink-0">
-            {/* Filter Button */}
-            {filterable && filters.length > 0 && (
+            
+            {/* Filter Dropdown */}
+            {enableFilters && filters.length > 0 && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" size="sm">
                     <Filter className="h-4 w-4 mr-2" />
-                    Filters
+                    Filter
                     {Object.keys(activeFilters).length > 0 && (
-                      <Badge variant="secondary" className="ml-2 h-5 w-5 rounded-full p-0 text-xs">
+                      <Badge variant="secondary" className="ml-2">
                         {Object.keys(activeFilters).length}
                       </Badge>
                     )}
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56 max-h-96 overflow-y-auto">
-                  <DropdownMenuLabel>Filter Options</DropdownMenuLabel>
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuLabel>Filter by</DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  
-                  {/* Clear all filters button */}
-                  {Object.keys(activeFilters).length > 0 && (
-                    <>
-                      <div className="p-2">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={handleClearFilters}
-                          className="h-6 px-2 text-xs w-full"
-                        >
-                          Clear All Filters
-                        </Button>
-                      </div>
-                      <DropdownMenuSeparator />
-                    </>
-                  )}
                   
                   {filters.map((filterGroup) => (
                     <div key={filterGroup.key} className="p-2">
@@ -268,7 +240,7 @@ export function DataTable<T extends Record<string, any>>({
                         const isActive = activeFilters[filterGroup.key] === option.value;
                         return (
                           <DropdownMenuItem
-                            key={option.value}
+                            key={`${filterGroup.key}-${option.value}`}
                             onClick={(e) => e.preventDefault()}
                             className="cursor-default"
                           >
@@ -342,46 +314,107 @@ export function DataTable<T extends Record<string, any>>({
       </div>
 
       {/* Data Table */}
-      <div className="bg-white rounded-lg border border-zinc-200 overflow-hidden shadow-sm">
-        <BaseDataTable
-          data={paginatedData}
-          columns={processedColumns}
-          sortField={sortField}
-          sortDirection={sortDirection}
-          onSort={handleSort}
-          loading={loading}
-          error={error}
-          className={className}
-          onRowClick={onRowClick}
-        />
-
-        {/* Pagination */}
-        {paginated && sortedData.length > 0 && (
-          <div className="border-t border-zinc-200 px-4 py-2.5 bg-zinc-50/50">
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={handlePageChange}
-            />
-          </div>
-        )}
+      <div className="bg-white rounded-lg border border-zinc-200 shadow-sm">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              {visibleColumns.map((column) => (
+                <TableHead 
+                  key={column.id}
+                  className={`${column.enableSorting ? 'cursor-pointer hover:bg-muted/50' : ''}`}
+                  onClick={() => column.enableSorting && handleSort(column.id)}
+                  style={{ width: column.size ? `${column.size}px` : undefined }}
+                >
+                  <div className="flex items-center gap-2">
+                    {column.header}
+                    {enableSorting && sortConfig?.key === column.id && (
+                      <span className="text-xs">
+                        {sortConfig.direction === 'asc' ? '↑' : '↓'}
+                      </span>
+                    )}
+                  </div>
+                </TableHead>
+              ))}
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {paginatedData.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={visibleColumns.length} className="text-center py-8">
+                  <div className="text-muted-foreground">
+                    {searchTerm || Object.keys(activeFilters).length > 0 
+                      ? "No results found. Try adjusting your search or filters."
+                      : "No data available."
+                    }
+                  </div>
+                </TableCell>
+              </TableRow>
+            ) : (
+              paginatedData.map((row, index) => (
+                <TableRow 
+                  key={`row-${index}`}
+                  className={onRowClick ? "cursor-pointer hover:bg-muted/50" : ""}
+                  onClick={() => onRowClick?.(row)}
+                >
+                  {visibleColumns.map((column) => (
+                    <TableCell key={`${index}-${column.id}`}>
+                      {column.cell ? (
+                        column.cell({ row: { original: row } })
+                      ) : (
+                        <div>
+                          {column.accessorKey ? String(row[column.accessorKey]) : ''}
+                        </div>
+                      )}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
       </div>
 
-      {/* Results summary */}
-      {!loading && !error && (
-        <div className="flex flex-col sm:flex-row gap-2 sm:items-center sm:justify-between text-xs text-zinc-500">
-          <div>
-            Showing {paginatedData.length} of {sortedData.length} results
-            {searchTerm && ` for "${searchTerm}"`}
+      {/* Pagination */}
+      {enablePagination && totalPages > 1 && (
+        <div className="flex items-center justify-between">
+          <div className="text-sm text-muted-foreground">
+            Showing {((currentPage - 1) * pageSize) + 1} to {Math.min(currentPage * pageSize, sortedData.length)} of {sortedData.length} results
           </div>
-          
-          {/* Active filters summary */}
-          {Object.keys(activeFilters).length > 0 && (
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+            >
+              <ChevronLeft className="h-4 w-4 mr-2" />
+              Previous
+            </Button>
+            
             <div className="flex items-center gap-1">
-              <span>•</span>
-              <span>{Object.keys(activeFilters).length} filter{Object.keys(activeFilters).length > 1 ? 's' : ''} active</span>
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                <Button
+                  key={page}
+                  variant={currentPage === page ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => handlePageChange(page)}
+                  className="w-8 h-8 p-0"
+                >
+                  {page}
+                </Button>
+              ))}
             </div>
-          )}
+            
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+            >
+              Next
+              <ChevronRight className="h-4 w-4 ml-2" />
+            </Button>
+          </div>
         </div>
       )}
     </div>

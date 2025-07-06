@@ -32,27 +32,27 @@ export function ColumnVisibilityToggle<T>({
   columnVisibility,
   onColumnVisibilityChange,
 }: ColumnVisibilityToggleProps<T>) {
-  const hideableColumns = columns.filter(col => col.hideable !== false);
+  const hideableColumns = columns.filter(col => col.enableHiding !== false);
   
   if (hideableColumns.length === 0) {
     return null;
   }
 
   const visibleCount = hideableColumns.filter(col => 
-    columnVisibility[col.accessor as string] !== false
+    columnVisibility[col.id] !== false
   ).length;
 
-  const handleToggleColumn = (accessor: keyof T, checked: boolean) => {
+  const handleToggleColumn = (columnId: string, checked: boolean) => {
     onColumnVisibilityChange({
       ...columnVisibility,
-      [accessor as string]: checked,
+      [columnId]: checked,
     });
   };
 
   const handleShowAll = () => {
     const newVisibility = { ...columnVisibility };
     hideableColumns.forEach(col => {
-      newVisibility[col.accessor as string] = true;
+      newVisibility[col.id] = true;
     });
     onColumnVisibilityChange(newVisibility);
   };
@@ -60,7 +60,7 @@ export function ColumnVisibilityToggle<T>({
   const handleHideAll = () => {
     const newVisibility = { ...columnVisibility };
     hideableColumns.forEach(col => {
-      newVisibility[col.accessor as string] = false;
+      newVisibility[col.id] = false;
     });
     onColumnVisibilityChange(newVisibility);
   };
@@ -103,24 +103,24 @@ export function ColumnVisibilityToggle<T>({
         
         {/* Individual column toggles */}
         {hideableColumns.map((column) => {
-          const isVisible = columnVisibility[column.accessor as string] !== false;
+          const isVisible = columnVisibility[column.id] !== false;
           return (
             <DropdownMenuItem
-              key={column.accessor as string}
+              key={column.id}
               onClick={(e) => e.preventDefault()}
               className="cursor-default"
             >
               <div className="flex items-center w-full">
                 <Checkbox
-                  id={column.accessor as string}
+                  id={`column-${column.id}`}
                   checked={isVisible}
                   onCheckedChange={(checked) => 
-                    handleToggleColumn(column.accessor, checked as boolean)
+                    handleToggleColumn(column.id, checked as boolean)
                   }
                   className="mr-2"
                 />
                 <label
-                  htmlFor={column.accessor as string}
+                  htmlFor={`column-${column.id}`}
                   className="flex-1 cursor-pointer"
                 >
                   {column.header}
