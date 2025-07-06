@@ -166,7 +166,7 @@ const SearchResultItem = memo(
           className={cn(
             "block p-4 border border-zinc-200/80 rounded-lg",
             "hover:bg-accent/30 ",
-            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+            "focus-visible:outline-none focus-visible:ring-2-focus-visible:ring-ring",
             "group relative bg-card"
           )}
         >

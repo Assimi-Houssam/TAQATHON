@@ -50,6 +50,7 @@ export function DataTable<T extends Record<string, any>>({
   onRowClick,
   columnVisibility: externalColumnVisibility,
   onColumnVisibilityChange: externalOnColumnVisibilityChange,
+  rowClassName,
 }: DataTableProps<T>) {
   // Extract configuration with defaults
   const {
@@ -356,7 +357,7 @@ export function DataTable<T extends Record<string, any>>({
               paginatedData.map((row, index) => (
                 <TableRow 
                   key={`row-${index}`}
-                  className={onRowClick ? "cursor-pointer hover:bg-muted/50" : ""}
+                  className={`${onRowClick ? "cursor-pointer hover:bg-muted/50" : ""} ${rowClassName ? rowClassName(row) : ""}`}
                   onClick={() => onRowClick?.(row)}
                 >
                   {visibleColumns.map((column) => (

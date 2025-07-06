@@ -473,15 +473,29 @@ const mockAnomalies: Anomaly[] = [
 
 // Helper function to calculate red color opacity based on value (1-5 scale)
 const getRedOpacity = (value: number): string => {
-  // Group values: 1=transparent, 2&3=medium red, 4&5=high red
-  if (value === 1) {
-    return 'transparent';
-  } else if (value === 2 || value === 3) {
-    return 'rgba(239, 68, 68, 0.25)'; // 25% red for values 2 and 3
-  } else if (value === 4 || value === 5) {
-    return 'rgba(239, 68, 68, 0.5)'; // 50% red for values 4 and 5
+  // Only values 4 and 5 should be red (less colored), others transparent
+  if (value === 4 || value === 5) {
+    return 'rgba(239, 68, 68, 0.15)'; // 30% red for values 4 and 5 (less colored)
   }
-  return 'transparent'; // fallback
+  return 'transparent'; // values 1, 2, 3 stay transparent
+};
+
+// Helper function to get criticality indicator color
+const getCriticalityIndicatorColor = (criticality: number): string => {
+  const level = getCriticalityLevel(criticality);
+  
+  switch (level) {
+    case 'CRITICAL':
+      return 'bg-red-500';
+    case 'HIGH':
+      return 'bg-orange-500';
+    case 'MEDIUM':
+      return 'bg-yellow-400';
+    case 'LOW':
+      return 'bg-zinc-400';
+    default:
+      return 'bg-gray-300';
+  }
 };
 
 // Column definitions using new components - reordered and enhanced
@@ -595,15 +609,13 @@ const columns: Column<Anomaly>[] = [
     accessorKey: "criticality",
     cell: ({ row }) => (
       <div className="flex items-center justify-center">
-        <div className="px-3 py-1 rounded-full bg-zinc-50 border">
-          <AnomalyCriticalityIndicator 
-            criticality={row.original.criticality}
-            variant="text"
-          />
-        </div>
+        <AnomalyCriticalityIndicator 
+          criticality={row.original.criticality}
+          variant="badge"
+        />
       </div>
     ),
-    size: 120,
+    size: 140,
     enableSorting: true,
     enableHiding: false, // Always visible
   },
@@ -679,6 +691,21 @@ const columns: Column<Anomaly>[] = [
     enableSorting: false,
     enableHiding: false, // Always visible
   },
+  {
+    id: "criticality_indicator",
+    header: "",
+    cell: ({ row }) => (
+      <div className="flex items-center justify-center">
+        <div 
+          className={`w-1 h-8 rounded-full ${getCriticalityIndicatorColor(row.original.criticality)}`}
+          title={getCriticalityLevel(row.original.criticality)}
+        />
+      </div>
+    ),
+    size: 20,
+    enableSorting: false,
+    enableHiding: false,
+  },
 ];
 
 // Data table configuration
@@ -709,6 +736,7 @@ const config: DataTableConfig<Anomaly> = {
     date_apparition: false, // Hidden by default
     origin: false, // Hidden by default
     actions: true,
+    criticality_indicator: true, // Always visible, now last
   },
 };
 

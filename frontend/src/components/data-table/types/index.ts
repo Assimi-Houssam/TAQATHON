@@ -129,4 +129,5 @@ export interface DataTableProps<T extends Record<string, any>> {
   onRowClick?: (row: T) => void;
   columnVisibility?: ColumnVisibilityState<T>;
   onColumnVisibilityChange?: (columnVisibility: ColumnVisibilityState<T>) => void;
+  rowClassName?: (row: T) => string;
 } 
