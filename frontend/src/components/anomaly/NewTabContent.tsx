@@ -97,7 +97,7 @@ export function NewTabContent({ anomaly, onUpdate, onStatusChange }: NewTabConte
         title="Criticality Assessment & Intervention"
         icon={<Shield className="h-5 w-5" />}
         defaultOpen={true}
-        className="bg-gray-50/70"
+        className=""
       >
         <div className="space-y-5">
           {/* Criticality Controls */}
@@ -258,7 +258,7 @@ export function NewTabContent({ anomaly, onUpdate, onStatusChange }: NewTabConte
         title="Action Plan"
         icon={<Activity className="h-5 w-5" />}
         defaultOpen={true}
-        className="bg-gray-50/70"
+        className=""
       >
         <div className="flex items-center justify-center py-8">
           <Button

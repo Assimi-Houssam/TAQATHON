@@ -213,92 +213,77 @@ export function AnomalyProfile({ anomaly, onStatusChange, onUpdate }: AnomalyPro
 
   return (
     <div>
-      {/* Main Action Button - Top */}
-      {/* <div className="mb-6 flex justify-center">
-        {getMainActionButton()}
-      </div> */}
-
       {/* Clean Progress Stepper */}
-      <div className="z-20 mb-6 p-4 bg-white/95 backdrop-blur-md rounded-lg border border-gray-200 shadow">
-        <div className="relative">
-          {/* Subtle Background Accent */}
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-50/50 to-blue-50/50 rounded-lg"></div>
-          
-          <div className="relative flex items-center justify-between">
-            {LIFECYCLE_STEPS.map((step, index) => {
-              const status = getStepStatus(step.key);
-              const isClickable = canAccessStep(step.key);
-              const progress = ((getCurrentStepIndex() + 1) / LIFECYCLE_STEPS.length) * 100;
-              
-              return (
-                <div key={step.key} className="flex items-center flex-1">
-                  {/* Step Node */}
-                  <div className="relative flex items-center">
-                    <button
-                      onClick={() => isClickable && setActiveStep(step.key)}
-                      disabled={!isClickable}
-                      className={`
-                        relative flex items-center justify-center w-8 h-8 rounded-full transition-all duration-300 transform border-2
-                        ${status === "completed" 
-                          ? "bg-blue-600 border-blue-600 shadow-md shadow-blue-200 scale-110" 
-                          : status === "current"
-                          ? "bg-blue-500 border-blue-500 shadow-lg shadow-blue-300 scale-125"
-                          : "bg-white border-gray-300 hover:border-blue-300"
-                        }
-                        ${isClickable ? "hover:scale-110 cursor-pointer" : "cursor-not-allowed"}
-                      `}
-                    >
-                      {status === "completed" && (
-                        <CheckCircle className="h-4 w-4 text-white" />
-                      )}
-                      {status === "current" && (
-                        <div className="w-2 h-2 bg-white rounded-full"></div>
-                      )}
-                      {status === "pending" && (
-                        <div className="w-1.5 h-1.5 bg-gray-400 rounded-full"></div>
-                      )}
-                      
-                      {/* Subtle Hover Effect */}
-                      {isClickable && (
-                        <div className="absolute inset-0 rounded-full bg-blue-500 opacity-0 hover:opacity-10 transition-opacity duration-300"></div>
-                      )}
-                    </button>
-                    
-                    {/* Step Label - Only for current step */}
-                    {status === "current" && (
-                      <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2">
-                        <div className="bg-white text-gray-700 text-xs px-2 py-1 rounded-md border border-gray-200 shadow-sm whitespace-nowrap">
-                          {step.label}
-                        </div>
-                      </div>
+      <div className="mb-6 p-3 bg-white rounded-lg border border-gray-200 shadow-sm">
+        <div className="flex items-center justify-between">
+          {LIFECYCLE_STEPS.map((step, index) => {
+            const status = getStepStatus(step.key);
+            const isClickable = canAccessStep(step.key);
+            
+            return (
+              <div key={step.key} className="flex items-center flex-1">
+                {/* Step Node */}
+                <div className="relative flex items-center">
+                  <button
+                    onClick={() => isClickable && setActiveStep(step.key)}
+                    disabled={!isClickable}
+                    className={`
+                      relative flex items-center justify-center w-6 h-6 rounded-full transition-all duration-200 border-2
+                      ${status === "completed" 
+                        ? "bg-blue-600 border-blue-600" 
+                        : status === "current"
+                        ? "bg-blue-500 border-blue-500"
+                        : "bg-white border-gray-300"
+                      }
+                      ${isClickable ? "hover:scale-110 cursor-pointer" : "cursor-not-allowed"}
+                    `}
+                  >
+                    {status === "completed" && (
+                      <CheckCircle className="h-3 w-3 text-white" />
                     )}
-                  </div>
+                    {status === "current" && (
+                      <div className="w-1.5 h-1.5 bg-white rounded-full"></div>
+                    )}
+                    {status === "pending" && (
+                      <div className="w-1 h-1 bg-gray-400 rounded-full"></div>
+                    )}
+                  </button>
                   
-                  {/* Progress Line */}
-                  {index < LIFECYCLE_STEPS.length - 1 && (
-                    <div className="flex-1 mx-3 h-0.5 bg-gray-200 rounded-full overflow-hidden">
-                      <div 
-                        className={`h-full transition-all duration-700 ease-in-out ${
-                          index < getCurrentStepIndex() 
-                            ? "bg-blue-500" 
-                            : "bg-gray-200"
-                        }`}
-                        style={{
-                          width: index < getCurrentStepIndex() ? "100%" : 
-                                 index === getCurrentStepIndex() ? "50%" : "0%"
-                        }}
-                      />
+                  {/* Step Label */}
+                  <div className="ml-2">
+                    <div className={`text-xs font-medium ${
+                      status === "current" ? "text-blue-600" : 
+                      status === "completed" ? "text-gray-900" : "text-gray-500"
+                    }`}>
+                      {step.label}
                     </div>
-                  )}
+                  </div>
                 </div>
-              );
-            })}
-
-            {/* Progress Percentage */}
-            <div className="absolute -top-2 -right-2">
-              <div className="bg-blue-600 text-white text-xs px-2 py-1 rounded-full font-medium shadow-sm">
-                {Math.round(((getCurrentStepIndex() + 1) / LIFECYCLE_STEPS.length) * 100)}%
+                
+                {/* Progress Line */}
+                {index < LIFECYCLE_STEPS.length - 1 && (
+                  <div className="flex-1 mx-3 h-0.5 bg-gray-200 rounded-full overflow-hidden">
+                    <div 
+                      className={`h-full transition-all duration-500 ease-in-out ${
+                        index < getCurrentStepIndex() 
+                          ? "bg-blue-500" 
+                          : "bg-gray-200"
+                      }`}
+                      style={{
+                        width: index < getCurrentStepIndex() ? "100%" : 
+                               index === getCurrentStepIndex() ? "50%" : "0%"
+                      }}
+                    />
+                  </div>
+                )}
               </div>
+            );
+          })}
+
+          {/* Progress Percentage */}
+          <div className="ml-4">
+            <div className="bg-blue-600 text-white text-xs px-2 py-1 rounded-full font-medium">
+              {Math.round(((getCurrentStepIndex() + 1) / LIFECYCLE_STEPS.length) * 100)}%
             </div>
           </div>
         </div>
@@ -308,7 +293,7 @@ export function AnomalyProfile({ anomaly, onStatusChange, onUpdate }: AnomalyPro
       <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
         {/* Main Content - Left Side */}
         <div className="xl:col-span-3 order-2 xl:order-1">
-          <Card className="shadow-sm border-none shadow-none">
+          <Card className="shadow-sm border-none shadow-none bg-transparent">
             <CardContent className="p-0">
               {renderStepContent()}
             </CardContent>

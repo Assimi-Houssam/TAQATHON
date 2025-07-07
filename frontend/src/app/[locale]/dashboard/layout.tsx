@@ -21,7 +21,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             <Navbar />
             <div className="flex min-h-[100vh] w-full pt-20">
               <AppSidebar />
-              <main className="flex-1 w-full overflow-x-hidden">
+              <main className="flex-1 w-full overflow-x-hidden bg-gray-50">
                 {children}
               </main>
             </div>
