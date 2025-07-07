@@ -136,10 +136,10 @@ export function ColumnVisibilityToggle<T>({
                 <label
                   htmlFor={`column-${column.id}`}
                   className="flex-1 cursor-pointer"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                  }}
+                  // onClick={(e) => {
+                  //   e.preventDefault();
+                  //   e.stopPropagation();
+                  // }}
                 >
                   {column.header}
                 </label>

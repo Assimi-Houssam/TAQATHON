@@ -616,14 +616,27 @@ const columns: Column<Anomaly>[] = [
     id: "criticality",
     header: "Criticality",
     accessorKey: "criticality",
-    cell: ({ row }) => (
-      <div className="flex items-center justify-center">
-        <AnomalyCriticalityIndicator 
-          criticality={row.original.criticality}
-          variant="badge"
-        />
-      </div>
-    ),
+    cell: ({ row }) => {
+      // Check if this is a fake row (padding row)
+      const isFakeRow = row.original && typeof row.original === 'object' && '__isFakeRow' in row.original;
+      
+      if (isFakeRow) {
+        return (
+          <div className="flex items-center justify-center">
+            <span className="text-zinc-400">-</span>
+          </div>
+        );
+      }
+      
+      return (
+        <div className="flex items-center justify-center">
+          <AnomalyCriticalityIndicator 
+            criticality={row.original.criticality}
+            variant="badge"
+          />
+        </div>
+      );
+    },
     size: 140,
     enableSorting: true,
     enableHiding: false, // Always visible
