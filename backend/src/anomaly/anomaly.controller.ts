@@ -19,6 +19,7 @@ import { extname } from 'path';
 import { AnomalyService } from './anomaly.service';
 import { CreateAnomalieDto, UpdateAnomalieDto } from './dto/anomalie.dto';
 import { PythonExecutorService } from './python,service';
+import { ForceStopDto } from './dto/forceStop.dto';
 
 @Controller('anomaly')
 export class AnomalyController {
@@ -224,15 +225,15 @@ export class AnomalyController {
       return await this.anomalyService.attachMaintenanceWindow(anomalyId, maintenanceId);
     }
 
-    @Patch('resolveAnomaly/:id')
-    async resolveAnomaly(@Param('id') id: string) {
-      return await this.anomalyService.resolveAnomaly(id);
+    @Patch('traited/:id')
+    async markAsTreated(@Param('id') id: string) {
+      return await this.anomalyService.markAsTreated(id);
     }
 
     //  arrete force 
     @Patch('forceStop')
-    async forceStopAnomaly() {
-      // return await this.anomalyService.forceStopAnomaly();
+    async forceStopAnomaly(@Body() data: ForceStopDto) {
+      return await this.anomalyService.forceStopAnomaly(data);
     }
 
   }
