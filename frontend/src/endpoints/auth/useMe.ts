@@ -4,15 +4,24 @@ import { useQuery } from "@tanstack/react-query";
 import { getCookie } from "cookies-next/client";
 
 export function useMe() {
-  return useQuery({
-    queryKey: ["user"],
-    queryFn: async () => {
-      const token = getCookie("access_token");
-      if (!token) return null;
-
-      const { data } = await apiClient.get<User>("/auth/me");
-      return data;
-    },
-    retry: false,
-  });
+  // Disabled - no longer used for auth
+  return {
+    data: null,
+    isLoading: false,
+    isError: false,
+    error: null
+  };
+  
+  // Original implementation commented out:
+  // return useQuery({
+  //   queryKey: ["user"],
+  //   queryFn: async () => {
+  //     const token = getCookie("access_token");
+  //     if (!token) return null;
+  //
+  //     const { data } = await apiClient.get<User>("/auth/me");
+  //     return data;
+  //   },
+  //   retry: false,
+  // });
 }

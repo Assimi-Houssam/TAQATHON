@@ -11,15 +11,15 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Bell, Loader2, CheckCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
-  useNotification,
+  // useNotification,
   NotificationStatus,
 } from "@/context/NotificationContext";
 import NotificationContainer from "./NotificationContainer";
 import { cn } from "@/lib/utils";
-import { useMarkAllNotificationsAsRead } from "@/endpoints/notifications/mutations";
+// import { useMarkAllNotificationsAsRead } from "@/endpoints/notifications/mutations";
 import { toast } from "sonner";
 import {
-  useGetAllNotifications,
+  // useGetAllNotifications,
   groupNotificationsByDate,
 } from "@/endpoints/notifications/get-all-notifications";
 import { safeFormat } from "@/lib/utils/date";
@@ -35,10 +35,20 @@ type FilterStatus = "all" | NotificationStatus;
 const NotificationCenter: React.FC<NotificationCenterProps> = ({
   className,
 }) => {
-  const { unreadCount, markAllAsRead } = useNotification();
-  const markAllAsReadMutation = useMarkAllNotificationsAsRead();
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
-    useGetAllNotifications();
+  // const { unreadCount, markAllAsRead } = useNotification();
+  const unreadCount = 0; // Default value when useNotification is disabled
+  const markAllAsRead = () => {}; // Default empty function when useNotification is disabled
+  // const markAllAsReadMutation = useMarkAllNotificationsAsRead();
+  const markAllAsReadMutation = { mutateAsync: async () => {}, isPending: false }; // Default when disabled
+  // const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
+  //   useGetAllNotifications();
+  
+  // Default values when notifications are disabled
+  const data = { pages: [{ data: [] }] };
+  const fetchNextPage = () => {};
+  const hasNextPage = false;
+  const isFetchingNextPage = false;
+  const isLoading = false;
   const { ref, inView } = useInView();
   const [filterStatus, setFilterStatus] = useState<FilterStatus>("all");
 
@@ -68,11 +78,8 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({
   // Combine all pages of notifications
   const allNotifications = data?.pages.flatMap((page) => page.data) ?? [];
 
-  // Filter notifications based on status
-  const filteredNotifications = allNotifications.filter((notification) => {
-    if (filterStatus === "all") return true;
-    return notification.notification_status === filterStatus;
-  });
+  // Filter notifications based on status (disabled - always empty)
+  const filteredNotifications: any[] = [];
 
   const groupedNotifications = groupNotificationsByDate(filteredNotifications);
 

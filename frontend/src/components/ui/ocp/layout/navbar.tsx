@@ -7,24 +7,24 @@ import UserIcon from "../user-icon";
 import Logo from "@/components/ui/ocp/logo";
 import { useSidebar } from "@/components/ui/sidebar";
 import { PanelLeft } from "lucide-react";
-import { useNotification } from "@/context/NotificationContext";
-import { useGetAllNotifications } from "@/endpoints/notifications/get-all-notifications";
+// import { useNotification } from "@/context/NotificationContext";
+// import { useGetAllNotifications } from "@/endpoints/notifications/get-all-notifications";
 import { toast } from "sonner";
 
 const Navbar = () => {
   const { toggleSidebar } = useSidebar();
-  const { setNotifications } = useNotification();
-  const { data: notifications, isError } = useGetAllNotifications();
+  // const { setNotifications } = useNotification();
+  // const { data: notifications, isError } = useGetAllNotifications();
 
-  useEffect(() => {
-    if (notifications) {
-      setNotifications(notifications.pages.flatMap((page) => page.data));
-    }
-  }, [notifications, setNotifications]);
+  // useEffect(() => {
+  //   if (notifications) {
+  //     setNotifications(notifications.pages.flatMap((page) => page.data));
+  //   }
+  // }, [notifications, setNotifications]);
 
-  if (isError) {
-    toast.error("Failed to fetch notifications");
-  }
+  // if (isError) {
+  //   toast.error("Failed to fetch notifications");
+  // }
 
   return (
     <div className="bg-white h-20 p-4 border-b flex items-center justify-between fixed opacity- top-0 left-0 w-full z-50">
