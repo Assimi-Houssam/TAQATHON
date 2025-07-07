@@ -59,43 +59,8 @@ export default function BatchUploadPage() {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [showPreview, setShowPreview] = useState(false);
 
-  // Mock preview data based on new schema
-  const mockPreviewRecords: PreviewRecord[] = [
-    {
-      id: "1",
-      num_equipments: "EQ-001",
-      unite: "Production Unit A",
-      systeme: "Pressure Control System",
-      descreption_anomalie: "Pressure sensor showing irregular readings",
-      origine: "Sensor Malfunction",
-      section_proprietaire: "Production",
-      Criticite: "HIGH",
-      status: "valid"
-    },
-    {
-      id: "2",
-      num_equipments: "EQ-002",
-      unite: "Production Unit B",
-      systeme: "Temperature Control",
-      descreption_anomalie: "Temperature fluctuations outside normal range",
-      origine: "Calibration Drift",
-      section_proprietaire: "Maintenance",
-      Criticite: "MEDIUM",
-      status: "valid"
-    },
-    {
-      id: "3",
-      num_equipments: "",
-      unite: "Production Unit C",
-      systeme: "Vibration Monitoring",
-      descreption_anomalie: "Missing equipment number",
-      origine: "Unknown",
-      section_proprietaire: "",
-      Criticite: "HIGH",
-      status: "invalid",
-      errors: ["Equipment number is required", "Owner section is required"]
-    }
-  ];
+  // TODO: Replace with API call to process uploaded file and get preview data
+  // const { data: previewData, error: previewError } = useProcessUploadedFile(file);
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
@@ -132,7 +97,8 @@ export default function BatchUploadPage() {
                 }
               : f
           ));
-          setPreviewRecords(mockPreviewRecords);
+          // TODO: Replace with actual API response data
+          setPreviewRecords([]);
           setShowPreview(true);
         }, 2000);
       }, 1000);

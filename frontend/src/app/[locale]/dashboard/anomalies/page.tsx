@@ -10,6 +10,7 @@ import { Column, DataTableConfig } from "@/components/data-table/types";
 import { useRouter } from "next/navigation";
 import { Anomaly, AnomalyStatus, calculateCriticality, getCriticalityLevel } from "@/types/anomaly";
 import { AnomalyStatus as AnomalyStatusComponent, AnomalyCriticalityIndicator } from "@/components/anomaly";
+import { useAnomalies } from "@/hooks/useAnomalies";
 
 // Helper function to get criticality filter value
 const getCriticalityFilterValue = (criticality: number): string => {
@@ -19,466 +20,8 @@ const getCriticalityFilterValue = (criticality: number): string => {
   return 'low';
 };
 
-// Mock data using new interface structure with 1-5 scale factors and 1-15 criticality
-const mockAnomalies: Anomaly[] = [
-  {
-    id: "ANM-001",
-    code: "ANM-001",
-    equipment: "Main Pressure Sensor (PS-001)",
-    description: "Irregular pressure readings detected in main pipeline",
-    date_apparition: "2024-01-15T08:30:00Z",
-    process_safety: 3,
-    fiabilite_integrite: 3,
-    disponibilite: 3,
-    criticality: 10,
-    origin: "Oracle",
-    status: "New",
-    created_at: "2024-01-15T08:30:00Z",
-    updated_at: "2024-01-15T08:30:00Z"
-  },
-  {
-    id: "ANM-002",
-    code: "ANM-002", 
-    equipment: "Temperature Controller (TC-002)",
-    description: "Temperature fluctuations outside normal operating range",
-    date_apparition: "2024-01-15T09:15:00Z",
-    process_safety: 2,
-    fiabilite_integrite: 3,
-    disponibilite: 3,
-    criticality: 8,
-    origin: "APM",
-    status: "In Progress",
-    feedback_at: "2024-01-15T10:00:00Z",
-    created_at: "2024-01-15T09:15:00Z",
-    updated_at: "2024-01-15T10:00:00Z"
-  },
-  {
-    id: "ANM-003",
-    code: "ANM-003",
-    equipment: "Production Motor (MO-003)",
-    description: "Excessive vibration levels detected in motor housing",
-    date_apparition: "2024-01-14T14:22:00Z",
-    process_safety: 5,
-    fiabilite_integrite: 4,
-    disponibilite: 5,
-    criticality: 14,
-    origin: "IBM Maximo",
-    status: "In Progress",
-    feedback_at: "2024-01-14T15:00:00Z",
-    scheduling_ready_at: "2024-01-14T16:00:00Z",
-    scheduled_at: "2024-01-14T17:00:00Z",
-    created_at: "2024-01-14T14:22:00Z",
-    updated_at: "2024-01-14T17:00:00Z"
-  },
-  {
-    id: "ANM-004",
-    code: "ANM-004",
-    equipment: "Flow Control Valve (FV-004)",
-    description: "Reduced flow rate in primary distribution line",
-    date_apparition: "2024-01-16T07:45:00Z",
-    process_safety: 2,
-    fiabilite_integrite: 2,
-    disponibilite: 3,
-    criticality: 7,
-    origin: "EMC",
-    status: "New",
-    created_at: "2024-01-16T07:45:00Z",
-    updated_at: "2024-01-16T07:45:00Z"
-  },
-  {
-    id: "ANM-005",
-    code: "ANM-005",
-    equipment: "Main Electrical Panel (EP-005)",
-    description: "Power fluctuations causing equipment instability",
-    date_apparition: "2024-01-16T11:20:00Z",
-    process_safety: 4,
-    fiabilite_integrite: 3,
-    disponibilite: 4,
-    criticality: 11,
-    origin: "Oracle",
-    status: "In Progress",
-    feedback_at: "2024-01-16T12:00:00Z",
-    created_at: "2024-01-16T11:20:00Z",
-    updated_at: "2024-01-16T12:00:00Z"
-  },
-  {
-    id: "ANM-006",
-    code: "ANM-006",
-    equipment: "Precision Scale (SC-006)",
-    description: "Calibration drift in precision measurement device",
-    date_apparition: "2024-01-13T13:30:00Z",
-    process_safety: 1,
-    fiabilite_integrite: 2,
-    disponibilite: 2,
-    criticality: 5,
-    origin: "APM",
-    status: "Closed",
-    feedback_at: "2024-01-13T14:00:00Z",
-    scheduling_ready_at: "2024-01-13T15:00:00Z",
-    scheduled_at: "2024-01-13T16:00:00Z",
-    resolved_at: "2024-01-13T18:00:00Z",
-    closed_at: "2024-01-13T19:00:00Z",
-    created_at: "2024-01-13T13:30:00Z",
-    updated_at: "2024-01-13T19:00:00Z"
-  },
-  {
-    id: "ANM-007",
-    code: "ANM-007",
-    equipment: "Cooling Pump (CP-007)",
-    description: "Coolant temperature rising above optimal range",
-    date_apparition: "2024-01-16T16:45:00Z",
-    process_safety: 3,
-    fiabilite_integrite: 2,
-    disponibilite: 3,
-    criticality: 8,
-    origin: "IBM Maximo",
-    status: "New",
-    created_at: "2024-01-16T16:45:00Z",
-    updated_at: "2024-01-16T16:45:00Z"
-  },
-  {
-    id: "ANM-008",
-    code: "ANM-008",
-    equipment: "Smoke Detector (SD-008)",
-    description: "Smoke detector showing intermittent false alarms",
-    date_apparition: "2024-01-12T10:15:00Z",
-    process_safety: 5,
-    fiabilite_integrite: 4,
-    disponibilite: 3,
-    criticality: 12,
-    origin: "EMC",
-    status: "Closed",
-    feedback_at: "2024-01-12T11:00:00Z",
-    scheduling_ready_at: "2024-01-12T12:00:00Z",
-    scheduled_at: "2024-01-12T13:00:00Z",
-    resolved_at: "2024-01-12T15:00:00Z",
-    created_at: "2024-01-12T10:15:00Z",
-    updated_at: "2024-01-12T15:00:00Z"
-  },
-  {
-    id: "ANM-009",
-    code: "ANM-009",
-    equipment: "Conveyor Belt (CB-009)",
-    description: "Belt misalignment causing product spillage",
-    date_apparition: "2024-01-16T14:30:00Z",
-    process_safety: 3,
-    fiabilite_integrite: 3,
-    disponibilite: 2,
-    criticality: 8,
-    origin: "Oracle",
-    status: "New",
-    created_at: "2024-01-16T14:30:00Z",
-    updated_at: "2024-01-16T14:30:00Z"
-  },
-  {
-    id: "ANM-010",
-    code: "ANM-010",
-    equipment: "HVAC Filter (HF-010)",
-    description: "Air filter showing high pressure differential",
-    date_apparition: "2024-01-11T09:00:00Z",
-    process_safety: 1,
-    fiabilite_integrite: 1,
-    disponibilite: 2,
-    criticality: 4,
-    origin: "APM",
-    status: "Closed",
-    feedback_at: "2024-01-11T10:00:00Z",
-    scheduling_ready_at: "2024-01-11T11:00:00Z",
-    scheduled_at: "2024-01-11T12:00:00Z",
-    resolved_at: "2024-01-11T14:00:00Z",
-    created_at: "2024-01-11T09:00:00Z",
-    updated_at: "2024-01-11T14:00:00Z"
-  },
-  {
-    id: "ANM-011",
-    code: "ANM-011",
-    equipment: "Hydraulic Actuator (HA-011)",
-    description: "Hydraulic fluid leak detected in actuator assembly",
-    date_apparition: "2024-01-17T12:10:00Z",
-    process_safety: 5,
-    fiabilite_integrite: 4,
-    disponibilite: 4,
-    criticality: 13,
-    origin: "IBM Maximo",
-    status: "New",
-    created_at: "2024-01-17T12:10:00Z",
-    updated_at: "2024-01-17T12:10:00Z"
-  },
-  {
-    id: "ANM-012",
-    code: "ANM-012",
-    equipment: "pH Meter (PH-012)",
-    description: "pH levels consistently outside acceptable range",
-    date_apparition: "2024-01-17T15:25:00Z",
-    process_safety: 2,
-    fiabilite_integrite: 3,
-    disponibilite: 3,
-    criticality: 8,
-    origin: "EMC",
-    status: "In Progress",
-    feedback_at: "2024-01-17T16:00:00Z",
-    created_at: "2024-01-17T15:25:00Z",
-    updated_at: "2024-01-17T16:00:00Z"
-  },
-  {
-    id: "ANM-013",
-    code: "ANM-013",
-    equipment: "Oil Pump (OP-013)",
-    description: "Oil pressure low in main lubrication circuit",
-    date_apparition: "2024-01-18T11:50:00Z",
-    process_safety: 1,
-    fiabilite_integrite: 3,
-    disponibilite: 3,
-    criticality: 7,
-    origin: "Oracle",
-    status: "Closed",
-    feedback_at: "2024-01-18T12:30:00Z",
-    scheduling_ready_at: "2024-01-18T13:00:00Z",
-    scheduled_at: "2024-01-18T14:00:00Z",
-    resolved_at: "2024-01-18T16:00:00Z",
-    created_at: "2024-01-18T11:50:00Z",
-    updated_at: "2024-01-18T16:00:00Z"
-  },
-  {
-    id: "ANM-014",
-    code: "ANM-014",
-    equipment: "Data Logger (DL-014)",
-    description: "Data logger showing communication timeouts",
-    date_apparition: "2024-01-18T08:15:00Z",
-    process_safety: 1,
-    fiabilite_integrite: 2,
-    disponibilite: 2,
-    criticality: 5,
-    origin: "APM",
-    status: "New",
-    created_at: "2024-01-18T08:15:00Z",
-    updated_at: "2024-01-18T08:15:00Z"
-  },
-  {
-    id: "ANM-015",
-    code: "ANM-015",
-    equipment: "Air Compressor (AC-015)",
-    description: "Compressed air pressure drops during peak demand",
-    date_apparition: "2024-01-19T16:40:00Z",
-    process_safety: 3,
-    fiabilite_integrite: 3,
-    disponibilite: 3,
-    criticality: 9,
-    origin: "IBM Maximo",
-    status: "Closed",
-    feedback_at: "2024-01-19T17:00:00Z",
-    scheduling_ready_at: "2024-01-19T17:30:00Z",
-    scheduled_at: "2024-01-19T18:00:00Z",
-    resolved_at: "2024-01-19T20:00:00Z",
-    closed_at: "2024-01-19T21:00:00Z",
-    created_at: "2024-01-19T16:40:00Z",
-    updated_at: "2024-01-19T21:00:00Z"
-  },
-  {
-    id: "ANM-016",
-    code: "ANM-016",
-    equipment: "Waste Conveyor Motor (WM-016)",
-    description: "Waste conveyor motor overheating during operation",
-    date_apparition: "2024-01-20T13:20:00Z",
-    process_safety: 4,
-    fiabilite_integrite: 3,
-    disponibilite: 2,
-    criticality: 9,
-    origin: "EMC",
-    status: "In Progress",
-    feedback_at: "2024-01-20T14:00:00Z",
-    scheduling_ready_at: "2024-01-20T14:30:00Z",
-    scheduled_at: "2024-01-20T15:00:00Z",
-    created_at: "2024-01-20T13:20:00Z",
-    updated_at: "2024-01-20T15:00:00Z"
-  },
-  {
-    id: "ANM-017",
-    code: "ANM-017",
-    equipment: "Spectroscope (SP-017)",
-    description: "Spectroscope calibration drifting beyond tolerance",
-    date_apparition: "2024-01-20T14:15:00Z",
-    process_safety: 1,
-    fiabilite_integrite: 2,
-    disponibilite: 2,
-    criticality: 5,
-    origin: "Oracle",
-    status: "Closed",
-    feedback_at: "2024-01-20T15:00:00Z",
-    scheduling_ready_at: "2024-01-20T15:30:00Z",
-    scheduled_at: "2024-01-20T16:00:00Z",
-    resolved_at: "2024-01-20T18:00:00Z",
-    created_at: "2024-01-20T14:15:00Z",
-    updated_at: "2024-01-20T18:00:00Z"
-  },
-  {
-    id: "ANM-018",
-    code: "ANM-018",
-    equipment: "Steam Control Valve (SV-018)",
-    description: "Steam pressure fluctuations affecting process stability",
-    date_apparition: "2024-01-21T10:30:00Z",
-    process_safety: 5,
-    fiabilite_integrite: 4,
-    disponibilite: 4,
-    criticality: 13,
-    origin: "APM",
-    status: "New",
-    created_at: "2024-01-21T10:30:00Z",
-    updated_at: "2024-01-21T10:30:00Z"
-  },
-  {
-    id: "ANM-019",
-    code: "ANM-019",
-    equipment: "Emergency Light Battery (EL-019)",
-    description: "Emergency lighting system battery backup failing",
-    date_apparition: "2024-01-21T17:05:00Z",
-    process_safety: 5,
-    fiabilite_integrite: 3,
-    disponibilite: 3,
-    criticality: 11,
-    origin: "IBM Maximo",
-    status: "In Progress",
-    feedback_at: "2024-01-21T17:30:00Z",
-    created_at: "2024-01-21T17:05:00Z",
-    updated_at: "2024-01-21T17:30:00Z"
-  },
-  {
-    id: "ANM-020",
-    code: "ANM-020",
-    equipment: "Mixing Tank Agitator (AG-020)",
-    description: "Mixing tank agitator showing irregular rotation speed",
-    date_apparition: "2024-01-22T09:45:00Z",
-    process_safety: 2,
-    fiabilite_integrite: 3,
-    disponibilite: 3,
-    criticality: 8,
-    origin: "EMC",
-    status: "New",
-    created_at: "2024-01-22T09:45:00Z",
-    updated_at: "2024-01-22T09:45:00Z"
-  },
-  {
-    id: "ANM-021",
-    code: "ANM-021",
-    equipment: "Cooling Tower Fan (CTF-021)",
-    description: "Cooling tower fan vibration levels exceed normal limits",
-    date_apparition: "2024-01-22T11:30:00Z",
-    process_safety: 3,
-    fiabilite_integrite: 4,
-    disponibilite: 3,
-    criticality: 10,
-    origin: "Oracle",
-    status: "In Progress",
-    feedback_at: "2024-01-22T12:00:00Z",
-    scheduling_ready_at: "2024-01-22T12:30:00Z",
-    scheduled_at: "2024-01-22T13:00:00Z",
-    created_at: "2024-01-22T11:30:00Z",
-    updated_at: "2024-01-22T13:00:00Z"
-  },
-  {
-    id: "ANM-022",
-    code: "ANM-022",
-    equipment: "Dosing Pump (DP-022)",
-    description: "Chemical dosing pump flow rate inconsistent",
-    date_apparition: "2024-01-23T08:20:00Z",
-    process_safety: 3,
-    fiabilite_integrite: 2,
-    disponibilite: 3,
-    criticality: 8,
-    origin: "APM",
-    status: "New",
-    created_at: "2024-01-23T08:20:00Z",
-    updated_at: "2024-01-23T08:20:00Z"
-  },
-  {
-    id: "ANM-023",
-    code: "ANM-023",
-    equipment: "Safety Valve (SV-023)",
-    description: "Safety valve pressure relief mechanism not responding",
-    date_apparition: "2024-01-23T14:45:00Z",
-    process_safety: 5,
-    fiabilite_integrite: 5,
-    disponibilite: 4,
-    criticality: 14,
-    origin: "IBM Maximo",
-    status: "In Progress",
-    feedback_at: "2024-01-23T15:00:00Z",
-    created_at: "2024-01-23T14:45:00Z",
-    updated_at: "2024-01-23T15:00:00Z"
-  },
-  {
-    id: "ANM-024",
-    code: "ANM-024",
-    equipment: "Heat Exchanger (HE-024)",
-    description: "Heat exchanger efficiency degraded below optimal range",
-    date_apparition: "2024-01-24T07:15:00Z",
-    process_safety: 2,
-    fiabilite_integrite: 4,
-    disponibilite: 3,
-    criticality: 9,
-    origin: "EMC",
-    status: "Closed",
-    feedback_at: "2024-01-24T08:00:00Z",
-    scheduling_ready_at: "2024-01-24T08:30:00Z",
-    scheduled_at: "2024-01-24T09:00:00Z",
-    resolved_at: "2024-01-24T12:00:00Z",
-    created_at: "2024-01-24T07:15:00Z",
-    updated_at: "2024-01-24T12:00:00Z"
-  },
-  {
-    id: "ANM-025",
-    code: "ANM-025",
-    equipment: "Control Panel Display (CPD-025)",
-    description: "Control panel display showing intermittent errors",
-    date_apparition: "2024-01-24T16:30:00Z",
-    process_safety: 1,
-    fiabilite_integrite: 2,
-    disponibilite: 2,
-    criticality: 5,
-    origin: "Oracle",
-    status: "New",
-    created_at: "2024-01-24T16:30:00Z",
-    updated_at: "2024-01-24T16:30:00Z"
-  },
-  {
-    id: "ANM-026",
-    code: "ANM-026",
-    equipment: "Boiler Feed Pump (BFP-026)",
-    description: "Boiler feed pump cavitation detected during startup",
-    date_apparition: "2024-01-25T06:45:00Z",
-    process_safety: 3,
-    fiabilite_integrite: 4,
-    disponibilite: 3,
-    criticality: 11,
-    origin: "APM",
-    status: "In Progress",
-    feedback_at: "2024-01-25T07:30:00Z",
-    scheduling_ready_at: "2024-01-25T08:00:00Z",
-    scheduled_at: "2024-01-25T08:30:00Z",
-    created_at: "2024-01-25T06:45:00Z",
-    updated_at: "2024-01-25T08:30:00Z"
-  },
-  {
-    id: "ANM-027",
-    code: "ANM-027",
-    equipment: "Gas Analyzer (GA-027)",
-    description: "Gas analyzer readings inconsistent with manual samples",
-    date_apparition: "2024-01-25T13:10:00Z",
-    process_safety: 3,
-    fiabilite_integrite: 3,
-    disponibilite: 2,
-    criticality: 8,
-    origin: "IBM Maximo",
-    status: "Closed",
-    feedback_at: "2024-01-25T14:00:00Z",
-    scheduling_ready_at: "2024-01-25T14:30:00Z",
-    scheduled_at: "2024-01-25T15:00:00Z",
-    resolved_at: "2024-01-25T17:00:00Z",
-    closed_at: "2024-01-25T17:30:00Z",
-    created_at: "2024-01-25T13:10:00Z",
-    updated_at: "2024-01-25T17:30:00Z"
-  }
-];
+// TODO: Replace with API call to fetch anomalies from backend
+// const { data: anomalies = [], isLoading, error } = useAnomalies();
 
 // Helper function to calculate red color opacity based on value (1-5 scale)
 const getRedOpacity = (value: number): string => {
@@ -773,13 +316,60 @@ const filters = [
 export default function AnomaliesPage() {
   const router = useRouter();
 
+  // Fetch anomalies from backend
+  const { anomalies, loading: isLoading, error } = useAnomalies();
+
   // Add computed criticality filter field to the data
   const processedAnomalies = useMemo(() => {
-    return mockAnomalies.map(anomaly => ({
+    return anomalies.map(anomaly => ({
       ...anomaly,
       criticality_filter: getCriticalityFilterValue(anomaly.criticality)
     }));
-  }, []);
+  }, [anomalies]);
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="container mx-auto px-6 py-6">
+        <div className="flex justify-between items-center mb-6">
+          <div>
+            <h1 className="text-2xl font-semibold text-zinc-900">Anomaly Management</h1>
+            <p className="text-zinc-600 mt-1">Monitor equipment anomalies with detailed criticality assessment</p>
+          </div>
+        </div>
+        <div className="flex items-center justify-center py-20">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+            <p className="text-zinc-600 mt-4">Loading anomalies...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="container mx-auto px-6 py-6">
+        <div className="flex justify-between items-center mb-6">
+          <div>
+            <h1 className="text-2xl font-semibold text-zinc-900">Anomaly Management</h1>
+            <p className="text-zinc-600 mt-1">Monitor equipment anomalies with detailed criticality assessment</p>
+          </div>
+        </div>
+        <div className="flex items-center justify-center py-20">
+          <div className="text-center">
+            <AlertTriangle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+            <h2 className="text-lg font-semibold text-zinc-900 mb-2">Error Loading Anomalies</h2>
+            <p className="text-zinc-600 mb-4">There was an error loading the anomaly data. Please try again.</p>
+            <Button onClick={() => window.location.reload()}>
+              Retry
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto px-6 py-6">

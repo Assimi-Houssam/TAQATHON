@@ -117,67 +117,8 @@ export default function AddAnomaliesPage() {
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  // Mock preview data for batch upload
-  const mockPreviewRecords: PreviewRecord[] = [
-    {
-      id: "1",
-      num_equipments: "EQ-001",
-      unite: "Production Unit A",
-      systeme: "Pressure Control System",
-      descreption_anomalie: "Pressure sensor showing irregular readings",
-      origine: "Sensor Malfunction",
-      section_proprietaire: "Production",
-      Criticite: "HIGH",
-      status: "valid"
-    },
-    {
-      id: "2",
-      num_equipments: "EQ-002",
-      unite: "Production Unit B",
-      systeme: "Temperature Control",
-      descreption_anomalie: "Temperature fluctuations outside normal range",
-      origine: "Calibration Drift",
-      section_proprietaire: "Maintenance",
-      Criticite: "MEDIUM",
-      status: "valid"
-    },
-    {
-      id: "3",
-      num_equipments: "",
-      unite: "Production Unit C",
-      systeme: "Vibration Monitoring",
-      descreption_anomalie: "Excessive vibration detected in pump bearing",
-      origine: "Mechanical Wear",
-      section_proprietaire: "",
-      Criticite: "HIGH",
-      status: "invalid",
-      errors: ["Equipment number missing", "Owner section required"]
-    },
-    {
-      id: "4",
-      num_equipments: "EQ-004",
-      unite: "Production Unit D",
-      systeme: "Flow Control",
-      descreption_anomalie: "Flow rate below minimum threshold",
-      origine: "Blockage",
-      section_proprietaire: "Operations",
-      Criticite: "INVALID_VALUE",
-      status: "invalid",
-      errors: ["Criticality must be LOW, MEDIUM, or HIGH"]
-    },
-    {
-      id: "5",
-      num_equipments: "EQ-005",
-      unite: "",
-      systeme: "Safety System",
-      descreption_anomalie: "Emergency stop button not responding",
-      origine: "Electrical Issue",
-      section_proprietaire: "Safety",
-      Criticite: "HIGH",
-      status: "invalid",
-      errors: ["Unit field cannot be empty"]
-    }
-  ];
+  // TODO: Replace with API call to process uploaded files and return preview data
+  // const { data: previewData, error: previewError } = useProcessUploadedFile(uploadedFile);
 
   const handleInputChange = (field: keyof FormData, value: string | number | File) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -304,7 +245,8 @@ export default function AddAnomaliesPage() {
               }
               : f
           ));
-          setPreviewRecords(mockPreviewRecords);
+          // TODO: Replace with actual API response data
+          setPreviewRecords([]);
           setShowPreview(true);
           setIsRequiredFieldsOpen(false); // Auto-close required fields when preview shows
 
