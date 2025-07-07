@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useCallback, useRef } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -31,6 +31,8 @@ export function ClosedTabContent({ anomaly, onUpdate, onSetRexSaveFunction }: Cl
   const [rexNotes, setRexNotes] = useState(anomaly.rex?.notes || "");
   const [lessonsLearned, setLessonsLearned] = useState(anomaly.rex?.lessons_learned || "");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const saveInProgressRef = useRef(false);
 
   const criticalityLevel = getCriticalityLevel(anomaly.criticality);
 
@@ -38,16 +40,34 @@ export function ClosedTabContent({ anomaly, onUpdate, onSetRexSaveFunction }: Cl
     const file = event.target.files?.[0];
     if (file) {
       setSelectedFile(file);
+      setHasUnsavedChanges(true);
     }
   };
 
-  const handleSaveREX = async () => {
+  const handleNotesChange = (value: string) => {
+    setRexNotes(value);
+    setHasUnsavedChanges(true);
+  };
+
+  const handleLessonsChange = (value: string) => {
+    setLessonsLearned(value);
+    setHasUnsavedChanges(true);
+  };
+
+  const handleSaveREX = useCallback(async () => {
+    // Prevent duplicate saves
+    if (saveInProgressRef.current || isLoading) {
+      return;
+    }
+
     if (!rexNotes.trim()) {
       alert("Please provide REX notes before saving.");
       return;
     }
 
+    saveInProgressRef.current = true;
     setIsLoading(true);
+    
     try {
       await onUpdate({
         rex: {
@@ -61,19 +81,25 @@ export function ClosedTabContent({ anomaly, onUpdate, onSetRexSaveFunction }: Cl
         }
       });
       
+      setHasUnsavedChanges(false);
       alert("REX data saved successfully!");
     } catch (error) {
       console.error("Failed to save REX:", error);
       alert("Failed to save REX data. Please try again.");
     } finally {
       setIsLoading(false);
+      saveInProgressRef.current = false;
     }
-  };
+  }, [rexNotes, lessonsLearned, selectedFile, onUpdate, anomaly.rex?.id, anomaly.id, anomaly.rex?.file_path, isLoading]);
 
-  // Set up the save function in the parent when component mounts or data changes
+  // Only set the save function when there are actual changes and notes are provided
   React.useEffect(() => {
     if (onSetRexSaveFunction) {
-      onSetRexSaveFunction(handleSaveREX);
+      if (hasUnsavedChanges && rexNotes.trim()) {
+        onSetRexSaveFunction(handleSaveREX);
+      } else {
+        onSetRexSaveFunction(null);
+      }
     }
     
     // Cleanup: remove the save function when component unmounts
@@ -82,7 +108,7 @@ export function ClosedTabContent({ anomaly, onUpdate, onSetRexSaveFunction }: Cl
         onSetRexSaveFunction(null);
       }
     };
-  }, [rexNotes, lessonsLearned, selectedFile, onSetRexSaveFunction, isLoading]);
+  }, [handleSaveREX, onSetRexSaveFunction, hasUnsavedChanges, rexNotes]);
 
   const formatDateTime = (dateString: string) => {
     return new Date(dateString).toLocaleString();
@@ -159,7 +185,7 @@ export function ClosedTabContent({ anomaly, onUpdate, onSetRexSaveFunction }: Cl
             <div className="text-2xl font-bold text-blue-900 mb-1">{anomaly.criticality}</div>
             <div className="text-xs text-blue-600 mb-1">out of 15</div>
             <h4 className="text-sm font-medium text-blue-900">Total Score</h4>
-            <Badge className={getCriticalityColor(criticalityLevel)} variant="outline" size="sm">
+            <Badge className={getCriticalityColor(criticalityLevel)} variant="outline">
               {criticalityLevel}
             </Badge>
           </div>
@@ -287,7 +313,7 @@ export function ClosedTabContent({ anomaly, onUpdate, onSetRexSaveFunction }: Cl
               <Textarea
                 id="rex-notes"
                 value={rexNotes}
-                onChange={(e) => setRexNotes(e.target.value)}
+                onChange={(e) => handleNotesChange(e.target.value)}
                 placeholder="Document the resolution process, what was done, and any important observations..."
                 rows={4}
                 className="min-h-[100px]"
@@ -301,7 +327,7 @@ export function ClosedTabContent({ anomaly, onUpdate, onSetRexSaveFunction }: Cl
               <Textarea
                 id="lessons-learned"
                 value={lessonsLearned}
-                onChange={(e) => setLessonsLearned(e.target.value)}
+                onChange={(e) => handleLessonsChange(e.target.value)}
                 placeholder="What insights were gained? How can similar issues be prevented in the future?"
                 rows={3}
               />
@@ -330,6 +356,24 @@ export function ClosedTabContent({ anomaly, onUpdate, onSetRexSaveFunction }: Cl
                 Upload photos, reports, or other documentation related to the resolution
               </p>
             </div>
+
+            {/* Manual Save Button */}
+            <div className="flex justify-end pt-4">
+              <Button
+                onClick={handleSaveREX}
+                disabled={!rexNotes.trim() || isLoading}
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                <Save className="h-4 w-4 mr-2" />
+                {isLoading ? "Saving..." : "Save REX Documentation"}
+              </Button>
+            </div>
+
+            {hasUnsavedChanges && (
+              <div className="text-sm text-orange-600 bg-orange-50 p-2 rounded border border-orange-200">
+                You have unsaved changes. Save your REX documentation to preserve your work.
+              </div>
+            )}
 
             {anomaly.rex?.file_path && (
               <div className="p-3 border border-blue-200 rounded-lg bg-blue-50">

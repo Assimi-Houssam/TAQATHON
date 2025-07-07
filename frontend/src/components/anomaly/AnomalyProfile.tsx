@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle, Circle, PlayCircle, Save } from "lucide-react";
+import { CheckCircle, Circle, PlayCircle, Save, AlertTriangle } from "lucide-react";
 import { AnomalyWithRelations, STATUS_TRANSITIONS } from "@/types/anomaly";
 import { AnomalySummary } from "./AnomalySummary";
 import { NewTabContent } from "./NewTabContent";
@@ -35,6 +35,8 @@ export function AnomalyProfile({ anomaly, onStatusChange, onUpdate }: AnomalyPro
   
   const [isActionLoading, setIsActionLoading] = useState(false);
   const [rexSaveFunction, setRexSaveFunction] = useState<(() => Promise<void>) | null>(null);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [pendingAction, setPendingAction] = useState<string | null>(null);
 
   const getCurrentStepIndex = () => {
     return LIFECYCLE_STEPS.findIndex(step => step.key === activeStep);
@@ -84,20 +86,61 @@ export function AnomalyProfile({ anomaly, onStatusChange, onUpdate }: AnomalyPro
     }
   };
 
-  const handleMainAction = async () => {
+  const executeConfirmedAction = async () => {
     setIsActionLoading(true);
     try {
-      if (activeStep === "new" && anomaly.status === "New") {
+      if (pendingAction === "validate" && anomaly.status === "New") {
         await handleStatusTransition("In Progress");
-      } else if (activeStep === "in-progress" && anomaly.status === "In Progress") {
+      } else if (pendingAction === "complete" && anomaly.status === "In Progress") {
         await handleStatusTransition("Closed");
-      } else if (activeStep === "closed" && anomaly.status === "Closed" && rexSaveFunction) {
+      } else if (pendingAction === "document" && anomaly.status === "Closed" && rexSaveFunction) {
         await rexSaveFunction();
       }
     } catch (error) {
       console.error("Failed to execute main action:", error);
     } finally {
       setIsActionLoading(false);
+      setShowConfirmModal(false);
+      setPendingAction(null);
+    }
+  };
+
+  const handleMainAction = async () => {
+    if (activeStep === "new" && anomaly.status === "New") {
+      setPendingAction("validate");
+      setShowConfirmModal(true);
+    } else if (activeStep === "in-progress" && anomaly.status === "In Progress") {
+      setPendingAction("complete");
+      setShowConfirmModal(true);
+    } else if (activeStep === "closed" && anomaly.status === "Closed" && rexSaveFunction) {
+      setPendingAction("document");
+      setShowConfirmModal(true);
+    }
+  };
+
+  const getConfirmationMessage = () => {
+    switch (pendingAction) {
+      case "validate":
+        return "Are you sure you want to validate this anomaly and move it to In Progress?";
+      case "complete":
+        return "Are you sure you want to complete the resolution and close this anomaly?";
+      case "document":
+        return "Are you sure you want to complete the documentation for this anomaly?";
+      default:
+        return "Are you sure you want to proceed?";
+    }
+  };
+
+  const getConfirmationTitle = () => {
+    switch (pendingAction) {
+      case "validate":
+        return "Validate Anomaly";
+      case "complete":
+        return "Complete Resolution";
+      case "document":
+        return "Complete Documentation";
+      default:
+        return "Confirm Action";
     }
   };
 
@@ -213,6 +256,39 @@ export function AnomalyProfile({ anomaly, onStatusChange, onUpdate }: AnomalyPro
 
   return (
     <div>
+      {/* Confirmation Modal */}
+      {showConfirmModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4 shadow-xl">
+            <div className="flex items-center mb-4">
+              <AlertTriangle className="h-6 w-6 text-orange-500 mr-3" />
+              <h3 className="text-lg font-semibold text-gray-900">{getConfirmationTitle()}</h3>
+            </div>
+            <p className="text-gray-600 mb-6">{getConfirmationMessage()}</p>
+            <div className="flex space-x-3">
+              <Button
+                onClick={() => {
+                  setShowConfirmModal(false);
+                  setPendingAction(null);
+                }}
+                variant="outline"
+                className="flex-1"
+                disabled={isActionLoading}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={executeConfirmedAction}
+                className="flex-1"
+                disabled={isActionLoading}
+              >
+                {isActionLoading ? "Processing..." : "Confirm"}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Clean Progress Stepper */}
       <div className="mb-6 p-3 bg-white rounded-lg border border-gray-200 shadow-sm">
         <div className="flex items-center justify-between">

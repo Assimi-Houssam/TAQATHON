@@ -16,10 +16,10 @@ import {
   Shield, 
   Activity,
   PlayCircle,
-  Save,
-  X
+  Save
 } from "lucide-react";
 import { AnomalyWithRelations, ActionPlan, calculateCriticality, getCriticalityLevel } from "@/types/anomaly";
+import { ActionPlanTable } from "./ActionPlanTable";
 
 interface NewTabContentProps {
   anomaly: AnomalyWithRelations;
@@ -29,7 +29,6 @@ interface NewTabContentProps {
 
 export function NewTabContent({ anomaly, onUpdate, onStatusChange }: NewTabContentProps) {
   const [isSaving, setIsSaving] = useState(false);
-  const [isActionPlanModalOpen, setIsActionPlanModalOpen] = useState(false);
   const [formData, setFormData] = useState({
     process_safety: anomaly.process_safety,
     fiabilite_integrite: anomaly.fiabilite_integrite,
@@ -88,6 +87,21 @@ export function NewTabContent({ anomaly, onUpdate, onStatusChange }: NewTabConte
       case 'CRITICAL': return 'bg-red-50 text-red-700 border-red-200';
       default: return 'bg-gray-50 text-gray-700 border-gray-200';
     }
+  };
+
+  const handleAddAction = () => {
+    // TODO: Implement add action functionality
+    console.log("Add action clicked");
+  };
+
+  const handleEditAction = (item: any) => {
+    // TODO: Implement edit action functionality
+    console.log("Edit action clicked", item);
+  };
+
+  const handleDeleteAction = (id: string) => {
+    // TODO: Implement delete action functionality
+    console.log("Delete action clicked", id);
   };
 
   return (
@@ -220,7 +234,7 @@ export function NewTabContent({ anomaly, onUpdate, onStatusChange }: NewTabConte
                     value={formData.duration_of_intervention || ''}
                     onChange={(e) => handleFieldChange('duration_of_intervention', parseFloat(e.target.value) || 0)}
                     placeholder="0"
-                    className="text-center border-0 bg-transparent text-sm w-8 focus:ring-0 p-0 font-medium"
+                    className="text-center border-0 bg-transparent text-sm w-16 focus:ring-0 p-0 font-medium"
                   />
                   <span className="text-xs text-gray-400">h</span>
                 </div>
@@ -260,54 +274,13 @@ export function NewTabContent({ anomaly, onUpdate, onStatusChange }: NewTabConte
         defaultOpen={true}
         className=""
       >
-        <div className="flex items-center justify-center py-8">
-          <Button
-            variant="outline"
-            onClick={() => setIsActionPlanModalOpen(true)}
-            className="flex items-center gap-2 px-6 py-3 border-dashed border-gray-300 hover:border-blue-400 hover:bg-blue-50 transition-colors"
-          >
-            <Plus className="h-4 w-4" />
-            Add Action Plan
-          </Button>
-        </div>
+        <ActionPlanTable 
+          showHeader={false}
+          onAddAction={handleAddAction}
+          onEditAction={handleEditAction}
+          onDeleteAction={handleDeleteAction}
+        />
       </CollapsibleCard>
-
-      {/* Action Plan Modal */}
-      {isActionPlanModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div
-            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-            onClick={() => setIsActionPlanModalOpen(false)}
-          />
-          
-          <div className="relative bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-            <div className="sticky top-0 bg-white border-b border-gray-200 rounded-t-2xl p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h2 className="text-xl font-semibold text-gray-900">Action Plan</h2>
-                  <p className="text-sm text-gray-600 mt-1">Define actions needed to resolve this anomaly</p>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setIsActionPlanModalOpen(false)}
-                  className="h-8 w-8 p-0 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full"
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-
-            <div className="p-6">
-              <div className="text-center py-12 text-gray-500">
-                <Activity className="h-16 w-16 mx-auto mb-4 text-gray-400" />
-                <p className="text-lg font-medium text-gray-900 mb-2">Coming Soon</p>
-                <p className="text-sm">Action plan functionality will be available here</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 } 

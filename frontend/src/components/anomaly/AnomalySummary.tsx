@@ -95,7 +95,7 @@ export function AnomalySummary({ anomaly }: AnomalySummaryProps) {
       </Card>
 
       {/* Timeline - Compact Footer */}
-      <Card className="bg-gray-50/50">
+      <Card className="bg-white">
         <CardContent className="p-3">
           <div className="flex items-center gap-4 text-xs text-gray-600">
             <div className="flex items-center gap-1">
