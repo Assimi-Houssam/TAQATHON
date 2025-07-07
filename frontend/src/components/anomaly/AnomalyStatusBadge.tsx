@@ -10,7 +10,7 @@ export function AnomalyStatus({
   status, 
   className 
 }: AnomalyStatusProps) {
-  const isNew = status === 'New';
+  const isNew = status === 'NEW';
   
   return (
     <div className={`flex items-center gap-2 ${className}`}>

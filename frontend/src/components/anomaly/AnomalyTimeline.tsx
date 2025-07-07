@@ -20,31 +20,31 @@ interface TimelineEvent {
 export function AnomalyTimeline({ anomaly, className }: AnomalyTimelineProps) {
   const getTimelineEvents = (anomaly: Anomaly): TimelineEvent[] => {
     const currentStatusIndex = [
-      'New',
-      'In Progress',
-      'Closed'
-    ].indexOf(anomaly.status);
+      'NEW',
+      'IN_PROGRESS',
+      'CLOSED'
+    ].indexOf(anomaly.status || 'NEW');
 
     return [
       {
-        status: 'New',
-        timestamp: anomaly.created_at,
+        status: 'NEW',
+        timestamp: anomaly.created_at ? anomaly.created_at.toString() : undefined,
         label: 'Reported',
         description: 'Anomaly reported and awaiting review',
         icon: AlertTriangle,
         completed: currentStatusIndex >= 0
       },
       {
-        status: 'In Progress',
-        timestamp: anomaly.feedback_at || anomaly.scheduled_at,
+        status: 'IN_PROGRESS',
+        timestamp: anomaly.date_traitement,
         label: 'In Progress',
         description: 'Maintenance In Progress for resolution',
         icon: Calendar,
         completed: currentStatusIndex >= 1
       },
       {
-        status: 'Closed',
-        timestamp: anomaly.resolved_at || anomaly.closed_at,
+        status: 'CLOSED',
+        timestamp: anomaly.resolution_date,
         label: 'Closed',
         description: 'Anomaly resolved and closed',
         icon: CheckCircle,

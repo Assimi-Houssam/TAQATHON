@@ -8,15 +8,16 @@ import { Plus, AlertTriangle, FileText, Wrench } from "lucide-react";
 import { DataTable } from "@/components/data-table";
 import { Column, DataTableConfig } from "@/components/data-table/types";
 import { useRouter } from "next/navigation";
-import { Anomaly, AnomalyStatus, calculateCriticality, getCriticalityLevel } from "@/types/anomaly";
+import { Anomaly, AnomalyStatus, getCriticalityLevel } from "@/types/anomaly";
 import { AnomalyStatus as AnomalyStatusComponent, AnomalyCriticalityIndicator } from "@/components/anomaly";
 import { useAnomalies } from "@/hooks/useAnomalies";
 
 // Helper function to get criticality filter value
-const getCriticalityFilterValue = (criticality: number): string => {
-  if (criticality >= 13) return 'critical';
-  if (criticality >= 10) return 'high';
-  if (criticality >= 7) return 'medium';
+const getCriticalityFilterValue = (criticality?: string): string => {
+  const criticalityValue = parseFloat(criticality || '0') || 0;
+  if (criticalityValue >= 13) return 'critical';
+  if (criticalityValue >= 10) return 'high';
+  if (criticalityValue >= 7) return 'medium';
   return 'low';
 };
 
@@ -24,16 +25,17 @@ const getCriticalityFilterValue = (criticality: number): string => {
 // const { data: anomalies = [], isLoading, error } = useAnomalies();
 
 // Helper function to calculate red color opacity based on value (1-5 scale)
-const getRedOpacity = (value: number): string => {
+const getRedOpacity = (value?: string): string => {
+  const numValue = parseFloat(value || '0') || 0;
   // Only values 4 and 5 should be red (less colored), others transparent
-  if (value === 4 || value === 5) {
+  if (numValue === 4 || numValue === 5) {
     return 'rgba(239, 68, 68, 0.15)'; // 30% red for values 4 and 5 (less colored)
   }
   return 'transparent'; // values 1, 2, 3 stay transparent
 };
 
 // Helper function to get criticality indicator color
-const getCriticalityIndicatorColor = (criticality: number): string => {
+const getCriticalityIndicatorColor = (criticality?: string): string => {
   const level = getCriticalityLevel(criticality);
   
   switch (level) {
@@ -53,26 +55,26 @@ const getCriticalityIndicatorColor = (criticality: number): string => {
 // Column definitions using new components - reordered and enhanced
 const columns: Column<Anomaly>[] = [
   {
-    id: "code",
-    header: "Code",
-    accessorKey: "code",
+    id: "num_equipments",
+    header: "Equipment ID",
+    accessorKey: "num_equipments",
     cell: ({ row }) => (
       <div className="font-mono text-sm font-medium text-zinc-900">
-        {row.original.code}
+        {row.original.num_equipments}
       </div>
     ),
-    size: 100,
+    size: 120,
     enableSorting: true,
     enableHiding: false, // Always visible
   },
   {
-    id: "equipment",
-    header: "Equipment",
-    accessorKey: "equipment",
+    id: "systeme",
+    header: "System",
+    accessorKey: "systeme",
     cell: ({ row }) => (
       <div className="max-w-[200px]">
-        <div className="font-medium text-zinc-900 truncate" title={row.original.equipment}>
-          {row.original.equipment}
+        <div className="font-medium text-zinc-900 truncate" title={row.original.systeme || ""}>
+          {row.original.systeme || "N/A"}
         </div>
       </div>
     ),
@@ -81,13 +83,13 @@ const columns: Column<Anomaly>[] = [
     enableHiding: false, // Always visible
   },
   {
-    id: "description",
+    id: "descreption_anomalie",
     header: "Description",
-    accessorKey: "description",
+    accessorKey: "descreption_anomalie",
     cell: ({ row }) => (
       <div className="max-w-[300px]">
-        <div className="text-sm text-zinc-600 truncate" title={row.original.description}>
-          {row.original.description}
+        <div className="text-sm text-zinc-600 truncate" title={row.original.descreption_anomalie || ""}>
+          {row.original.descreption_anomalie || "No description"}
         </div>
       </div>
     ),
@@ -96,17 +98,17 @@ const columns: Column<Anomaly>[] = [
     enableHiding: false, // Always visible
   },
   {
-    id: "process_safety",
+    id: "process_safty",
     header: "Process Safety",
-    accessorKey: "process_safety",
+    accessorKey: "process_safty",
     cell: ({ row }) => (
       <div className="flex items-center justify-center">
         <div 
           className="w-8 h-8 rounded-lg flex items-center justify-center"
-          style={{ backgroundColor: getRedOpacity(row.original.process_safety) }}
+          style={{ backgroundColor: getRedOpacity(row.original.process_safty) }}
         >
           <span className="text-sm font-medium text-zinc-900">
-            {row.original.process_safety}
+            {row.original.process_safty || "0"}
           </span>
         </div>
       </div>
@@ -116,17 +118,17 @@ const columns: Column<Anomaly>[] = [
     enableHiding: false, // Always visible
   },
   {
-    id: "fiabilite_integrite",
+    id: "fiablite_integrite",
     header: "Reliability",
-    accessorKey: "fiabilite_integrite",
+    accessorKey: "fiablite_integrite",
     cell: ({ row }) => (
       <div className="flex items-center justify-center">
         <div 
           className="w-8 h-8 rounded-lg flex items-center justify-center"
-          style={{ backgroundColor: getRedOpacity(row.original.fiabilite_integrite) }}
+          style={{ backgroundColor: getRedOpacity(row.original.fiablite_integrite) }}
         >
           <span className="text-sm font-medium text-zinc-900">
-            {row.original.fiabilite_integrite}
+            {row.original.fiablite_integrite || "0"}
           </span>
         </div>
       </div>
@@ -136,17 +138,17 @@ const columns: Column<Anomaly>[] = [
     enableHiding: false, // Always visible
   },
   {
-    id: "disponibilite",
+    id: "disponsibilite",
     header: "Availability",
-    accessorKey: "disponibilite",
+    accessorKey: "disponsibilite",
     cell: ({ row }) => (
       <div className="flex items-center justify-center">
         <div 
           className="w-8 h-8 rounded-lg flex items-center justify-center"
-          style={{ backgroundColor: getRedOpacity(row.original.disponibilite) }}
+          style={{ backgroundColor: getRedOpacity(row.original.disponsibilite) }}
         >
           <span className="text-sm font-medium text-zinc-900">
-            {row.original.disponibilite}
+            {row.original.disponsibilite || "0"}
           </span>
         </div>
       </div>
@@ -156,9 +158,9 @@ const columns: Column<Anomaly>[] = [
     enableHiding: false, // Always visible
   },
   {
-    id: "criticality",
+    id: "Criticite",
     header: "Criticality",
-    accessorKey: "criticality",
+    accessorKey: "Criticite",
     cell: ({ row }) => {
       // Check if this is a fake row (padding row)
       const isFakeRow = row.original && typeof row.original === 'object' && '__isFakeRow' in row.original;
@@ -174,7 +176,7 @@ const columns: Column<Anomaly>[] = [
       return (
         <div className="flex items-center justify-center">
           <AnomalyCriticalityIndicator 
-            criticality={row.original.criticality}
+            criticality={parseFloat(row.original.Criticite || '0') || 0}
             variant="badge"
           />
         </div>
@@ -191,7 +193,7 @@ const columns: Column<Anomaly>[] = [
     cell: ({ row }) => (
       <div className="text-center">
         <AnomalyStatusComponent 
-          status={row.original.status}
+          status={row.original.status || 'NEW'}
         />
       </div>
     ),
@@ -200,16 +202,16 @@ const columns: Column<Anomaly>[] = [
     enableHiding: false, // Always visible
   },
   {
-    id: "date_apparition",
+    id: "date_detection",
     header: "Date Detected",
-    accessorKey: "date_apparition",
+    accessorKey: "date_detection",
     cell: ({ row }) => (
       <div className="text-sm text-zinc-600">
-        {new Date(row.original.date_apparition).toLocaleDateString('en-US', {
+        {row.original.date_detection ? new Date(row.original.date_detection).toLocaleDateString('en-US', {
           year: 'numeric',
           month: 'short',
           day: 'numeric'
-        })}
+        }) : "No date"}
       </div>
     ),
     size: 120,
@@ -217,12 +219,12 @@ const columns: Column<Anomaly>[] = [
     enableHiding: true, // Can be hidden
   },
   {
-    id: "origin",
+    id: "origine",
     header: "Origin",
-    accessorKey: "origin",
+    accessorKey: "origine",
     cell: ({ row }) => (
       <div className="text-sm text-zinc-600">
-        {row.original.origin || "Unknown"}
+        {row.original.origine || "Unknown"}
       </div>
     ),
     size: 150,
@@ -236,8 +238,8 @@ const columns: Column<Anomaly>[] = [
     cell: ({ row }) => (
       <div className="flex items-center justify-center">
         <div 
-          className={`w-1 h-8 rounded-full ${getCriticalityIndicatorColor(row.original.criticality)}`}
-          title={getCriticalityLevel(row.original.criticality)}
+          className={`w-1 h-8 rounded-full ${getCriticalityIndicatorColor(row.original.Criticite)}`}
+          title={getCriticalityLevel(row.original.Criticite)}
         />
       </div>
     ),
@@ -256,24 +258,24 @@ const config: DataTableConfig<Anomaly> = {
   enablePagination: true,
   pageSize: 10,
   searchPlaceholder: "Search anomalies...",
-  searchableColumns: ["code", "equipment", "description", "origin"],
+  searchableColumns: ["num_equipments", "systeme", "descreption_anomalie", "origine"],
   // Default sorting: Critical anomalies first (highest criticality first)
   defaultSort: {
-    field: "criticality",
+    field: "Criticite",
     direction: "desc", // Descending order (highest criticality first)
   },
   // Default visible columns (most important ones in new order)
   defaultColumnVisibility: {
-    code: true,
-    equipment: true,
-    description: true,
-    process_safety: true, // Now visible by default
-    fiabilite_integrite: true, // Now visible by default
-    disponibilite: true, // Now visible by default
-    criticality: true,
+    num_equipments: true,
+    systeme: true,
+    descreption_anomalie: true,
+    process_safty: true, // Now visible by default
+    fiablite_integrite: true, // Now visible by default
+    disponsibilite: true, // Now visible by default
+    Criticite: true,
     status: true,
-    date_apparition: false, // Hidden by default
-    origin: false, // Hidden by default
+    date_detection: false, // Hidden by default
+    origine: false, // Hidden by default
     criticality_indicator: true, // Always visible, now last
   },
 };
@@ -300,7 +302,7 @@ const filters = [
     ],
   },
   {
-    key: "origin",
+    key: "origine",
     label: "Origin",
     options: [
       { value: "Oracle", label: "Oracle" },
@@ -323,7 +325,7 @@ export default function AnomaliesPage() {
   const processedAnomalies = useMemo(() => {
     return anomalies.map(anomaly => ({
       ...anomaly,
-      criticality_filter: getCriticalityFilterValue(anomaly.criticality)
+      criticality_filter: getCriticalityFilterValue(anomaly.Criticite)
     }));
   }, [anomalies]);
 
@@ -397,10 +399,10 @@ export default function AnomaliesPage() {
           columns={columns}
           config={config}
           filters={filters}
-          onRowClick={(anomaly) => router.push(`/dashboard/anomalies/detail?id=${anomaly.id}`)}
-          className="w-full"
-        />
+                      onRowClick={(anomaly) => router.push(`/dashboard/anomalies/detail?id=${anomaly.id}`)}
+            className="w-full"
+          />
+        </div>
       </div>
-    </div>
-  );
-} 
+    );
+  }

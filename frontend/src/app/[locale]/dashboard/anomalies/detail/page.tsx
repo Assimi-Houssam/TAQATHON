@@ -17,7 +17,7 @@ export default function AnomalyDetailPage() {
   const { updateAnomaly, updateAnomalyStatus } = useAnomalyMutations();
 
   const handleStatusChange = async (newStatus: AnomalyWithRelations['status']) => {
-    if (!anomalyId) return;
+    if (!anomalyId || !newStatus) return;
     try {
       await updateAnomalyStatus(anomalyId, newStatus);
     } catch (error) {
@@ -170,7 +170,7 @@ export default function AnomalyDetailPage() {
         <div>
             <h1 className="text-2xl font-bold text-gray-900 mb-1">Anomaly Profile</h1>
           <p className="text-sm text-gray-600">
-              Managing {anomaly?.code || anomaly?.id || 'Anomaly'} through its lifecycle
+              Managing {anomaly?.num_equipments || anomaly?.id || 'Anomaly'} through its lifecycle
           </p>
           </div>
         </div>

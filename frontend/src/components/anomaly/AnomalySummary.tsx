@@ -35,7 +35,7 @@ const criticityColors: Record<AnomalyCriticality, string> = {
 
 export function AnomalySummary({ anomaly }: AnomalySummaryProps) {
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
-  const criticalityLevel = getCriticalityLevel(anomaly.criticality);
+  const criticalityLevel = getCriticalityLevel(anomaly.Criticite);
   
   // Helper function to get display value or fallback
   const getDisplayValue = (value: any, fallback = "Not specified") => {
@@ -56,7 +56,7 @@ export function AnomalySummary({ anomaly }: AnomalySummaryProps) {
               <div>
                 <p className="text-sm font-medium text-gray-500">Anomaly ID</p>
                 <p className="font-mono text-sm font-semibold text-gray-900">
-                  {anomaly.code || `#${anomaly.id.slice(-8).toUpperCase()}`}
+                  {`#${anomaly.id.slice(-8).toUpperCase()}`}
                 </p>
               </div>
             </div>
@@ -75,7 +75,7 @@ export function AnomalySummary({ anomaly }: AnomalySummaryProps) {
                 <span className="text-sm font-medium text-gray-700">Description</span>
               </div>
               <p className="text-gray-900 leading-relaxed pl-6 line-clamp-3">
-                {anomaly.description}
+                {anomaly.descreption_anomalie || "No description provided"}
               </p>
             </div>
 
@@ -86,19 +86,19 @@ export function AnomalySummary({ anomaly }: AnomalySummaryProps) {
                 <span className="text-sm font-medium text-gray-700">Equipment</span>
               </div>
               <p className="text-gray-900 pl-6">
-                {anomaly.equipment}
+                {anomaly.num_equipments || anomaly.systeme || "No equipment specified"}
               </p>
             </div>
 
             {/* Owning Section - using origin as fallback since section_proprietaire isn't in main interface */}
-            {anomaly.origin && (
+            {anomaly.origine && (
               <div>
                 <div className="flex items-center gap-2 mb-2">
                   <Users className="h-4 w-4 text-gray-500" />
-                  <span className="text-sm font-medium text-gray-700">Owning Section</span>
+                  <span className="text-sm font-medium text-gray-700">Origin</span>
                 </div>
                 <p className="text-gray-900 pl-6">
-                  {anomaly.origin}
+                  {anomaly.origine}
                 </p>
               </div>
             )}
@@ -129,13 +129,13 @@ export function AnomalySummary({ anomaly }: AnomalySummaryProps) {
                     <div>
                       <span>Anomaly Details</span>
                       <p className="text-sm font-normal text-gray-500 mt-1">
-                        {anomaly.code || `#${anomaly.id.slice(-8).toUpperCase()}`}
+                        {`#${anomaly.id.slice(-8).toUpperCase()}`}
                       </p>
                     </div>
                   </DialogTitle>
                 </DialogHeader>
 
-                                <div className="space-y-5 mt-4">
+                <div className="space-y-5 mt-4">
                   {/* Two-Column Layout */}
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     
@@ -153,7 +153,7 @@ export function AnomalySummary({ anomaly }: AnomalySummaryProps) {
                           <span className="text-sm font-medium text-gray-700">Description</span>
                         </div>
                         <p className="text-gray-900 leading-relaxed text-sm">
-                          {anomaly.description}
+                          {anomaly.descreption_anomalie || "No description provided"}
                         </p>
                       </div>
 
@@ -164,16 +164,16 @@ export function AnomalySummary({ anomaly }: AnomalySummaryProps) {
                             <Settings className="h-4 w-4 text-gray-600" />
                             <span className="text-sm font-medium text-gray-700">Equipment</span>
                           </div>
-                          <p className="text-gray-900 text-sm">{anomaly.equipment}</p>
+                          <p className="text-gray-900 text-sm">{anomaly.num_equipments || anomaly.systeme || "No equipment specified"}</p>
                         </div>
 
-                        {anomaly.origin && (
+                        {anomaly.origine && (
                           <div className="p-3 bg-gray-50 rounded-lg">
                             <div className="flex items-center gap-2 mb-1">
                               <Users className="h-4 w-4 text-gray-600" />
-                              <span className="text-sm font-medium text-gray-700">Owning Section</span>
+                              <span className="text-sm font-medium text-gray-700">Origin</span>
                             </div>
-                            <p className="text-gray-900 text-sm">{anomaly.origin}</p>
+                            <p className="text-gray-900 text-sm">{anomaly.origine}</p>
                           </div>
                         )}
                       </div>
@@ -194,11 +194,11 @@ export function AnomalySummary({ anomaly }: AnomalySummaryProps) {
                             <span className="text-sm font-medium text-gray-700">Detection Date</span>
                           </div>
                           <p className="text-gray-900 text-sm">
-                            {new Date(anomaly.date_apparition).toLocaleDateString('en-US', {
+                            {anomaly.date_detection ? new Date(anomaly.date_detection).toLocaleDateString('en-US', {
                               year: 'numeric',
                               month: 'long',
                               day: 'numeric'
-                            })}
+                            }) : "No date specified"}
                           </p>
                         </div>
 
@@ -211,7 +211,7 @@ export function AnomalySummary({ anomaly }: AnomalySummaryProps) {
                             <Badge className={criticityColors[criticalityLevel]} variant="outline">
                               {criticalityLevel}
                             </Badge>
-                            <span className="text-xs text-gray-600">({anomaly.criticality}/15)</span>
+                            <span className="text-xs text-gray-600">({anomaly.Criticite || 0}/15)</span>
                           </div>
                         </div>
                       </div>
@@ -226,21 +226,21 @@ export function AnomalySummary({ anomaly }: AnomalySummaryProps) {
                           <div className="flex justify-between">
                             <span className="text-gray-600">Created:</span>
                             <span className="text-gray-900 font-medium">
-                              {new Date(anomaly.created_at).toLocaleDateString('en-US', {
+                              {anomaly.created_at ? new Date(anomaly.created_at).toLocaleDateString('en-US', {
                                 year: 'numeric',
                                 month: 'short',
                                 day: 'numeric'
-                              })}
+                              }) : "No date"}
                             </span>
                           </div>
                           <div className="flex justify-between">
                             <span className="text-gray-600">Updated:</span>
                             <span className="text-gray-900 font-medium">
-                              {new Date(anomaly.updated_at).toLocaleDateString('en-US', {
+                              {anomaly.updated_at ? new Date(anomaly.updated_at).toLocaleDateString('en-US', {
                                 year: 'numeric',
                                 month: 'short',
                                 day: 'numeric'
-                              })}
+                              }) : "No date"}
                             </span>
                           </div>
                         </div>
@@ -257,15 +257,15 @@ export function AnomalySummary({ anomaly }: AnomalySummaryProps) {
                     <div className="bg-gray-50 rounded-lg p-3">
                       <div className="grid grid-cols-3 gap-3">
                         <div className="text-center">
-                          <div className="text-lg font-semibold text-gray-900">{anomaly.process_safety}/5</div>
+                          <div className="text-lg font-semibold text-gray-900">{anomaly.process_safty || 0}/5</div>
                           <div className="text-xs text-gray-600">Process Safety</div>
                         </div>
                         <div className="text-center">
-                          <div className="text-lg font-semibold text-gray-900">{anomaly.fiabilite_integrite}/5</div>
+                          <div className="text-lg font-semibold text-gray-900">{anomaly.fiablite_integrite || 0}/5</div>
                           <div className="text-xs text-gray-600">Reliability</div>
                         </div>
                         <div className="text-center">
-                          <div className="text-lg font-semibold text-gray-900">{anomaly.disponibilite}/5</div>
+                          <div className="text-lg font-semibold text-gray-900">{anomaly.disponsibilite || 0}/5</div>
                           <div className="text-xs text-gray-600">Availability</div>
                         </div>
                       </div>
