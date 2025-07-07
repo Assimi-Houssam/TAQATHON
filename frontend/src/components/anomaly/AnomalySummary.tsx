@@ -93,22 +93,6 @@ export function AnomalySummary({ anomaly }: AnomalySummaryProps) {
           </p>
         </CardContent>
       </Card>
-
-      {/* Timeline - Compact Footer */}
-      <Card className="bg-white">
-        <CardContent className="p-3">
-          <div className="flex items-center gap-4 text-xs text-gray-600">
-            <div className="flex items-center gap-1">
-              <Clock className="h-3 w-3" />
-              <span>Created {new Date(anomaly.created_at).toLocaleDateString()}</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <Clock className="h-3 w-3" />
-              <span>Updated {new Date(anomaly.updated_at).toLocaleDateString()}</span>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 } 

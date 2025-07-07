@@ -16,7 +16,7 @@ import {
   Shield, 
   Activity,
   PlayCircle,
-  Save
+  Send
 } from "lucide-react";
 import { AnomalyWithRelations, ActionPlan, calculateCriticality, getCriticalityLevel } from "@/types/anomaly";
 import { ActionPlanTable } from "./ActionPlanTable";
@@ -28,7 +28,9 @@ interface NewTabContentProps {
 }
 
 export function NewTabContent({ anomaly, onUpdate, onStatusChange }: NewTabContentProps) {
-  const [isSaving, setIsSaving] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [criteriaTouched, setCriteriaTouched] = useState(false);
+  const [feedbackText, setFeedbackText] = useState("");
   const [formData, setFormData] = useState({
     process_safety: anomaly.process_safety,
     fiabilite_integrite: anomaly.fiabilite_integrite,
@@ -45,10 +47,6 @@ export function NewTabContent({ anomaly, onUpdate, onStatusChange }: NewTabConte
 
   const criticalityLevel = getCriticalityLevel(currentCriticality);
 
-  const handleFieldChange = (field: keyof typeof formData, value: number | boolean) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-  };
-
   const validateForm = () => {
     if (formData.process_safety < 1 || formData.process_safety > 5) return false;
     if (formData.fiabilite_integrite < 1 || formData.fiabilite_integrite > 5) return false;
@@ -57,25 +55,34 @@ export function NewTabContent({ anomaly, onUpdate, onStatusChange }: NewTabConte
     return true;
   };
 
-  const handleSave = async () => {
-    if (!validateForm()) {
-      alert("Please complete all required criticality fields.");
-      return;
+  const handleFieldChange = async (field: keyof typeof formData, value: number | boolean) => {
+    const newFormData = { ...formData, [field]: value };
+    setFormData(newFormData);
+
+    // Mark criteria as touched if it's one of the 3 criteria fields
+    if (field === 'process_safety' || field === 'fiabilite_integrite' || field === 'disponibilite') {
+      setCriteriaTouched(true);
     }
 
-    setIsSaving(true);
-    try {
-      await onUpdate({
-        process_safety: formData.process_safety,
-        fiabilite_integrite: formData.fiabilite_integrite,
-        disponibilite: formData.disponibilite,
-        criticality: currentCriticality,
-      });
-    } catch (error) {
-      console.error("Failed to save anomaly data:", error);
-      alert("Failed to save data. Please try again.");
-    } finally {
-      setIsSaving(false);
+    // Auto-save for criteria fields
+    if ((field === 'process_safety' || field === 'fiabilite_integrite' || field === 'disponibilite') && validateForm()) {
+      setIsUpdating(true);
+      try {
+        const newCriticality = calculateCriticality(
+          field === 'process_safety' ? value as number : newFormData.process_safety,
+          field === 'fiabilite_integrite' ? value as number : newFormData.fiabilite_integrite,
+          field === 'disponibilite' ? value as number : newFormData.disponibilite
+        );
+        
+        await onUpdate({
+          [field]: value,
+          criticality: newCriticality,
+        });
+      } catch (error) {
+        console.error("Failed to update anomaly data:", error);
+      } finally {
+        setIsUpdating(false);
+      }
     }
   };
 
@@ -88,8 +95,6 @@ export function NewTabContent({ anomaly, onUpdate, onStatusChange }: NewTabConte
       default: return 'bg-gray-50 text-gray-700 border-gray-200';
     }
   };
-
-
 
   return (
     <div className="space-y-6">
@@ -111,7 +116,7 @@ export function NewTabContent({ anomaly, onUpdate, onStatusChange }: NewTabConte
                   variant="ghost"
                   size="sm"
                   onClick={() => handleFieldChange('process_safety', Math.max(1, formData.process_safety - 1))}
-                  disabled={formData.process_safety <= 1}
+                  disabled={formData.process_safety <= 1 || isUpdating}
                   className="h-6 w-6 p-0 text-gray-400 hover:text-gray-600 hover:bg-white/80"
                 >
                   <Minus className="h-3 w-3" />
@@ -125,7 +130,7 @@ export function NewTabContent({ anomaly, onUpdate, onStatusChange }: NewTabConte
                   variant="ghost"
                   size="sm"
                   onClick={() => handleFieldChange('process_safety', Math.min(5, formData.process_safety + 1))}
-                  disabled={formData.process_safety >= 5}
+                  disabled={formData.process_safety >= 5 || isUpdating}
                   className="h-6 w-6 p-0 text-gray-400 hover:text-gray-600 hover:bg-white/80"
                 >
                   <Plus className="h-3 w-3" />
@@ -141,7 +146,7 @@ export function NewTabContent({ anomaly, onUpdate, onStatusChange }: NewTabConte
                   variant="ghost"
                   size="sm"
                   onClick={() => handleFieldChange('fiabilite_integrite', Math.max(1, formData.fiabilite_integrite - 1))}
-                  disabled={formData.fiabilite_integrite <= 1}
+                  disabled={formData.fiabilite_integrite <= 1 || isUpdating}
                   className="h-6 w-6 p-0 text-gray-400 hover:text-gray-600 hover:bg-white/80"
                 >
                   <Minus className="h-3 w-3" />
@@ -155,7 +160,7 @@ export function NewTabContent({ anomaly, onUpdate, onStatusChange }: NewTabConte
                   variant="ghost"
                   size="sm"
                   onClick={() => handleFieldChange('fiabilite_integrite', Math.min(5, formData.fiabilite_integrite + 1))}
-                  disabled={formData.fiabilite_integrite >= 5}
+                  disabled={formData.fiabilite_integrite >= 5 || isUpdating}
                   className="h-6 w-6 p-0 text-gray-400 hover:text-gray-600 hover:bg-white/80"
                 >
                   <Plus className="h-3 w-3" />
@@ -171,7 +176,7 @@ export function NewTabContent({ anomaly, onUpdate, onStatusChange }: NewTabConte
                   variant="ghost"
                   size="sm"
                   onClick={() => handleFieldChange('disponibilite', Math.max(1, formData.disponibilite - 1))}
-                  disabled={formData.disponibilite <= 1}
+                  disabled={formData.disponibilite <= 1 || isUpdating}
                   className="h-6 w-6 p-0 text-gray-400 hover:text-gray-600 hover:bg-white/80"
                 >
                   <Minus className="h-3 w-3" />
@@ -185,7 +190,7 @@ export function NewTabContent({ anomaly, onUpdate, onStatusChange }: NewTabConte
                   variant="ghost"
                   size="sm"
                   onClick={() => handleFieldChange('disponibilite', Math.min(5, formData.disponibilite + 1))}
-                  disabled={formData.disponibilite >= 5}
+                  disabled={formData.disponibilite >= 5 || isUpdating}
                   className="h-6 w-6 p-0 text-gray-400 hover:text-gray-600 hover:bg-white/80"
                 >
                   <Plus className="h-3 w-3" />
@@ -206,6 +211,9 @@ export function NewTabContent({ anomaly, onUpdate, onStatusChange }: NewTabConte
                   <Badge className={getCriticalityColor(criticalityLevel)} variant="outline">
                     {criticalityLevel}
                   </Badge>
+                  {isUpdating && (
+                    <div className="ml-2 w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                  )}
                 </div>
               </div>
             </div>
@@ -239,17 +247,37 @@ export function NewTabContent({ anomaly, onUpdate, onStatusChange }: NewTabConte
             </div>
           </div>
 
-          {/* Save Button */}
-          <div className="flex justify-end pt-4">
-            <Button
-              onClick={handleSave}
-              disabled={!validateForm() || isSaving}
-              variant="outline"
-              className="px-4 py-2 text-gray-900 border-gray-400 hover:bg-gray-100"
-            >
-              <Save className="h-4 w-4 mr-2" />
-              {isSaving ? "Saving..." : "Save Changes"}
-            </Button>
+          {/* Feedback Input - Appears smoothly when criteria are touched */}
+          <div className={`transition-all duration-300 ease-in-out overflow-hidden ${
+            criteriaTouched 
+              ? 'max-h-[250px] opacity-100 translate-y-0' 
+              : 'max-h-0 opacity-0 -translate-y-2'
+          }`}>
+            <div className="space-y-3 pt-4 pb-2 border-t border-gray-100">
+              <Label className="text-xs font-medium text-gray-600 uppercase tracking-wide">
+                Feedback on Criticality Assessment
+              </Label>
+              <Textarea
+                value={feedbackText}
+                onChange={(e) => setFeedbackText(e.target.value)}
+                placeholder="Enter your feedback on the criticality assessment..."
+                className="min-h-[80px] border-gray-200 focus:border-blue-400 focus:ring-blue-400/20"
+                rows={2}
+              />
+              <div className="flex justify-between items-center pt-1">
+                <p className="text-xs text-gray-500">
+                  This feedback will help improve future criticality assessments.
+                </p>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="px-3 py-1 h-8 text-xs border-gray-300 hover:bg-gray-50 flex-shrink-0"
+                >
+                  <Send className="h-3 w-3 mr-1" />
+                  Send
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
       </CollapsibleCard>
@@ -258,7 +286,7 @@ export function NewTabContent({ anomaly, onUpdate, onStatusChange }: NewTabConte
       <CollapsibleCard
         title="Action Plan"
         icon={<Activity className="h-5 w-5" />}
-        defaultOpen={true}
+        defaultOpen={false}
         className=""
       >
         <ActionPlanTable showHeader={false} />

@@ -23,18 +23,6 @@
           "url": "/dashboard/anomalies/new",
           "parent": "/dashboard/anomalies",
           "allowedEntityTypes": ["OCP_AGENT"]
-        },
-        {
-          "titleKey": "pages.anomaly_detail",
-          "url": "/dashboard/anomalies/detail",
-          "parent": "/dashboard/anomalies",
-          "allowedEntityTypes": ["OCP_AGENT", "SUPPLIER"]
-        },
-        {
-          "titleKey": "pages.anomaly_batch_upload",
-          "url": "/dashboard/anomalies/batch-upload",
-          "parent": "/dashboard/anomalies",
-          "allowedEntityTypes": ["OCP_AGENT"]
         }
       ]
     },

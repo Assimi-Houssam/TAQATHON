@@ -41,8 +41,8 @@ export function MenuItem({
       className={clsx(
         "h-14 mb-1 transition-all duration-200 border-l-4",
         isActive
-          ? "bg-slate-900 text-white font-semibold border-l-blue-400"
-          : "text-black hover:bg-slate-50 hover:text-slate-900 border-l-transparent hover:border-l-slate-200"
+          ? "bg-blue-600 text-white font-semibold border-l-blue-400"
+          : "text-black hover:bg-blue-50 hover:text-blue-700 border-l-transparent hover:border-l-blue-400"
       )}
     >
       <Link
@@ -50,7 +50,7 @@ export function MenuItem({
         className={clsx(
           "flex items-center gap-4 px-6 py-4 w-full justify-between h-full",
           isActive &&
-            "hover:bg-slate-800 hover:text-white active:bg-slate-800 active:text-white"
+            "hover:bg-blue-700 hover:text-white active:bg-blue-700 active:text-white"
         )}
         target={external ? "_blank" : undefined}
       >
@@ -102,7 +102,7 @@ export const SubMenu: React.FC<SubMenuProps> = ({
       className="ml-8 relative"
     >
       <div
-        className="absolute left-0 w-[1px] bg-slate-300"
+        className="absolute left-0 w-[1px] bg-gray-300"
         style={{
           top: "0.5rem",
           height: `calc(100% - 1rem)`,
@@ -111,15 +111,15 @@ export const SubMenu: React.FC<SubMenuProps> = ({
 
       <div className="space-y-1 w-full pt-2">
         {items.map((subItem) => (
-          <SidebarMenuItem className="ml-4" key={subItem.title}>
+          <SidebarMenuItem className="ml-2" key={subItem.title}>
             <SidebarMenuButton
-              className="text-slate-600 hover:text-black hover:bg-slate-50 w-full transition-all duration-200 h-12"
+              className="text-gray-600 hover:text-black hover:bg-gray-50 w-full transition-all duration-200 h-12"
               asChild
             >
               <Link
                 href={subItem.url}
                 target={external ? "_blank" : undefined}
-                className="w-full flex items-center justify-between px-4 py-3 transition-all duration-200 h-full"
+                className="w-full flex items-center justify-between p-2 transition-all duration-200 h-full"
               >
                 <span className="text-sm font-medium tracking-wide">{subItem.title}</span>
                 <ChevronRight className="w-4 h-4 flex-shrink-0" />
