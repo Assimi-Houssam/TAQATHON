@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -9,6 +10,14 @@ import { Column, DataTableConfig } from "@/components/data-table/types";
 import { useRouter } from "next/navigation";
 import { Anomaly, AnomalyStatus, calculateCriticality, getCriticalityLevel } from "@/types/anomaly";
 import { AnomalyStatus as AnomalyStatusComponent, AnomalyCriticalityIndicator } from "@/components/anomaly";
+
+// Helper function to get criticality filter value
+const getCriticalityFilterValue = (criticality: number): string => {
+  if (criticality >= 13) return 'critical';
+  if (criticality >= 10) return 'high';
+  if (criticality >= 7) return 'medium';
+  return 'low';
+};
 
 // Mock data using new interface structure with 1-5 scale factors and 1-15 criticality
 const mockAnomalies: Anomaly[] = [
@@ -725,7 +734,7 @@ const filters = [
     ],
   },
   {
-    key: "criticality",
+    key: "criticality_filter",
     label: "Criticality",
     options: [
       { value: "critical", label: "Critical (13-15)" },
@@ -751,6 +760,14 @@ const filters = [
 export default function AnomaliesPage() {
   const router = useRouter();
 
+  // Add computed criticality filter field to the data
+  const processedAnomalies = useMemo(() => {
+    return mockAnomalies.map(anomaly => ({
+      ...anomaly,
+      criticality_filter: getCriticalityFilterValue(anomaly.criticality)
+    }));
+  }, []);
+
   return (
     <div className="container mx-auto px-6 py-6">
       {/* Header */}
@@ -773,7 +790,7 @@ export default function AnomaliesPage() {
       {/* Data Table */}
       <div className="overflow-hidden">
         <DataTable
-          data={mockAnomalies}
+          data={processedAnomalies}
           columns={columns}
           config={config}
           filters={filters}
