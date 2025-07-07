@@ -200,10 +200,10 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        <div className="mt-auto border-t border-slate-200">
+        <div className="mt-auto border-t border-blue-200">
           <button
             onClick={() => router.push("/dashboard/settings")}
-            className="flex items-center gap-4 w-full px-6 py-4 h-14 text-black hover:text-slate-900 hover:bg-slate-50 transition-all duration-200 font-medium border-l-4 border-l-transparent hover:border-l-slate-200"
+            className="flex items-center gap-4 w-full px-6 py-4 h-14 text-black hover:text-blue-700 hover:bg-blue-50 transition-all duration-200 font-medium border-l-4 border-l-transparent hover:border-l-blue-400"
           >
             <Settings className="h-5 w-5 flex-shrink-0" />
             <span className="text-sm font-medium tracking-wide">{t("pages.settings")}</span>

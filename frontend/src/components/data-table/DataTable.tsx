@@ -306,10 +306,6 @@ export function DataTable<T extends Record<string, any>>({
                               <label
                                 htmlFor={`${filterGroup.key}-${option.value}`}
                                 className="flex-1 cursor-pointer text-sm"
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  e.stopPropagation();
-                                }}
                               >
                                 {option.label}
                               </label>

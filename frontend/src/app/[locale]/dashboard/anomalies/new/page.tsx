@@ -307,7 +307,7 @@ export default function AddAnomaliesPage() {
           setPreviewRecords(mockPreviewRecords);
           setShowPreview(true);
           setIsRequiredFieldsOpen(false); // Auto-close required fields when preview shows
-          
+
           // Auto-advance to step 2 after a short delay when file processing is complete
           setTimeout(() => {
             if (isBatchModalOpen && batchCurrentStep === 1) {
@@ -319,16 +319,16 @@ export default function AddAnomaliesPage() {
     });
   };
 
-    const handleUpload = () => {
+  const handleUpload = () => {
     setIsUploading(true);
     setUploadProgress(0);
     setIsRequiredFieldsOpen(false); // Auto-close required fields when upload starts
-    
+
     // Auto-advance to step 3 in batch modal if open
     if (isBatchModalOpen && batchCurrentStep === 2) {
       setBatchCurrentStep(3);
     }
-    
+
     const interval = setInterval(() => {
       setUploadProgress(prev => {
         if (prev >= 100) {
@@ -526,11 +526,11 @@ export default function AddAnomaliesPage() {
 
   return (
     <div className="container mx-auto px-4 py-6">
-            <div className="mb-8 pb-6 border-b border-gray-200">
+      <div className="mb-8 pb-6 border-b border-gray-200">
         <div className="flex items-center gap-3 mb-4">
-          <Button 
-            variant="ghost" 
-            size="sm" 
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={() => router.push("/dashboard/anomalies")}
             className="h-8 w-8 p-0 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-md"
           >
@@ -553,11 +553,11 @@ export default function AddAnomaliesPage() {
       {/* Method Selection Cards */}
       <div className="mb-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Card 
+          <Card
             className={cn(
               "border-2 border-dashed transition-colors cursor-pointer group",
-              selectedMethod === 'batch' 
-                ? "border-blue-500 bg-blue-50" 
+              selectedMethod === 'batch'
+                ? "border-blue-500 bg-blue-50"
                 : "border-gray-200 hover:border-blue-300"
             )}
             onClick={() => {
@@ -568,8 +568,8 @@ export default function AddAnomaliesPage() {
             <CardContent className="p-6 text-center">
               <div className={cn(
                 "w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 transition-colors",
-                selectedMethod === 'batch' 
-                  ? "bg-blue-600 text-white" 
+                selectedMethod === 'batch'
+                  ? "bg-blue-600 text-white"
                   : "bg-blue-100 text-blue-600 group-hover:bg-blue-200"
               )}>
                 <FileSpreadsheet className="w-8 h-8" />
@@ -590,11 +590,11 @@ export default function AddAnomaliesPage() {
             </CardContent>
           </Card>
 
-          <Card 
+          <Card
             className={cn(
               "border-2 border-dashed transition-colors cursor-pointer group",
-              selectedMethod === 'single' 
-                ? "border-green-500 bg-green-50" 
+              selectedMethod === 'single'
+                ? "border-green-500 bg-green-50"
                 : "border-gray-200 hover:border-green-300"
             )}
             onClick={() => {
@@ -605,8 +605,8 @@ export default function AddAnomaliesPage() {
             <CardContent className="p-6 text-center">
               <div className={cn(
                 "w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 transition-colors",
-                selectedMethod === 'single' 
-                  ? "bg-green-600 text-white" 
+                selectedMethod === 'single'
+                  ? "bg-green-600 text-white"
                   : "bg-green-100 text-green-600 group-hover:bg-green-200"
               )}>
                 <Plus className="w-8 h-8" />
@@ -920,11 +920,11 @@ export default function AddAnomaliesPage() {
       {/* Batch Upload Modal */}
       {isBatchModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div 
+          <div
             className="absolute inset-0 bg-black/50 backdrop-blur-sm"
             onClick={closeBatchModal}
           />
-          
+
           <div className="relative bg-white rounded-2xl shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-300 border border-gray-100">
             <div className="sticky top-0 bg-white/95 backdrop-blur-sm border-b border-gray-100 rounded-t-2xl p-6">
               <div className="flex items-center justify-between">
@@ -948,7 +948,7 @@ export default function AddAnomaliesPage() {
               </div>
             </div>
 
-            <div className="p-5">
+            <div className="px-4 py-8">
               <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-100">
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
@@ -957,13 +957,13 @@ export default function AddAnomaliesPage() {
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900">
                       {batchCurrentStep === 1 ? "Upload Your Files" :
-                       batchCurrentStep === 2 ? "Review Your Data" :
-                       uploadComplete ? "Upload Complete" : "Uploading Data"}
+                        batchCurrentStep === 2 ? "Review Your Data" :
+                          uploadComplete ? "Upload Complete" : "Uploading Data"}
                     </h3>
                     <p className="text-xs text-gray-500">
                       {batchCurrentStep === 1 ? "Upload CSV or Excel files containing your anomaly data" :
-                       batchCurrentStep === 2 ? "Confirm the validation results before uploading" :
-                       uploadComplete ? "Successfully processed your anomaly records" : "Processing your anomaly records..."}
+                        batchCurrentStep === 2 ? "Confirm the validation results before uploading" :
+                          uploadComplete ? "Successfully processed your anomaly records" : "Processing your anomaly records..."}
                     </p>
                   </div>
                 </div>
@@ -980,18 +980,6 @@ export default function AddAnomaliesPage() {
                   <div className="space-y-6">
 
                     <div className="max-w-2xl mx-auto space-y-5">
-                      <div className="flex justify-center">
-                        <Button 
-                          onClick={handleDownloadTemplate}
-                          variant="outline"
-                          size="sm"
-                          className="h-10 px-4 border-2 border-dashed border-gray-300 hover:border-blue-400 hover:bg-blue-50 transition-all duration-200 rounded-lg"
-                        >
-                          <Download className="h-4 w-4 mr-2 text-blue-600" />
-                          <span className="font-medium">Download Template</span>
-                        </Button>
-                      </div>
-
                       <div className="relative">
                         <Input
                           ref={fileInputRef}
@@ -1001,12 +989,12 @@ export default function AddAnomaliesPage() {
                           onChange={handleFileSelect}
                           className="hidden"
                         />
-                        
-                        <div 
+
+                        <div
                           className={cn(
                             "group border-2 border-dashed rounded-2xl p-12 text-center transition-all duration-300 cursor-pointer relative overflow-hidden",
-                            isDragOver 
-                              ? "border-blue-400 bg-blue-50 scale-[1.01]" 
+                            isDragOver
+                              ? "border-blue-400 bg-blue-50 scale-[1.01]"
                               : "border-gray-200 hover:border-blue-300 hover:bg-gray-50"
                           )}
                           onDragOver={(e) => {
@@ -1025,10 +1013,25 @@ export default function AddAnomaliesPage() {
                           }}
                           onClick={() => fileInputRef.current?.click()}
                         >
+                          <div className="absolute top-4 right-4">
+                            <Button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDownloadTemplate();
+                              }}
+                              variant="ghost"
+                              size="sm"
+                              className="h-8 px-3 text-xs font-medium text-gray-500 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200 rounded-lg"
+                            >
+                              <Download className="h-3 w-3 mr-1.5" />
+                              Template
+                            </Button>
+                          </div>
+
                           <div className={cn(
                             "w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-4 transition-all duration-300",
-                            isDragOver 
-                              ? "bg-blue-600 text-white shadow-lg shadow-blue-200" 
+                            isDragOver
+                              ? "bg-blue-600 text-white shadow-lg shadow-blue-200"
                               : "bg-gray-100 text-gray-400 group-hover:bg-blue-100 group-hover:text-blue-600"
                           )}>
                             <Upload className="w-6 h-6" />
@@ -1058,15 +1061,15 @@ export default function AddAnomaliesPage() {
                               <div key={file.id} className={cn(
                                 "flex items-center justify-between p-3 rounded-xl border transition-all duration-200",
                                 file.status === 'success' ? "bg-green-50 border-green-200" :
-                                file.status === 'processing' ? "bg-blue-50 border-blue-200" :
-                                "bg-gray-50 border-gray-200"
+                                  file.status === 'processing' ? "bg-blue-50 border-blue-200" :
+                                    "bg-gray-50 border-gray-200"
                               )}>
                                 <div className="flex items-center gap-3">
                                   <div className={cn(
                                     "w-8 h-8 rounded-lg flex items-center justify-center",
                                     file.status === 'processing' ? "bg-blue-100" :
-                                    file.status === 'success' ? "bg-green-100" :
-                                    "bg-gray-100"
+                                      file.status === 'success' ? "bg-green-100" :
+                                        "bg-gray-100"
                                   )}>
                                     {file.status === 'processing' ? (
                                       <Loader2 className="h-4 w-4 text-blue-600 animate-spin" />
@@ -1104,26 +1107,34 @@ export default function AddAnomaliesPage() {
 
                     <div className="max-w-2xl mx-auto space-y-5">
                       <div className="grid grid-cols-3 gap-4">
-                        <div className="text-center p-4 bg-white rounded-2xl border-2 border-gray-100 hover:border-gray-200 transition-all duration-200">
-                          <div className="w-8 h-8 bg-gray-100 rounded-xl flex items-center justify-center mx-auto mb-3">
-                            <FileText className="w-4 h-4 text-gray-600" />
+                        {/* Total Records Card */}
+                        <div className="bg-white rounded-lg border border-gray-200 p-4">
+                          <div className="flex items-center gap-2 mb-2 text-blue-500 bg-blue-100 p-1 px-2 rounded-md w-fit">
+                            <FileText className="w-4 h-4" />
+                            <span className="text-xs font-medium uppercase tracking-wide">Total</span>
                           </div>
-                          <div className="text-2xl font-bold text-gray-900 mb-1">{previewRecords.length}</div>
-                          <div className="text-gray-600 font-medium text-sm">Total Records</div>
+                          <div className="text-2xl font-semibold text-gray-900">{previewRecords.length}</div>
+                          <div className="text-sm text-gray-600">Records</div>
                         </div>
-                        <div className="text-center p-4 bg-white rounded-2xl border-2 border-blue-100 hover:border-blue-200 transition-all duration-200">
-                          <div className="w-8 h-8 bg-blue-100 rounded-xl flex items-center justify-center mx-auto mb-3">
-                            <CheckCircle className="w-4 h-4 text-blue-600" />
+
+                        {/* Valid Records Card */}
+                        <div className="bg-white rounded-lg border border-gray-200 p-4">
+                          <div className="flex items-center gap-2 mb-2 text-green-500 bg-green-100 p-1 px-2 rounded-md w-fit">
+                            <CheckCircle className="w-4 h-4" />
+                            <span className="text-xs font-medium uppercase tracking-wide">Valid</span>
                           </div>
-                          <div className="text-2xl font-bold text-blue-600 mb-1">{validRecords.length}</div>
-                          <div className="text-blue-700 font-medium text-sm">Valid Records</div>
+                          <div className="text-2xl font-semibold text-gray-900">{validRecords.length}</div>
+                          <div className="text-sm text-gray-600">Records</div>
                         </div>
-                        <div className="text-center p-4 bg-white rounded-2xl border-2 border-gray-100 hover:border-gray-200 transition-all duration-200">
-                          <div className="w-8 h-8 bg-gray-100 rounded-xl flex items-center justify-center mx-auto mb-3">
-                            <AlertCircle className="w-4 h-4 text-gray-600" />
+
+                        {/* Invalid Records Card */}
+                        <div className="bg-white rounded-lg border border-gray-200 p-4">
+                          <div className="flex items-center gap-2 mb-2 text-red-500 bg-red-100 p-1 px-2 rounded-md w-fit">
+                            <AlertCircle className="w-4 h-4" />
+                            <span className="text-xs font-medium uppercase tracking-wide">Errors</span>
                           </div>
-                          <div className="text-2xl font-bold text-gray-600 mb-1">{invalidRecords.length}</div>
-                          <div className="text-gray-700 font-medium text-sm">Invalid Records</div>
+                          <div className="text-2xl font-semibold text-gray-900">{invalidRecords.length}</div>
+                          <div className="text-sm text-gray-600">Records</div>
                         </div>
                       </div>
 
@@ -1151,7 +1162,7 @@ export default function AddAnomaliesPage() {
                                 const errorTypes = invalidRecords.flatMap(r => r.errors || []);
                                 const missingFields = errorTypes.filter(e => e.includes('missing') || e.includes('empty')).length;
                                 const invalidValues = errorTypes.filter(e => e.includes('must be') || e.includes('INVALID')).length;
-                                
+
                                 if (missingFields > 0 && invalidValues > 0) {
                                   return `${missingFields} missing fields, ${invalidValues} invalid values`;
                                 } else if (missingFields > 0) {
@@ -1191,8 +1202,8 @@ export default function AddAnomaliesPage() {
                         <div className="max-w-md mx-auto space-y-3">
                           <div className="relative">
                             <Progress value={uploadProgress} className="w-full h-2 bg-gray-100" />
-                            <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full opacity-20 animate-pulse" 
-                                 style={{ width: `${uploadProgress}%` }}></div>
+                            <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full opacity-20 animate-pulse"
+                              style={{ width: `${uploadProgress}%` }}></div>
                           </div>
                           <div className="flex justify-between items-center text-sm">
                             <span className="text-gray-600">Progress</span>
@@ -1212,7 +1223,7 @@ export default function AddAnomaliesPage() {
                             <CheckCircle className="w-10 h-10 text-blue-600 relative z-10" />
                           </div>
                         </div>
-                        
+
                         <div className="space-y-3">
                           <h3 className="text-2xl font-semibold text-gray-900">Upload Complete!</h3>
                           <p className="text-gray-600 text-sm">
@@ -1221,7 +1232,7 @@ export default function AddAnomaliesPage() {
                         </div>
 
                         <div className="max-w-xs mx-auto space-y-3">
-                          <Button 
+                          <Button
                             onClick={() => {
                               closeBatchModal();
                               router.push("/dashboard/anomalies");
@@ -1232,7 +1243,7 @@ export default function AddAnomaliesPage() {
                             <CheckCircle className="w-4 h-4 mr-2" />
                             View Your Anomalies
                           </Button>
-                          <Button 
+                          <Button
                             variant="outline"
                             onClick={() => {
                               setBatchCurrentStep(1);
@@ -1255,14 +1266,14 @@ export default function AddAnomaliesPage() {
 
                 {/* Navigation Buttons */}
                 {batchCurrentStep === 2 && (
-                  <div className="flex justify-center pt-8 border-t border-gray-100">
+                  <div className="flex justify-end pt-8 border-t border-gray-100">
                     <Button
                       onClick={handleUpload}
-                      className="px-8 py-3 text-base font-semibold transition-all duration-200 rounded-xl shadow-lg bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-blue-200"
+                      className="px-4 py-2 text-base font-semibold transition-all duration-200 rounded shadow-lg bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-blue-200"
                       size="default"
                     >
                       <Send className="w-4 h-4 mr-2" />
-                      Upload {validRecords.length} Records
+                      Upload
                     </Button>
                   </div>
                 )}
