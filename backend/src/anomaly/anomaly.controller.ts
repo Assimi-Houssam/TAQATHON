@@ -81,7 +81,7 @@ export class AnomalyController {
   async getAnomaly(
     @Query('page') page: number = 1,
     @Query('limit') limit: number = 10,
-    @Query('filter') orderby: string = '',
+    @Query('filter') orderby: string = 'HIGH',
   ) {
     return await this.anomalyService.getAnomaly(page, limit, orderby);
   }

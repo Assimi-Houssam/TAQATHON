@@ -11,6 +11,8 @@ export class AnomalyService {
   async getAnomaly(page: number = 1, limit: number = 10, order: string = 'HIGH') {
     const skip = (page - 1) * limit;
     let anomaly: any;
+    console.log('Fetching anomalies with pagination:', { page, limit });
+    console.log('Order:', order);
     if (order == 'LOW' || order == 'HIGH') {
       let criticalityFilter: any = {};
       if (order == 'LOW') {
@@ -25,11 +27,10 @@ export class AnomalyService {
       anomaly = await this.Prisma.anomaly.findMany({
         skip: skip,
         take: limit,
-        where: criticalityFilter,
-        orderBy: {
-          Criticite: criticalityFilter.Criticite,
-          status: 'desc'
-        },
+        orderBy: [
+          { Criticite: criticalityFilter.Criticite },
+          { status: 'desc' }
+        ],
       });
     } else if (
       order == 'ORACLE' ||
@@ -393,12 +394,8 @@ export class AnomalyService {
     if (!forceStopentrie) {
       throw new Error('Failed to create force stop entry');
     }
-    const dureHeur = this.extractHours(duree_heure || '0');
     const automatedAssignment =
-      await this.autoAssigmentAnomalyToMaintenanceWindowForceStop(
-        forceStopentrie.id,
-        dureHeur,
-      );
+      await this.autoAssigmentAnomalyToMaintenanceWindowForceStop();
 
       return {
         success: true,
@@ -408,40 +405,51 @@ export class AnomalyService {
       }
     }
 
-  async autoAssigmentAnomalyToMaintenanceWindowForceStop(
-    maintenanceId: string,
-    dureHeur: number,
-  ) {
-    const maintenance_window = await this.Prisma.maintenance_window.findMany({
-      where: {
-        id: {
-          not: maintenanceId,
-        },
-      },
-      include: {
-        anomaly: true,
-      },
-    });
+  async autoAssigmentAnomalyToMaintenanceWindowForceStop()
+   {
+    const maintenance_window = await this.Prisma.maintenance_window.findMany();
     if (!maintenance_window || maintenance_window.length === 0) {
       throw new Error('No maintenance windows found');
     }
-    for (const window of maintenance_window) {
-      for (const anomaly of window.anomaly) {
-        const requiredHours = this.extractHours(
-          anomaly.duree_intervention || '0',
-        );
-        if (requiredHours <= dureHeur) {
+
+    const anomaly = await this.Prisma.anomaly.findMany({
+      where: {
+        status: 'IN_PROGRESS',
+        required_stoping: true,
+      },
+    });
+      for( const anom of anomaly) {
+        const requiredHours = this.extractHours(anom.duree_intervention || '0');
+        const suitableWindow = maintenance_window
+        .filter((window) => {
+          const windowHours = this.extractHours(window.duree_heure || '0');
+          const startDate = new Date(window.date_debut_arret);
+          const now = new Date();
+          
+          // Filter windows that have enough hours AND are in the future
+          return windowHours >= requiredHours && startDate > now;
+        })
+        .sort((a, b) => {
+          // Sort by closest date first
+          const dateA = new Date(a.date_debut_arret);
+          const dateB = new Date(b.date_debut_arret);
+          return dateA.getTime() - dateB.getTime();
+        })[0]; // Get the first (closest) one
+        if (suitableWindow) {
           await this.Prisma.anomaly.update({
-            where: { id: anomaly.id },
+            where: { id: anom.id },
             data: {
               maintenance_window: {
-                connect: { id: window.id },
+                connect: { id: suitableWindow.id },
               },
             },
           });
         }
       }
-    }
+      return {
+        success: true,
+        message: 'Anomalies automatically assigned to maintenance windows',
+      };
   }
   
 
