@@ -89,20 +89,7 @@ export function NewTabContent({ anomaly, onUpdate, onStatusChange }: NewTabConte
     }
   };
 
-  const handleAddAction = () => {
-    // TODO: Implement add action functionality
-    console.log("Add action clicked");
-  };
 
-  const handleEditAction = (item: any) => {
-    // TODO: Implement edit action functionality
-    console.log("Edit action clicked", item);
-  };
-
-  const handleDeleteAction = (id: string) => {
-    // TODO: Implement delete action functionality
-    console.log("Delete action clicked", id);
-  };
 
   return (
     <div className="space-y-6">
@@ -274,12 +261,7 @@ export function NewTabContent({ anomaly, onUpdate, onStatusChange }: NewTabConte
         defaultOpen={true}
         className=""
       >
-        <ActionPlanTable 
-          showHeader={false}
-          onAddAction={handleAddAction}
-          onEditAction={handleEditAction}
-          onDeleteAction={handleDeleteAction}
-        />
+        <ActionPlanTable showHeader={false} />
       </CollapsibleCard>
     </div>
   );
