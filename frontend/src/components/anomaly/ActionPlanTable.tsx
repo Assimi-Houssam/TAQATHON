@@ -147,6 +147,12 @@ export function ActionPlanTable({
       };
 
       setActionPlanItems(prev => [...prev, newItem]);
+      
+      // Auto-open the collapsible section when adding an action
+      if (collapsible && !isOpen) {
+        setIsOpen(true);
+      }
+      
       handleCloseModal();
     } catch (error) {
       console.error('Failed to add action:', error);
@@ -169,29 +175,34 @@ export function ActionPlanTable({
               <div className="flex items-center gap-3">
                 <Activity className="h-5 w-5 text-blue-600" />
                 <CardTitle className="text-lg font-semibold">{title}</CardTitle>
+              </div>
+              <div className="flex items-center gap-3">
+                <Button 
+                  size="sm" 
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                  onClick={handleAddAction}
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Action
+                </Button>
                 {collapsible && (
                   <Button
-                    variant="ghost"
+                    variant="outline"
                     size="sm"
                     onClick={() => setIsOpen(!isOpen)}
-                    className="h-8 w-8 p-0 hover:bg-gray-100 ml-2"
+                    className="h-9 px-3 hover:bg-gray-100 border-gray-300 shadow-sm"
                   >
+                    <span className="text-xs font-medium mr-2 text-gray-700">
+                      {isOpen ? 'Collapse' : 'Expand'}
+                    </span>
                     {isOpen ? (
-                      <ChevronUp className="h-4 w-4" />
+                      <ChevronUp className="h-4 w-4 text-gray-600" />
                     ) : (
-                      <ChevronDown className="h-4 w-4" />
+                      <ChevronDown className="h-4 w-4 text-gray-600" />
                     )}
                   </Button>
                 )}
               </div>
-              <Button 
-                size="sm" 
-                className="bg-blue-600 hover:bg-blue-700 text-white"
-                onClick={handleAddAction}
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Add Action
-              </Button>
             </div>
           </CardHeader>
         )}

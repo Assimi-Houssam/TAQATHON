@@ -10,17 +10,16 @@ import { AnomalyWithRelations } from "@/types/anomaly";
 const mockAnomalyWithRelations: AnomalyWithRelations = {
   id: "ANM-001",
   code: "ANM-001",
-  equipment: "Main Pressure Sensor (PS-001)",
-  description: "Irregular pressure readings detected in main pipeline. Sensor shows fluctuating values between 2.5 and 4.2 bar when normal operating pressure should be 3.0 ± 0.2 bar.",
-  date_apparition: "2024-01-15T08:30:00Z",
-  
+  equipment: "Système huile turbine",
+  description: "prévoir Controller la résistance N°3 de la centrifugeuse huile de graissage turbine",
+  date_apparition: "2024-01-15T08:30:00Z",  
   // Criticality assessment (1-5 each, total 1-15)
   process_safety: 4,
   fiabilite_integrite: 3,
   disponibilite: 4,
   criticality: 11, // 4 + 3 + 4 = 11 (HIGH)
   
-  origin: "Sensor Malfunction",
+  origin: "34EL",
   
   // Status
   status: "New", // Can be changed to test different tabs

@@ -238,8 +238,6 @@ export function AnomalyProfile({ anomaly, onStatusChange, onUpdate }: AnomalyPro
         return anomaly.status === "Closed" && onUpdate ? (
           <ClosedTabContent 
             anomaly={anomaly} 
-            onUpdate={handleUpdate}
-            onSetRexSaveFunction={setRexSaveFunction}
           />
         ) : (
           <div className="text-center py-12">
