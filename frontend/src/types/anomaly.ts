@@ -158,3 +158,46 @@ export interface AnomalyUpdateData {
   disponibilite?: number; // 1-5
   origin?: string;
 } 
+
+// Action Plan interface
+export interface ActionPlan {
+  id: string;
+  title: string;
+  description: string;
+  file_link?: string;
+  anomaly_id: string;
+  created_at: string;
+  updated_at: string;
+}
+
+// Maintenance Window interface
+export interface MaintenanceWindow {
+  id: string;
+  anomaly_id: string;
+  scheduled_start: string;
+  scheduled_end: string;
+  assigned_team?: string;
+  notes?: string;
+  duration_of_intervention?: number; // in hours
+  requires_stopping?: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+// REX (Return of Experience) interface
+export interface REX {
+  id: string;
+  anomaly_id: string;
+  notes: string;
+  file_path?: string;
+  lessons_learned?: string;
+  created_by: string;
+  created_at: string;
+}
+
+// Extended Anomaly interface with related data
+export interface AnomalyWithRelations extends Anomaly {
+  action_plans?: ActionPlan[];
+  maintenance_window?: MaintenanceWindow;
+  rex?: REX;
+} 

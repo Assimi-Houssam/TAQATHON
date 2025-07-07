@@ -74,3 +74,6 @@ export {
 
 // Alert components
 export { Alert, AlertDescription, AlertTitle } from './alert'; 
+
+// Custom UI components
+export { CollapsibleCard } from "./collapsible-card"; 
