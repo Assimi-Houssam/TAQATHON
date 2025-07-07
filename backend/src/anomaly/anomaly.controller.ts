@@ -16,6 +16,15 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiParam,
+  ApiBody,
+  ApiConsumes,
+  ApiQuery,
+} from '@nestjs/swagger';
 import { AnomalyService } from './anomaly.service';
 import { CreateAnomalieDto, UpdateAnomalieDto } from './dto/anomalie.dto';
 import { PythonExecutorService } from './python.service';
@@ -26,6 +35,7 @@ import {
 } from './dto/actionPlan.dto';
 import { Public } from 'src/metadata';
 
+@ApiTags('anomaly')
 @Controller('anomaly')
 @Public()
 export class AnomalyController {
@@ -35,6 +45,39 @@ export class AnomalyController {
   ) {}
 
   @Get('getAnomaly')
+  @ApiOperation({ summary: 'Get all anomalies with pagination and filtering' })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    type: Number,
+    description: 'Page number (default: 1)',
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    type: Number,
+    description: 'Items per page (default: 10)',
+  })
+  @ApiQuery({
+    name: 'filter',
+    required: false,
+    type: String,
+    description: 'Filter criteria (e.g., asc, desc, low, high, medium)',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'List of anomalies retrieved successfully',
+    schema: {
+      type: 'object',
+      properties: {
+        data: { type: 'array', items: { type: 'object' } },
+        totalPages: { type: 'number' },
+        currentPage: { type: 'number' },
+        hasNext: { type: 'boolean' },
+        hasPrevious: { type: 'boolean' },
+      },
+    },
+  })
   async getAnomaly(
     @Query('page') page: number = 1,
     @Query('limit') limit: number = 10,
@@ -44,16 +87,68 @@ export class AnomalyController {
   }
 
   @Get('getAnomalyById/:id')
+  @ApiOperation({ summary: 'Get anomaly by ID' })
+  @ApiParam({ name: 'id', description: 'Anomaly ID', type: 'string' })
+  @ApiResponse({
+    status: 200,
+    description: 'Anomaly retrieved successfully',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Anomaly not found',
+  })
   async getAnomalyById(@Param('id') id: string) {
     return await this.anomalyService.getAnomalyById(id);
   }
 
+  @ApiOperation({ summary: 'Create a new anomaly' })
+  @ApiResponse({
+    status: 201,
+    description: 'Anomaly created successfully',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid request data',
+  })
   @Post('createAnomaly')
   async createAnomaly(@Body() data: CreateAnomalieDto) {
     return await this.anomalyService.createAnomaly(data);
   }
 
   // with comment
+  @ApiOperation({ summary: 'Upload attachment for anomaly' })
+  @ApiConsumes('multipart/form-data')
+  @ApiParam({ name: 'id', description: 'Anomaly ID', type: 'string' })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+          description: 'File to upload (Excel, PDF, Word)',
+        },
+        description: {
+          type: 'string',
+          description: 'Optional file description',
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'File uploaded successfully',
+    schema: {
+      type: 'object',
+      properties: {
+        success: { type: 'boolean', example: true },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid file or upload failed',
+  })
   @Post('attachment/:id')
   @UseInterceptors(
     FileInterceptor('file', {
@@ -112,6 +207,16 @@ export class AnomalyController {
     }
   }
 
+  @ApiOperation({ summary: 'Create action plan for anomaly' })
+  @ApiParam({ name: 'anomalyId', description: 'Anomaly ID', type: 'string' })
+  @ApiResponse({
+    status: 201,
+    description: 'Action plan created successfully',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid request data',
+  })
   @Post('action_plan/:anomalyId')
   async actionPlan(
     @Param('anomalyId') anomalyId: string,
@@ -120,6 +225,48 @@ export class AnomalyController {
     return await this.anomalyService.actionPlan(anomalyId, body);
   }
 
+  @ApiOperation({ summary: 'Create maintenance window from Excel file' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+          description: 'Excel file containing maintenance window data',
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Maintenance windows created successfully',
+    schema: {
+      type: 'object',
+      properties: {
+        success: { type: 'boolean', example: true },
+        message: {
+          type: 'string',
+          example: 'Maintenance windows created successfully',
+        },
+        data: {
+          type: 'object',
+          properties: {
+            file_name: { type: 'string' },
+            file_url: { type: 'string' },
+            processed_rows: { type: 'number' },
+            created_windows: { type: 'number' },
+            windows: { type: 'array' },
+          },
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid file or processing failed',
+  })
   @Post('maintenance_window')
   @UseInterceptors(
     FileInterceptor('file', {
@@ -151,7 +298,9 @@ export class AnomalyController {
       ];
 
       if (!allowedMimeTypes.includes(file.mimetype)) {
-        throw new BadRequestException('Invalid file type. Only Excel files are allowed');
+        throw new BadRequestException(
+          'Invalid file type. Only Excel files are allowed',
+        );
       }
 
       const sheetName = file.originalname;
@@ -171,17 +320,19 @@ export class AnomalyController {
       const createdWindows = [];
 
       // Ensure we have an array to work with
-      const dataToProcess = Array.isArray(result.data) ? result.data : [result.data];
-      
+      const dataToProcess = Array.isArray(result.data)
+        ? result.data
+        : [result.data];
+
       for (const rowData of dataToProcess) {
         try {
           if (rowData) {
-                const window = await this.anomalyService.createMaintenanceWindow(
-                  rowData["Date début d'Arrét (Window)"],
-                  rowData["Date fin d'Arrét (Window)"],       
-                  rowData['Durée en Jr'] || null,
-                  rowData['Durée en H'] || null,
-                );
+            const window = await this.anomalyService.createMaintenanceWindow(
+              rowData["Date début d'Arrét (Window)"],
+              rowData["Date fin d'Arrét (Window)"],
+              rowData['Durée en Jr'] || null,
+              rowData['Durée en H'] || null,
+            );
             createdWindows.push(window);
           } else {
             console.warn('Skipping row: Missing required fields', rowData);
@@ -211,6 +362,33 @@ export class AnomalyController {
   // khass maintenace window ib9a ajour la ssala arrete o matclosatch dik anomaly khassha t assigna  l blassa okhra
   //finma izide chi maintenacne window jdida i3awad idire dik twichia
 
+  @ApiOperation({ summary: 'Mark anomaly as resolved' })
+  @ApiConsumes('multipart/form-data')
+  @ApiParam({ name: 'id', description: 'Anomaly ID', type: 'string' })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+          description: 'Resolution file (optional)',
+        },
+        summary: {
+          type: 'string',
+          description: 'Resolution summary',
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Anomaly marked as resolved successfully',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid request data',
+  })
   @Post('mark_as_resolved/:id')
   @UseInterceptors(
     FileInterceptor('file', {
@@ -237,6 +415,16 @@ export class AnomalyController {
     return await this.anomalyService.markAsResolved(id, file, summary);
   }
 
+  @ApiOperation({ summary: 'Update anomaly' })
+  @ApiParam({ name: 'id', description: 'Anomaly ID', type: 'string' })
+  @ApiResponse({
+    status: 200,
+    description: 'Anomaly updated successfully',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Anomaly not found',
+  })
   @Patch('updateAnomaly/:id')
   async updateAnomaly(
     @Param('id') id: string,
@@ -245,6 +433,21 @@ export class AnomalyController {
     return await this.anomalyService.updateAnomaly(id, body);
   }
 
+  @ApiOperation({ summary: 'Attach maintenance window to anomaly' })
+  @ApiParam({ name: 'anomalyid', description: 'Anomaly ID', type: 'string' })
+  @ApiParam({
+    name: 'maintenanceid',
+    description: 'Maintenance Window ID',
+    type: 'string',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Maintenance window attached successfully',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Anomaly or maintenance window not found',
+  })
   @Patch('attach_mw/:anomalyid/:maintenanceid')
   async attachMaintenanceWindow(
     @Param('anomalyid') anomalyId: string,
@@ -256,11 +459,30 @@ export class AnomalyController {
     );
   }
 
+  @ApiOperation({ summary: 'Mark anomaly as treated' })
+  @ApiParam({ name: 'id', description: 'Anomaly ID', type: 'string' })
+  @ApiResponse({
+    status: 200,
+    description: 'Anomaly marked as treated successfully',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Anomaly not found',
+  })
   @Patch('traited/:id')
   async markAsTreated(@Param('id') id: string) {
     return await this.anomalyService.markAsTreated(id);
   }
 
+  @ApiOperation({ summary: 'Add maintenance window' })
+  @ApiResponse({
+    status: 200,
+    description: 'Maintenance window added successfully',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid request data',
+  })
   @Patch('adding_maintenance_window')
   async addingMaintenanceWindow(@Body() data: ForceStopDto) {
     return await this.anomalyService.addingMaintenanceWindow(data);
