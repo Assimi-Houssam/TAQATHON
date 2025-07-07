@@ -319,11 +319,12 @@ export default function AnomaliesPage() {
   const router = useRouter();
 
   // Fetch anomalies from backend
-  const { anomalies, loading: isLoading, error } = useAnomalies();
+  const { data, isLoading, error } = useAnomalies();
+  const anomalies = data?.anomalies || [];
 
   // Add computed criticality filter field to the data
   const processedAnomalies = useMemo(() => {
-    return anomalies.map(anomaly => ({
+    return anomalies.map((anomaly: Anomaly) => ({
       ...anomaly,
       criticality_filter: getCriticalityFilterValue(anomaly.Criticite)
     }));
