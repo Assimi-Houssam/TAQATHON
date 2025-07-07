@@ -46,6 +46,8 @@ export class AnomalyController {
     return await this.anomalyService.createAnomaly(data);
   }
 
+
+  // with comment
   @Post('attachment/:id')
   @UseInterceptors(
     FileInterceptor('file', {
@@ -108,6 +110,7 @@ export class AnomalyController {
   async actionPlan(@Body() body: any) {
     // return await this.anomalyService.actionPlan(body);
   }
+
 
   @Post('maintenance_window')
   @UseInterceptors(

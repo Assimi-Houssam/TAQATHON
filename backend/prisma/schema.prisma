@@ -29,16 +29,11 @@ enum source {
 }
 
 enum Status {
+  NEW
   IN_PROGRESS
-  TRAITED
   CLOSED
 }
 
-enum Priority {
-  LOW
-  MEDIUM
-  HIGH
-}
 
 enum origine {
   ORACLE
@@ -65,9 +60,10 @@ model anomaly {
   disponibilite_conf String?
   process_safty String?
   process_safty_conf String?
-  Criticite String?
+  Criticite Int?
   status Status?
   source source?
+  comment String?
   rex_entrie   rex_entrie? 
   action_plan  action_plan[]
   atachments attachments[]

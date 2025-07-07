@@ -54,9 +54,9 @@ export class UpdateAnomalieDto {
     @IsString()
     @IsOptional()
     num_equipments?: string;
-    @IsString()
-    @IsOptional()
-    duree_intervention?: string;
+    // @IsString()
+    // @IsOptional()
+    // duree_intervention?: string;
     @IsString()
     @IsOptional()
     unite?: string;
