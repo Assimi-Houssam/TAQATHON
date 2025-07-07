@@ -29,16 +29,11 @@ enum source {
 }
 
 enum Status {
+  NEW
   IN_PROGRESS
-  TRAITED
   CLOSED
 }
 
-enum Priority {
-  LOW
-  MEDIUM
-  HIGH
-}
 
 enum origine {
   ORACLE
@@ -49,6 +44,7 @@ enum origine {
 
 model anomaly {
   id          String   @id @default(cuid())
+  required_stoping Boolean?
   num_equipments String?
   duree_intervention String?
   unite      String?
@@ -68,10 +64,11 @@ model anomaly {
   Criticite String?
   status Status?
   source source?
-  rex_entrie   rex_entrie? 
-  action_plan  action_plan[]
+  comment String?
+  rex_entrie   rex_entrie[] 
+  actions  action_plan[]
   atachments attachments[]
-  trained Boolean?
+  trained Boolean? @default(false)
   created_at DateTime @default(now())
   maintenance_window_id String?
   maintenance_window maintenance_window? @relation(fields: [maintenance_window_id], references: [id])
@@ -87,14 +84,19 @@ model attachments {
   anomaly     anomaly? @relation(fields: [anomaly_id], references: [id])
 }
 
+enum ActionPlanStatus {
+  NOT_COMPLETED
+  COMPLETED
+}
+
 model action_plan {
   id          String   @id @default(cuid())
   Action String?
   responsable String?
-  pdrs_disponible String?
+  pdrs_disponible Boolean?
   resource_intern String?
   resource_extern String?
-  status String?
+  status ActionPlanStatus? @default(NOT_COMPLETED)
   anomaly_id String?
   anomaly     anomaly? @relation(fields: [anomaly_id], references: [id])
 }
@@ -119,7 +121,7 @@ model rex_entrie {
   id          String   @id @default(cuid())
   summary     String?
   docment_path String?
-  anomalies_id String? @unique
+  anomalies_id String? 
   anomalies   anomaly? @relation(fields: [anomalies_id], references: [id])
 }
 
