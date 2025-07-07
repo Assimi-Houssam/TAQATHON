@@ -51,6 +51,7 @@ export function DataTable<T extends Record<string, any>>({
   columnVisibility: externalColumnVisibility,
   onColumnVisibilityChange: externalOnColumnVisibilityChange,
   rowClassName,
+  pagination,
 }: DataTableProps<T>) {
   // Extract configuration with defaults
   const {
@@ -68,7 +69,7 @@ export function DataTable<T extends Record<string, any>>({
 
   // Internal state
   const [searchTerm, setSearchTerm] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(pagination?.currentPage || 1);
   const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' } | null>(
     defaultSort ? { key: String(defaultSort.field), direction: defaultSort.direction } : null
   );
@@ -177,7 +178,9 @@ export function DataTable<T extends Record<string, any>>({
     return pageData;
   }, [sortedData, currentPage, pageSize, enablePagination]);
 
-  const totalPages = Math.ceil(sortedData.length / pageSize);
+  const totalPages = pagination?.totalPages || Math.ceil(sortedData.length / pageSize);
+  const totalCount = pagination?.total || sortedData.length;
+  const actualCurrentPage = pagination?.currentPage || currentPage;
 
   // Event handlers
   const handleSearch = (value: string) => {
@@ -212,7 +215,11 @@ export function DataTable<T extends Record<string, any>>({
   };
 
   const handlePageChange = (page: number) => {
-    setCurrentPage(page);
+    if (pagination?.onPageChange) {
+      pagination.onPageChange(page);
+    } else {
+      setCurrentPage(page);
+    }
   };
 
   // Render loading state
@@ -245,7 +252,7 @@ export function DataTable<T extends Record<string, any>>({
                   placeholder={searchPlaceholder}
                   value={searchTerm}
                   onChange={(e) => handleSearch(e.target.value)}
-                  className="pl-10 w-[300px]"
+                  className="pl-10 w-[300px] bg-white"
                 />
               </div>
             )}
@@ -373,9 +380,7 @@ export function DataTable<T extends Record<string, any>>({
                   onClick={() => column.enableSorting && handleSort(column.id)}
                   style={{ width: column.size ? `${column.size}px` : undefined }}
                 >
-                  <div className={`flex items-center gap-2 ${
-                    index === visibleColumns.length - 1 ? 'justify-end' : 'justify-center'
-                  }`}>
+                  <div className="flex items-center gap-2 justify-start">
                     {column.header}
                     {enableSorting && sortConfig?.key === column.id && (
                       <span className="text-xs">
@@ -433,14 +438,14 @@ export function DataTable<T extends Record<string, any>>({
       {enablePagination && totalPages > 1 && (
         <div className="flex items-center justify-between">
           <div className="text-sm text-muted-foreground">
-            Showing {((currentPage - 1) * pageSize) + 1} to {Math.min(currentPage * pageSize, sortedData.length)} of {sortedData.length} results
+            Showing {((actualCurrentPage - 1) * pageSize) + 1} to {Math.min(actualCurrentPage * pageSize, totalCount)} of {totalCount} results
           </div>
           <div className="flex items-center gap-2">
             <Button
               variant="outline"
               size="sm"
-              onClick={() => handlePageChange(currentPage - 1)}
-              disabled={currentPage === 1}
+              onClick={() => handlePageChange(actualCurrentPage - 1)}
+              disabled={actualCurrentPage === 1}
             >
               <ChevronLeft className="h-4 w-4 mr-2" />
               Previous
@@ -450,7 +455,7 @@ export function DataTable<T extends Record<string, any>>({
               {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
                 <Button
                   key={page}
-                  variant={currentPage === page ? "default" : "outline"}
+                  variant={actualCurrentPage === page ? "default" : "outline"}
                   size="sm"
                   onClick={() => handlePageChange(page)}
                   className="w-8 h-8 p-0"
@@ -463,8 +468,8 @@ export function DataTable<T extends Record<string, any>>({
             <Button
               variant="outline"
               size="sm"
-              onClick={() => handlePageChange(currentPage + 1)}
-              disabled={currentPage === totalPages}
+              onClick={() => handlePageChange(actualCurrentPage + 1)}
+              disabled={actualCurrentPage === totalPages}
             >
               Next
               <ChevronRight className="h-4 w-4 ml-2" />

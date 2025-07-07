@@ -130,4 +130,11 @@ export interface DataTableProps<T extends Record<string, any>> {
   columnVisibility?: ColumnVisibilityState<T>;
   onColumnVisibilityChange?: (columnVisibility: ColumnVisibilityState<T>) => void;
   rowClassName?: (row: T) => string;
+  // Server-side pagination props
+  pagination?: {
+    currentPage: number;
+    totalPages: number;
+    total: number;
+    onPageChange?: (page: number) => void;
+  };
 } 

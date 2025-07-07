@@ -3,17 +3,16 @@ import { Anomaly, AnomalyFormData, AnomalyUpdateData, AnomalyStatus } from '@/ty
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
 
 export interface UseAnomaliesOptions {
-  status?: AnomalyStatus;
-  criticality?: string;
-  equipment?: string;
-  limit?: number;
-  offset?: number;
   enabled?: boolean;
 }
 
 interface AnomaliesResponse {
-  anomalies: Anomaly[];
-  total?: number;
+  data: Anomaly[];
+  totalAnomaly?: number;
+  totalPages?: number;
+  currentPage?: number;
+  hasNext?: boolean;
+  hasPrevious?: boolean;
 }
 
 interface AnomalyStatsResponse {
@@ -25,29 +24,21 @@ interface AnomalyStatsResponse {
 
 export function useAnomalies(options: UseAnomaliesOptions = {}) {
   const { 
-    status, 
-    criticality, 
-    equipment, 
-    limit, 
-    offset, 
     enabled = true 
   } = options;
 
   return useQuery({
-    queryKey: ["anomalies", status, criticality, equipment, limit, offset],
+    queryKey: ["anomalies"],
     queryFn: async () => {
-      const params: Record<string, string | number> = {};
-      if (status) params.status = status;
-      if (criticality) params.criticality = criticality;
-      if (equipment) params.equipment = equipment;
-      if (limit) params.limit = limit;
-      if (offset) params.offset = offset;
-
-      const { data } = await apiClient.get<AnomaliesResponse>('/anomaly/getAnomaly', { params });
+      const { data } = await apiClient.get<AnomaliesResponse>('/anomaly/getAnomaly');
       
       return {
-        anomalies: data.anomalies || [],
-        total: data.total || 0,
+        anomalies: data.data || [],
+        total: data.totalAnomaly || 0,
+        totalPages: data.totalPages || 0,
+        currentPage: data.currentPage || 1,
+        hasNext: data.hasNext || false,
+        hasPrevious: data.hasPrevious || false,
       };
     },
     enabled,
