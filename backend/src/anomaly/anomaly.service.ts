@@ -82,7 +82,7 @@ export class AnomalyService {
       where: { id: id },
       include: {
         atachments: true,
-        action_plan: true,
+        actions: true,
         rex_entrie: true,
       },
     });
@@ -271,13 +271,13 @@ export class AnomalyService {
       where: { id: id },
       include: {
         atachments: true,
-        action_plan: true,
+        actions: true,
       },
     });
     if (!anomaly) {
       throw new Error('Anomaly not found');
     }
-    if (anomaly.action_plan.length === 0) {
+    if (anomaly.actions.length === 0) {
       throw new Error(
         "Le plan d'action est vide, veuillez le remplir avant de résoudre l'anomalie",
       );
