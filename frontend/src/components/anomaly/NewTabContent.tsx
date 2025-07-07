@@ -283,14 +283,11 @@ export function NewTabContent({ anomaly, onUpdate, onStatusChange }: NewTabConte
       </CollapsibleCard>
 
       {/* Action Plan */}
-      <CollapsibleCard
-        title="Action Plan"
-        icon={<Activity className="h-5 w-5" />}
-        defaultOpen={false}
-        className=""
-      >
-        <ActionPlanTable showHeader={false} />
-      </CollapsibleCard>
+      <ActionPlanTable 
+        showHeader={true} 
+        collapsible={true} 
+        defaultOpen={false} 
+      />
     </div>
   );
 } 

@@ -16,8 +16,11 @@ import {
   User,
   Activity,
   X,
-  CheckCircle2
+  CheckCircle2,
+  ChevronDown,
+  ChevronUp
 } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface ActionPlanItem {
   id: string;
@@ -32,6 +35,8 @@ interface ActionPlanItem {
 interface ActionPlanTableProps {
   title?: string;
   showHeader?: boolean;
+  collapsible?: boolean;
+  defaultOpen?: boolean;
   className?: string;
   onAddAction?: () => void;
   onEditAction?: (item: ActionPlanItem) => void;
@@ -42,6 +47,8 @@ interface ActionPlanTableProps {
 export function ActionPlanTable({ 
   title = "Action Plan",
   showHeader = true,
+  collapsible = false,
+  defaultOpen = true,
   className = "",
   onAddAction,
   onEditAction,
@@ -51,6 +58,7 @@ export function ActionPlanTable({
   const [actionPlanItems, setActionPlanItems] = useState<ActionPlanItem[]>(items);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isOpen, setIsOpen] = useState(defaultOpen);
   const [formData, setFormData] = useState({
     action: '',
     responsible: '',
@@ -89,6 +97,16 @@ export function ActionPlanTable({
     } else {
       setActionPlanItems(prev => prev.filter(item => item.id !== id));
     }
+  };
+
+  const handleToggleComplete = (id: string) => {
+    setActionPlanItems(prev => 
+      prev.map(item => 
+        item.id === id 
+          ? { ...item, isDone: !item.isDone }
+          : item
+      )
+    );
   };
 
   const resetForm = () => {
@@ -151,6 +169,20 @@ export function ActionPlanTable({
               <div className="flex items-center gap-3">
                 <Activity className="h-5 w-5 text-blue-600" />
                 <CardTitle className="text-lg font-semibold">{title}</CardTitle>
+                {collapsible && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setIsOpen(!isOpen)}
+                    className="h-8 w-8 p-0 hover:bg-gray-100 ml-2"
+                  >
+                    {isOpen ? (
+                      <ChevronUp className="h-4 w-4" />
+                    ) : (
+                      <ChevronDown className="h-4 w-4" />
+                    )}
+                  </Button>
+                )}
               </div>
               <Button 
                 size="sm" 
@@ -163,8 +195,9 @@ export function ActionPlanTable({
             </div>
           </CardHeader>
         )}
-        <CardContent className="p-0">
-          <div className="overflow-x-auto">
+        {(!collapsible || isOpen) && (
+          <CardContent className="p-0 animate-in slide-in-from-top-2 duration-200">
+            <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
                 <tr className="border-b border-gray-200 bg-gray-50">
@@ -174,7 +207,7 @@ export function ActionPlanTable({
                   <th className="text-left py-3 px-4 font-medium text-gray-900 text-sm">Ressources Internes</th>
                   <th className="text-left py-3 px-4 font-medium text-gray-900 text-sm">Ressources externes</th>
                   <th className="text-left py-3 px-4 font-medium text-gray-900 text-sm">Statut</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-900 text-sm w-20">Actions</th>
+                  <th className="text-left py-3 px-4 font-medium text-gray-900 text-sm w-24">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -214,15 +247,12 @@ export function ActionPlanTable({
                       <td className="py-3 px-4 text-sm text-gray-700">{item.externalResources}</td>
                       <td className="py-3 px-4">{getStatusBadge(item.isDone)}</td>
                       <td className="py-3 px-4">
-                        <div className="flex items-center gap-1">
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            className="h-8 w-8 p-0 hover:bg-gray-100"
-                            onClick={() => handleEditAction(item)}
-                          >
-                            <Edit3 className="h-3 w-3" />
-                          </Button>
+                        <div className="flex items-center gap-2">
+                          <Checkbox
+                            checked={item.isDone}
+                            onCheckedChange={() => handleToggleComplete(item.id)}
+                            className="data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
+                          />
                           <Button
                             size="sm"
                             variant="ghost"
@@ -238,8 +268,9 @@ export function ActionPlanTable({
                 )}
               </tbody>
             </table>
-          </div>
-        </CardContent>
+            </div>
+          </CardContent>
+        )}
       </Card>
 
       {/* Add Action Modal */}
