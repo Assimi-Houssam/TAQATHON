@@ -145,6 +145,7 @@ export class AnomalyService {
     if (!filePath) {
       throw new Error('No file path provided');
     }
+
     try {
       const fileMaintenance = await this.Prisma.maintenance_files.create({
         data: {
@@ -164,15 +165,20 @@ export class AnomalyService {
     end_date: Date,
     duration_days: number,
     duration_hours: number,
+    description?: string,
   ) {
-    const durationDay = duration_days.toString();
-    const durationHour = duration_hours.toString();
+    if (new Date(end_date) <= new Date()) {
+      throw new Error('Invalid date range');
+    }
+    if (!description)
+      description = `arret de ${duration_days} jours `;
     const maintenanceWindow = await this.Prisma.maintenance_window.create({
       data: {
-        date_debut_arret: start_date,
-        date_fin_arret: end_date,
-        duree_jour: durationDay,
-        duree_heure: durationHour,
+        date_debut_arret: new Date(start_date),
+        date_fin_arret: new Date(end_date),
+        duree_jour: duration_days.toString(),
+        duree_heure: duration_hours.toString(),
+        titlte: description,
       },
     });
     return maintenanceWindow;
@@ -362,7 +368,7 @@ export class AnomalyService {
     };
   }
 
-  async forceStopAnomaly(data: ForceStopDto) {
+  async addingMaintenanceWindow(data: ForceStopDto) {
     const {
       date_debut_arret,
       date_fin_arret,
@@ -373,10 +379,8 @@ export class AnomalyService {
     if (!date_debut_arret || !date_fin_arret) {
       throw new Error('Start and end dates are required');
     }
-
     const dateDebutArret = new Date(date_debut_arret);
     const dateFinArret = new Date(date_fin_arret);
-
     const forceStopentrie = await this.Prisma.maintenance_window.create({
       data: {
         date_debut_arret: dateDebutArret,
@@ -395,7 +399,14 @@ export class AnomalyService {
         forceStopentrie.id,
         dureHeur,
       );
-  }
+
+      return {
+        success: true,
+        message: 'Force stop entry created successfully',
+        data: forceStopentrie,
+        automatedAssignment: automatedAssignment,
+      }
+    }
 
   async autoAssigmentAnomalyToMaintenanceWindowForceStop(
     maintenanceId: string,
@@ -431,6 +442,33 @@ export class AnomalyService {
         }
       }
     }
+  }
+  
+
+
+  async actionPlan(anomalyId: string, body: any) {
+    const anomaly = await this.Prisma.anomaly.findUnique({
+      where: { id: anomalyId },
+    });
+    if (!anomaly) {
+      throw new Error('Anomaly not found');
+    }
+
+    const actionPlan = await this.Prisma.action_plan.create({
+      data: {
+        ...body,
+        anomaly : {
+          connect: { id: anomalyId },
+        },
+      },
+    });
+
+    return {
+      success: true,
+      message: 'Action plan created successfully',
+      data: actionPlan,
+    };
+
   }
 }
 
