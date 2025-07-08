@@ -359,7 +359,20 @@ export class AnomalyService {
           },
         });
       }
-      // await this.Pris
+      await this.Prisma.anomaly.update({
+        where: { id: anomalyId },
+        data: {
+          maintenance_window: {
+            connect: { id: orphans.id },
+          },
+        },
+      });
+      return {
+        success: false,
+        message: 'No suitable maintenance window found, assigned to ORPHANS',
+        updatedAnomaly: anomaly,
+        maintenanceWindow: orphans,
+      };
     }
     const updatedAnomaly = await this.Prisma.anomaly.update({
       where: { id: anomalyId },
@@ -415,6 +428,7 @@ export class AnomalyService {
 
   async autoAssigmentAnomalyToMaintenanceWindowForceStop() {
     try {
+      
       const maintenance_window =
         await this.Prisma.maintenance_window.findMany();
       const anomaly = await this.Prisma.anomaly.findMany({
@@ -452,6 +466,7 @@ export class AnomalyService {
               assigned: false,
               reason: 'No suitable window found',
             });
+
             continue;
           }
 
