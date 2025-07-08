@@ -19,10 +19,10 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         <SidebarProvider defaultOpen={true}>
           <NotificationProvider>
             <Navbar />
-            <div className="flex min-h-[100vh] w-full pt-20">
+            <div className="flex h-[calc(100vh-5rem)] w-full mt-20">
               <AppSidebar />
               <main className="flex-1 w-full overflow-x-hidden bg-gray-50">
-                {children}
+              {children}
               </main>
             </div>
           </NotificationProvider>
