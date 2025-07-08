@@ -50,7 +50,10 @@ export class MlApiService {
           timeout: 30000, // 30 seconds for file upload
         },
       );
-
+      // Clean up the temporary file
+      if (file.path && fs.existsSync(file.path)) {
+        fs.unlinkSync(file.path);
+      }
       return response.data;
     } catch (error) {
       console.error('ML API file upload failed:', error.message);
