@@ -35,7 +35,7 @@ const criticityColors: Record<AnomalyCriticality, string> = {
 
 export function AnomalySummary({ anomaly }: AnomalySummaryProps) {
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
-  const criticalityLevel = getCriticalityLevel(anomaly.Criticite);
+  const criticalityLevel = getCriticalityLevel(anomaly.criticite);
   
   // Helper function to get display value or fallback
   const getDisplayValue = (value: any, fallback = "Not specified") => {
@@ -219,7 +219,7 @@ export function AnomalySummary({ anomaly }: AnomalySummaryProps) {
                             <Badge className={criticityColors[criticalityLevel]} variant="outline">
                               {criticalityLevel}
                             </Badge>
-                            <span className="text-xs text-gray-600">({anomaly.Criticite || 0}/15)</span>
+                            <span className="text-xs text-gray-600">({anomaly.criticite || 0}/15)</span>
                           </div>
                         </div>
                       </div>

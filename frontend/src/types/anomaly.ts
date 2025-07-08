@@ -47,7 +47,7 @@ export interface Anomaly {
   disponibilite_conf?: string;
   process_safty?: string;
   process_safty_conf?: string;
-  Criticite?: string;
+  criticite?: string;
   status?: 'NEW' | 'IN_PROGRESS' | 'CLOSED';
   source?: 'MC' | 'MM' | 'MD' | 'CT' | 'EL';
   comment?: string;
@@ -199,7 +199,7 @@ export interface AnomalyFormData {
   section_proprietaire?: string;
   fiablite_integrite?: string;
   fiablite_conf?: string;
-  Criticite?: string;
+  criticite?: string;
   disponsibilite?: string;
   disponibilite_conf?: string;
   process_safty?: string;
@@ -278,7 +278,7 @@ export const convertLegacyToNew = (legacy: LegacyAnomaly): Anomaly => {
     fiablite_integrite: legacy.fiabilite_integrite?.toString(),
     disponsibilite: legacy.disponibilite?.toString(),
     process_safty: legacy.process_safety?.toString(),
-    Criticite: legacy.criticality?.toString(),
+    criticite: legacy.criticality?.toString(),
     status: legacy.status === 'New' ? 'NEW' : 
             legacy.status === 'In Progress' ? 'IN_PROGRESS' : 'CLOSED',
     origine: legacy.origin as AnomalyOrigin,

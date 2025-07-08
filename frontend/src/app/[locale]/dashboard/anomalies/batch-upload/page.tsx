@@ -43,7 +43,7 @@ interface PreviewRecord {
   descreption_anomalie: string;
   origine: string;
   section_proprietaire: string;
-  Criticite: string;
+  criticite: string;
   status: 'valid' | 'invalid' | 'warning';
   errors?: string[];
 }
@@ -310,7 +310,7 @@ export default function BatchUploadPage() {
                           </div>
                           <p className="text-sm text-gray-600 mb-2">{record.descreption_anomalie}</p>
                           <div className="flex gap-2">
-                            <Badge variant="outline">{record.Criticite}</Badge>
+                            <Badge variant="outline">{record.criticite}</Badge>
                             <Badge variant="outline">{record.unite}</Badge>
                             <Badge variant="outline">{record.systeme}</Badge>
                           </div>
@@ -392,7 +392,7 @@ export default function BatchUploadPage() {
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-                  <span>Criticite</span>
+                  <span>criticite</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 bg-gray-400 rounded-full"></div>

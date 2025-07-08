@@ -45,7 +45,7 @@ interface PreviewRecord {
   descreption_anomalie: string;
   origine: string;
   section_proprietaire: string;
-  Criticite: string;
+  criticite: string;
   status: 'valid' | 'invalid' | 'warning';
   errors?: string[];
 }
@@ -200,7 +200,7 @@ export default function BatchUploadModal({ isOpen, onClose, onSuccess }: BatchUp
   const handleDownloadTemplate = () => {
     // Create a sample Excel template (we'll provide a link to download a pre-made template)
     // For now, we'll create a CSV that user can save as Excel
-    const csvContent = "num_equipments,descreption_anomalie,section_proprietaire,Criticite,unite,systeme,origine,fiablite_integrite,disponsibilite,process_safty\nEQ-001,Pressure sensor showing irregular readings,Production,HIGH,Production Unit A,Pressure Control System,Sensor Malfunction,3,4,2\nEQ-002,Temperature fluctuations outside normal range,Maintenance,MEDIUM,Production Unit B,Temperature Control,Calibration Drift,2,3,1";
+    const csvContent = "num_equipments,descreption_anomalie,section_proprietaire,criticite,unite,systeme,origine,fiablite_integrite,disponsibilite,process_safty\nEQ-001,Pressure sensor showing irregular readings,Production,HIGH,Production Unit A,Pressure Control System,Sensor Malfunction,3,4,2\nEQ-002,Temperature fluctuations outside normal range,Maintenance,MEDIUM,Production Unit B,Temperature Control,Calibration Drift,2,3,1";
     const blob = new Blob([csvContent], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');

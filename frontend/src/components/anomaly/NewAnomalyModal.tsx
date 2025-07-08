@@ -161,7 +161,7 @@ export default function NewAnomalyModal({ isOpen, onClose, onSuccess }: NewAnoma
         process_safty: formData.process_safety.toString(),
         fiablite_integrite: formData.fiabilite_integrite.toString(),
         disponsibilite: formData.disponibilite.toString(),
-        Criticite: (formData.process_safety + formData.fiabilite_integrite + formData.disponibilite).toString(),
+        criticite: (formData.process_safety + formData.fiabilite_integrite + formData.disponibilite).toString(),
         comment: [
           formData.equipment_description ? `Equipment: ${formData.equipment_description}` : '',
           formData.comment || ''
