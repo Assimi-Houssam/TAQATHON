@@ -138,7 +138,6 @@ export class AnomalyController {
     return await this.anomalyService.createAnomaly(data);
   }
 
-  // with comment NOT TEsTed
   @ApiOperation({ summary: 'Upload attachment for anomaly' })
   @ApiConsumes('multipart/form-data')
   @ApiParam({ name: 'id', description: 'Anomaly ID', type: 'string' })
@@ -227,6 +226,7 @@ export class AnomalyController {
       };
     } catch (error) {
       throw new BadRequestException(`Upload failed: ${error.message}`);
+      
     }
   }
 
@@ -245,7 +245,13 @@ export class AnomalyController {
     @Param('anomalyId') anomalyId: string,
     @Body() body: CreateActionPlanDto,
   ) {
+    try {
     return await this.anomalyService.actionPlan(anomalyId, body);
+    }
+    catch{
+      throw new BadRequestException('Failed to create action plan');
+    }
+    
   }
 
   @ApiOperation({ summary: 'Create maintenance window from Excel file' })
@@ -371,7 +377,7 @@ export class AnomalyController {
         data: {
           file_name: sheetName,
           file_url: 'we will develop this later',
-          processed_rows: result.data.length,
+          processed_rows: dataToProcess.length,
           created_windows: createdWindows.length,
           windows: createdWindows,
         },
