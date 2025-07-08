@@ -1,20 +1,18 @@
 import { IsOptional, IsString } from 'class-validator';
-import { ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class PrioritySuggestionDto {
-  @ApiPropertyOptional({
+  @ApiProperty({
     description: 'Anomaly description for priority estimation',
     example: 'Equipment overheating causing production delays',
   })
   @IsString()
-  @IsOptional()
-  description?: string;
+  description_anomaly: string;
 
-  @ApiPropertyOptional({
-    description: 'Unique identifier for the request',
-    example: 'uid_123abc456',
+  @ApiProperty({
+    description: 'Equipment description for priority estimation',
+    example: 'Production line equipment experiencing issues',
   })
   @IsString()
-  @IsOptional()
-  uid?: string;
+  description_equipement: string;
 }
