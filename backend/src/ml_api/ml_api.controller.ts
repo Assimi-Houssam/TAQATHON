@@ -53,8 +53,6 @@ export class MlApiController {
   })
   @Post('suggestPriority')
   async SuggestPriority(@Body() data: PrioritySuggestionDto) {
-    // send data to fastapi for estimation of  priotite
-    // receive data from fastapi send it to front
     const response = await this.mlApiService.sendPriorityRequest(data);
     return response;
   }

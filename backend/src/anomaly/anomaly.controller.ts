@@ -12,6 +12,7 @@ import {
   ParseFilePipe,
   MaxFileSizeValidator,
   FileTypeValidator,
+  Delete,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
@@ -32,6 +33,7 @@ import { ForceStopDto } from './dto/forceStop.dto';
 import {
   ActionPlanResponseDto,
   CreateActionPlanDto,
+  UpdateActionPlanDto,
 } from './dto/actionPlan.dto';
 import { Public } from 'src/metadata';
 
@@ -319,23 +321,17 @@ export class AnomalyController {
       if (!file) {
         throw new BadRequestException('No Excel file uploaded');
       }
-
-      // Validate file
       const allowedMimeTypes = [
         'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         'application/vnd.ms-excel',
       ];
-
       if (!allowedMimeTypes.includes(file.mimetype)) {
         throw new BadRequestException(
           'Invalid file type. Only Excel files are allowed',
         );
       }
-
       const sheetName = file.originalname;
-
-      // Process with Python script (WAIT for completion)
-      const result = await this.pythonExecutorService.analyzeExcelRows(
+      const result = await this.pythonExecutorService.analyzeExcelRows( // spawning python script to read 
         file.path,
         sheetName,
       );
@@ -518,6 +514,85 @@ export class AnomalyController {
   async addingMaintenanceWindow(@Body() data: ForceStopDto) {
     return await this.anomalyService.addingMaintenanceWindow(data);
   }
+
+
+  @ApiOperation({ summary: 'delete maintenance window' })
+  @ApiResponse({
+    status: 200,
+    description: 'Maintenance window deleted successfully',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid request data',
+  })
+  @Delete('deletemaintenance/:id')
+  async deleteMaintenanceWindow(@Param('id') id: string) {
+    return await this.anomalyService.deleteMaintenanceWindow(id);
+  }
+
+
+    @ApiOperation({ summary: 'Get all action plans for an anomaly' })
+  @ApiParam({ name: 'anomalyId', description: 'Anomaly ID', type: 'string' })
+  @ApiResponse({
+    status: 200,
+    description: 'Action plans retrieved successfully',
+    schema: {
+      type: 'object',
+      properties: {
+        data: { 
+          type: 'array', 
+          items: { 
+            type: 'object',
+            properties: {
+              id: { type: 'string' },
+              Action: { type: 'string' },
+              responsable: { type: 'string' },
+              pdrs_disponible: { type: 'boolean' },
+              resource_intern: { type: 'string' },
+              resource_extern: { type: 'string' },
+              status: { type: 'string', enum: ['NOT_COMPLETED', 'COMPLETED'] },
+              anomaly_id: { type: 'string' },
+            }
+          }
+        },
+        total: { type: 'number' },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Anomaly not found',
+  })
+  @Get('action_plans/:anomalyId')
+  async getActionPlans(@Param('anomalyId') anomalyId: string) {
+    try {
+      return await this.anomalyService.getActionPlans(anomalyId);
+    } catch (error) {
+      throw new BadRequestException('Failed to retrieve action plans');
+    }
+  }
+  
+  // @Patch('updateActionPlan/:id')
+  // @ApiOperation({ summary: 'Update action plan for anomaly' })
+  // @ApiParam({ name: 'id', description: 'Anomaly ID', type:
+  //   'string' })
+  // @ApiResponse({
+  //   status: 200,
+  //   description: 'Action plan updated successfully',
+  // })
+  // @ApiResponse({
+  //   status: 404,
+  //   description: 'Anomaly not found',
+  // })
+  // async updateActionPlan( @Param('id') id: string, @Body() body: UpdateActionPlanDto) {
+  //   try {
+  //     return await this.anomalyService.updateActionPlan(id, body);
+  //   } catch (error) {
+  //     console.error('Error updating action plan:', error);
+  //     throw new BadRequestException('Failed to update action plan');
+  //   }
+
+  // }
 
 
 }

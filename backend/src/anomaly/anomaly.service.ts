@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma.service';
 import { CreateAnomalieDto, UpdateAnomalieDto } from './dto/anomalie.dto';
 import { ForceStopDto } from './dto/forceStop.dto';
+import { UpdateActionPlanDto } from './dto/actionPlan.dto';
 
 @Injectable()
 export class AnomalyService {
@@ -549,6 +550,74 @@ export class AnomalyService {
       data: actionPlan,
     };
   }
+  async deleteMaintenanceWindow(id: string) {
+    const maintenanceWindow = await this.Prisma.maintenance_window.findUnique({
+      where: { id: id },
+    });
+    if (!maintenanceWindow) {
+      throw new Error('Maintenance window not found');
+    }
+    await this.Prisma.maintenance_window.delete({
+      where: { id: id },
+    });
+    const assign =  this.autoAssigmentAnomalyToMaintenanceWindowForceStop();
+    if (!assign) {
+      throw new Error(`Failed to reassign anomalies`);
+    }
+
+    return {
+      success: true,
+      message: 'Maintenance window deleted successfully',
+    };
+  }
+
+      async getActionPlans(anomalyId: string) {
+    const anomaly = await this.Prisma.anomaly.findUnique({
+      where: { id: anomalyId },
+    });
+    if (!anomaly) {
+      throw new Error('Anomaly not found');
+    }
+
+    const actionPlans = await this.Prisma.action_plan.findMany({
+      where: { anomaly_id: anomalyId },
+      orderBy: { id: 'asc' },
+    });
+
+    const total = await this.Prisma.action_plan.count({
+      where: { anomaly_id: anomalyId },
+    });
+
+    return {
+      data: actionPlans,
+      total: total,
+    };
+  }
+
+
+  
+  // async updateActionPlan(id: string, body: UpdateActionPlanDto){
+  //   const actionplan = await this.Prisma.action_plan.findUnique({
+  //     where: { id: id },
+  //   });
+  //   if (!actionplan) {
+  //     throw new Error('Action plan not found');
+  //   }
+    
+  //   const updatedActionPlan = await this.Prisma.action_plan.update({
+  //     where: { id: id },
+  //     data: {
+  //       ...body,
+  //     },
+  //   });
+  //   return {
+  //     success: true,
+  //     message: 'Action plan updated successfully',
+  //     data: updatedActionPlan,
+  //   };
+
+  // }
+
 }
 
 //  when status is traite with  attach with -> the action plan  chanfe to traite and attach it to a maintenance window
