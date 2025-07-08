@@ -10,7 +10,7 @@ export class MlApiService {
     try {
       const response = await axios.post('http://fastapi:4000', data, {
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'multipart/form-data/json',
         },
         timeout: 10000, // 10 seconds timeout
       });

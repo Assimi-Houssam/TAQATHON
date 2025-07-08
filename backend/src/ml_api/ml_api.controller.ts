@@ -24,11 +24,16 @@ import { MlApiService } from './ml_api.service';
 import { Public } from 'src/metadata';
 import { CreateAnomalieDto } from 'src/anomaly/dto/anomalie.dto';
 import { PrioritySuggestionDto } from './dto/prioritysuggestion.dto';
+import { PythonExecutorService } from 'src/anomaly/python.service';
 
 @ApiTags('ml-api')
 @Controller('ml')
+@Public()
 export class MlApiController {
-  constructor(private readonly mlApiService: MlApiService) {}
+  constructor(
+    private readonly mlApiService: MlApiService,
+    private readonly pythonExecutorService: PythonExecutorService,
+  ) {}
 
   @ApiOperation({ summary: 'Get priority suggestion for anomaly' })
   @ApiResponse({
@@ -90,36 +95,33 @@ export class MlApiController {
         },
       }),
       limits: {
-        fileSize: 10 * 1024 * 1024,
+        fileSize: 10 * 1024 * 1024, // 10MB
+      },
+      fileFilter: (req, file, callback) => {
+        // Validate file type
+        if (!file.originalname.match(/\.(xlsx|xls)$/)) {
+          return callback(new Error('Only Excel files are allowed!'), false);
+        }
+        callback(null, true);
       },
     }),
   )
-  async uploadAnomaly(
-    @UploadedFile(
-      new ParseFilePipe({
-        validators: [
-          new MaxFileSizeValidator({ maxSize: 10 * 1024 * 1024 }), // 10MB
-          new FileTypeValidator({
-            fileType: /(xlsx|xls)$/,
-          }),
-        ],
-      }),
-    )
-    file: any,
-  ) {
+  async uploadAnomaly(@UploadedFile() file: any) {
     try {
       if (!file) {
         throw new BadRequestException('No file uploaded');
       }
-
-      const sending = await this.mlApiService.sendAnomalyFile(file);
-
-      if (!sending) {
-        throw new BadRequestException('Failed to send anomaly file to FastAPI');
+      const res = await this.mlApiService.sendAnomalyFile(file);
+      if (!res || !res) {
+        throw new BadRequestException('Failed to process the file');
       }
-
-      return sending;
+      return {
+        success: true,
+        message: 'File uploaded and processed successfully',
+        data: res,
+      };
     } catch (error) {
+      console.error('Upload error:', error);
       throw new BadRequestException(`Upload failed: ${error.message}`);
     }
   }
