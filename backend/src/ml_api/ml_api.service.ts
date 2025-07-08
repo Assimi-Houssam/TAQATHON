@@ -41,7 +41,7 @@ export class MlApiService {
       formData.append('file_type', 'excel');
 
       const response = await axios.post(
-        'http://fastapi:4000/upload-file',
+        'http://localhost:8000/predict_excel',
         formData,
         {
           headers: {

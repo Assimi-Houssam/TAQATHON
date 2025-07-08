@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, UploadFile, File
+from fastapi import FastAPI, HTTPException, UploadFile, File,BackgroundTasks
 from openpyxl import load_workbook
 import io
 from fastapi.middleware.cors import CORSMiddleware
@@ -210,72 +210,38 @@ async def batch_predict(texts: list[str]):
         logger.error(f"Unexpected error in batch prediction: {str(e)}")
         raise HTTPException(status_code=500, detail="Internal server error")
 
-@app.post("/predict_excel")
-async def predict_excel(file: UploadFile = File(...)):
-    """
-    Upload Excel file and get predictions for all descriptions
-    
-    Expected Excel columns:
-    - Num_equipement
-    - Systeme  
-    - Description
-    - Date de détéction de l'anomalie
-    - Description de l'équipement
-    - Section propriétaire
-    """
-    # Validate file type
-    if not file.filename.endswith(('.xlsx', '.xls')):
-        raise HTTPException(status_code=400, detail="File must be Excel format (.xlsx or .xls)")
-    
-    # Required columns
-    required_columns = [
-        "Num_equipement",
-        "Systeme", 
-        "Description",
-        "Date de détéction de l'anomalie",
-        "Description de l'équipement",
-        "Section propriétaire"
-    ]
-    
+
+# Background processing function
+def process_excel_file(file_bytes: bytes):
     try:
-        # Read Excel file
-        contents = await file.read()
-        workbook = load_workbook(io.BytesIO(contents))
+        workbook = load_workbook(io.BytesIO(file_bytes))
         sheet = workbook.active
-        
-        # Get headers from first row
+
         headers = [cell.value for cell in sheet[1]]
-        print(f"Headers found: {headers}")
-        
-        # Check if all required columns exist
-        missing_columns = []
+        required_columns = [
+            "Num_equipement",
+            "Systeme", 
+            "Description",
+            "Date de détéction de l'anomalie",
+            "Description de l'équipement",
+            "Section propriétaire"
+        ]
+
         column_indices = {}
-        
-        for required_col in required_columns:
-            try:
-                column_indices[required_col] = headers.index(required_col)
-            except ValueError:
-                missing_columns.append(required_col)
-        
-        if missing_columns:
-            raise HTTPException(
-                status_code=400, 
-                detail=f"Excel file must contain these columns: {', '.join(missing_columns)}"
-            )
-        
-        # Process each row
+        for col in required_columns:
+            if col not in headers:
+                logger.warning(f"Missing required column: {col}")
+                return
+            column_indices[col] = headers.index(col)
+
         results = []
+
         for row_idx, row in enumerate(sheet.iter_rows(min_row=2, values_only=True), start=2):
             description = row[column_indices["Description"]]
-            
-            if description:  # If description exists
+            if description:
                 description = str(description).strip()
-                
                 if description:
-                    # Get prediction
                     predictions = predict_text(description)
-                    
-                    # Create row data with required fields
                     row_data = {
                         'Num_equipement': row[column_indices["Num_equipement"]],
                         'Systeme': row[column_indices["Systeme"]],
@@ -284,23 +250,34 @@ async def predict_excel(file: UploadFile = File(...)):
                         'Description de l\'équipement': row[column_indices["Description de l'équipement"]],
                         'Section propriétaire': row[column_indices["Section propriétaire"]],
                         'Fiabilité Intégrité': predictions['fiabilite_integrite'],
-                        'Disponibilité': predictions['disponibilite'], 
+                        'Disponibilité': predictions['disponibilite'],
                         'Process Safety': predictions['process_safety'],
                         'Criticité': predictions['criticite']
                     }
                     results.append(row_data)
-            
-            if row_idx % 100 == 0:
+
+            # Optional limit for testing
+            if row_idx % 1000 == 0:
                 break
-        
-        return {
-            "results": results
-        }
-        
+
+        # TODO: save results to DB, file, email, etc.
+        logger.info(f"Processed {len(results)} rows in background.")
+
     except Exception as e:
-        logger.error(f"Error processing Excel file: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Failed to process Excel file: {str(e)}")
-    
+        logger.error(f"Error in background task: {e}")
+
+# Endpoint that triggers background task
+@app.post("/predict_excel")
+async def predict_excel(background_tasks: BackgroundTasks, file: UploadFile = File(...)):
+    if not file.filename.endswith(('.xlsx', '.xls')):
+        raise HTTPException(status_code=400, detail="File must be Excel format (.xlsx or .xls)")
+
+    contents = await file.read()
+    background_tasks.add_task(process_excel_file, contents)
+
+    return {
+        "message": "File received. Processing will continue in background."
+    }
 
 if __name__ == "__main__":
     uvicorn.run(
