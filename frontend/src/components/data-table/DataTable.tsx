@@ -435,15 +435,15 @@ export function DataTable<T extends Record<string, any>>({
       <div className="bg-white rounded-lg border border-zinc-200 shadow-sm">
         <Table>
           <TableHeader>
-            <TableRow>
+            <TableRow className="h-12">
               {visibleColumns.map((column, index) => (
                 <TableHead 
                   key={column.id}
-                  className={`${column.enableSorting ? 'cursor-pointer hover:bg-muted/50' : ''}`}
+                  className={`${column.enableSorting ? 'cursor-pointer hover:bg-muted/50' : ''} whitespace-nowrap`}
                   onClick={() => column.enableSorting && handleSort(column.id)}
                   style={{ width: column.size ? `${column.size}px` : undefined }}
                 >
-                  <div className="flex items-center gap-2 justify-start">
+                  <div className="flex items-center gap-2 justify-start whitespace-nowrap">
                     {column.header}
                     {enableSorting && sortConfig?.key === column.id && (
                       <span className="text-xs">
@@ -457,9 +457,9 @@ export function DataTable<T extends Record<string, any>>({
           </TableHeader>
           <TableBody>
             {paginatedData.length === 0 ? (
-              <TableRow>
+              <TableRow className="h-14">
                 <TableCell colSpan={visibleColumns.length} className="text-center py-8">
-                  <div className="text-muted-foreground">
+                  <div className="text-muted-foreground whitespace-nowrap">
                     {searchTerm || Object.keys(activeFilters).length > 0 
                       ? "No results found. Try adjusting your search or filters."
                       : "No data available."
@@ -475,15 +475,21 @@ export function DataTable<T extends Record<string, any>>({
                 return (
                   <TableRow 
                     key={isFakeRow ? `fake-row-${index}` : `row-${index}`}
-                    className={`${!isFakeRow && onRowClick ? "cursor-pointer hover:bg-muted/50" : ""} ${!isFakeRow && rowClassName ? rowClassName(row as T) : ""} ${isFakeRow ? "opacity-30 pointer-events-none" : ""}`}
+                    className={`h-14 ${!isFakeRow && onRowClick ? "cursor-pointer hover:bg-muted/50" : ""} ${!isFakeRow && rowClassName ? rowClassName(row as T) : ""} ${isFakeRow ? "opacity-30 pointer-events-none" : ""}`}
                     onClick={() => !isFakeRow && onRowClick?.(row as T)}
                   >
                     {visibleColumns.map((column) => (
-                      <TableCell key={`${index}-${column.id}`}>
+                      <TableCell 
+                        key={`${index}-${column.id}`}
+                        className="whitespace-nowrap overflow-hidden"
+                        style={{ 
+                          maxWidth: column.size ? `${column.size}px` : 'auto',
+                        }}
+                      >
                         {column.cell ? (
                           column.cell({ row: { original: row as T } })
                         ) : (
-                          <div>
+                          <div className="whitespace-nowrap truncate">
                             {column.accessorKey ? String((row as T)[column.accessorKey]) : ''}
                           </div>
                         )}

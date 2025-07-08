@@ -15,6 +15,7 @@ interface AnomalyProfileProps {
   anomaly: AnomalyWithRelations;
   onStatusChange?: (newStatus: AnomalyWithRelations['status']) => Promise<void>;
   onUpdate?: (updates: Partial<AnomalyWithRelations>) => Promise<void>;
+  onValidate?: () => Promise<void>;
 }
 
 const LIFECYCLE_STEPS = [
@@ -23,7 +24,7 @@ const LIFECYCLE_STEPS = [
   { key: "closed", label: "Closed", description: "Document resolution", status: "CLOSED" }
 ];
 
-export function AnomalyProfile({ anomaly, onStatusChange, onUpdate }: AnomalyProfileProps) {
+export function AnomalyProfile({ anomaly, onStatusChange, onUpdate, onValidate }: AnomalyProfileProps) {
   const [activeStep, setActiveStep] = useState(() => {
     switch (anomaly.status) {
       case "NEW": return "new";
@@ -90,7 +91,13 @@ export function AnomalyProfile({ anomaly, onStatusChange, onUpdate }: AnomalyPro
     setIsActionLoading(true);
     try {
       if (pendingAction === "validate" && anomaly.status === "NEW") {
-        await handleStatusTransition("IN_PROGRESS");
+        if (onValidate) {
+          // Use the markAsTreated mutation for validation
+          await onValidate();
+          setActiveStep("in-progress");
+        } else {
+          await handleStatusTransition("IN_PROGRESS");
+        }
       } else if (pendingAction === "complete" && anomaly.status === "IN_PROGRESS") {
         await handleStatusTransition("CLOSED");
       } else if (pendingAction === "document" && anomaly.status === "CLOSED" && rexSaveFunction) {
