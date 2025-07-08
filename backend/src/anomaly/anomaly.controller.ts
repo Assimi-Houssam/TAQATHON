@@ -64,6 +64,24 @@ export class AnomalyController {
     type: String,
     description: 'Filter criteria (e.g., asc, desc, low, high, medium)',
   })
+  @ApiQuery({
+    name: 'source',
+    required: false,
+    type: String,
+    description: 'Filter by source (e.g., "EMC", "APM")',
+  })
+  @ApiQuery({
+    name: 'status',
+    required: false,
+    type: String,
+    description: 'Filter by status (e.g., "NEW", "IN_PROGRESS", "RESOLVED")',
+  })
+  @ApiQuery({
+    name: 'criticity',
+    required: false,
+    type: String,
+    description: 'Filter by criticity (e.g., "HIGH", "MEDIUM", "LOW")',
+  })
   @ApiResponse({
     status: 200,
     description: 'List of anomalies retrieved successfully',
@@ -82,6 +100,9 @@ export class AnomalyController {
     @Query('page') page: number = 1,
     @Query('limit') limit: number = 10,
     @Query('filter') orderby: string = 'HIGH',
+    @Query('status') status: string = '',
+    @Query('criticity') criticity: string = '',
+    @Query('source') source: string = '',
   ) {
      const pageNum = parseInt(page.toString()) || 1;
       const limitNum = parseInt(limit.toString()) || 10;

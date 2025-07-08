@@ -7,16 +7,19 @@ import { ForceStopDto } from './dto/forceStop.dto';
 export class AnomalyService {
   constructor(private readonly Prisma: PrismaService) {}
 
-  // adding filter by dure intervention , by  status
   async getAnomaly(
     page: number = 1,
     limit: number = 10,
     order: string = 'HIGH',
+    status: string = '',
+    criticity: string = '',
+    source: string = '',
   ) {
     const skip = (page - 1) * limit;
     let anomaly: any;
+    let criticalityFilter: any = {};
+
     if (order == 'LOW' || order == 'HIGH') {
-      let criticalityFilter: any = {};
       if (order == 'LOW') {
         criticalityFilter = {
           Criticite: 'asc',
@@ -26,50 +29,28 @@ export class AnomalyService {
           Criticite: 'desc',
         };
       }
-      anomaly = await this.Prisma.anomaly.findMany({
-        skip: skip,
-        take: limit,
-        orderBy: [
-          { Criticite: criticalityFilter.Criticite },
-          { status: 'desc' },
-        ],
-      });
-    } else if (
-      order == 'ORACLE' ||
-      order == 'MAXIMO' ||
-      order == 'EMC' ||
-      order == 'APM'
-    ) {
-      anomaly = await this.Prisma.anomaly.findMany({
-        skip: skip,
-        take: limit,
-        where: {
-          origine: order,
-        },
-        orderBy: {
-          Criticite: 'desc',
-        },
-      });
-    } else if (order == 'NEW' || order == 'IN_PROGRESS' || order == 'CLOSED') {
-      anomaly = await this.Prisma.anomaly.findMany({
-        skip: skip,
-        take: limit,
-        where: {
-          status: order,
-        },
-        orderBy: {
-          Criticite: 'desc',
-        },
-      });
     }
-
+    const whereClause: any = {};
+    if (status && status.trim() !== '') {
+      whereClause.status = status;
+    }
+    if (criticity && criticity.trim() !== '') {
+      whereClause.Criticite = criticity;
+    }
+    if (source && source.trim() !== '') {
+      whereClause.source = source;
+    }
+    anomaly = await this.Prisma.anomaly.findMany({
+      skip: skip,
+      take: limit,
+      where: whereClause,
+      orderBy: [{ Criticite: criticalityFilter.Criticite }, { status: 'desc' }],
+    });
     if (!anomaly || anomaly.length === 0) {
       return { message: 'No anomalies found' };
     }
-
     const totalAnomaly = await this.Prisma.anomaly.count();
     const totalPages = Math.ceil(totalAnomaly / limit);
-
     return {
       data: anomaly,
       totalAnomaly: totalAnomaly,
@@ -290,18 +271,18 @@ export class AnomalyService {
         date_traitement: new Date(),
       },
     });
-    if (!anomaly.required_stoping &&  anomaly.duree_intervention !== '0') {
-    const maintenanceWindow = await this.anomalyToMaintenanceWindow(id);
-    if (!maintenanceWindow.success) {
-      throw new Error(`Failed to attach anomaly to maintenance window`);
+    if (!anomaly.required_stoping && anomaly.duree_intervention !== '0') {
+      const maintenanceWindow = await this.anomalyToMaintenanceWindow(id);
+      if (!maintenanceWindow.success) {
+        throw new Error(`Failed to attach anomaly to maintenance window`);
+      }
+      return {
+        success: true,
+        message: 'Anomaly resolved successfully',
+        updatedAnomaly: maintenanceWindow.updatedAnomaly,
+        maintenanceWindow: maintenanceWindow.maintenanceWindow,
+      };
     }
-    return {
-      success: true,
-      message: 'Anomaly resolved successfully',
-      updatedAnomaly: maintenanceWindow.updatedAnomaly,
-      maintenanceWindow: maintenanceWindow.maintenanceWindow,
-    };
-  }
     return {
       success: true,
       message: 'Anomaly marked as treated successfully',
@@ -333,15 +314,15 @@ export class AnomalyService {
     const requiredHours = this.extractHours(anomaly.duree_intervention || '0');
     const maintenanceWindows = await this.Prisma.maintenance_window.findMany({
       where: {
-      titlte: {
-        not: 'ORPHANS'
-      },
-      date_debut_arret: {
-        gte: new Date(),
-      },
+        titlte: {
+          not: 'ORPHANS',
+        },
+        date_debut_arret: {
+          gte: new Date(),
+        },
       },
       orderBy: {
-      date_debut_arret: 'asc',
+        date_debut_arret: 'asc',
       },
     });
     const suitableWindow = maintenanceWindows.find((window) => {
@@ -359,7 +340,20 @@ export class AnomalyService {
           },
         });
       }
-      // await this.Pris
+      await this.Prisma.anomaly.update({
+        where: { id: anomalyId },
+        data: {
+          maintenance_window: {
+            connect: { id: orphans.id },
+          },
+        },
+      });
+      return {
+        success: false,
+        message: 'No suitable maintenance window found, assigned to ORPHANS',
+        updatedAnomaly: anomaly,
+        maintenanceWindow: orphans,
+      };
     }
     const updatedAnomaly = await this.Prisma.anomaly.update({
       where: { id: anomalyId },
@@ -415,6 +409,16 @@ export class AnomalyService {
 
   async autoAssigmentAnomalyToMaintenanceWindowForceStop() {
     try {
+      let orphans = await this.Prisma.maintenance_window.findFirst({
+        where: { titlte: 'ORPHANS' },
+      });
+      if (!orphans) {
+        orphans = await this.Prisma.maintenance_window.create({
+          data: {
+            titlte: 'ORPHANS',
+          },
+        });
+      }
       const maintenance_window =
         await this.Prisma.maintenance_window.findMany();
       const anomaly = await this.Prisma.anomaly.findMany({
@@ -451,6 +455,12 @@ export class AnomalyService {
               anomalyId: anom.id,
               assigned: false,
               reason: 'No suitable window found',
+            });
+            await this.Prisma.anomaly.update({
+              where: { id: anom.id },
+              data: {
+                maintenance_window: { connect: { id: orphans.id } },
+              },
             });
             continue;
           }

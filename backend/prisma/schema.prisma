@@ -63,7 +63,7 @@ model anomaly {
   process_safty_conf String?
   Criticite String?
   status Status? @default(NEW)
-  source source? @default(MC)
+  section source? @default(MC)
   comment String?
   rex_entrie   rex_entrie[] 
   actions  action_plan[]
