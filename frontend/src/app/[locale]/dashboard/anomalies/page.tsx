@@ -238,9 +238,9 @@ const columns: Column<Anomaly>[] = [
     enableHiding: false, // Always visible
   },
   {
-    id: "Criticite",
-    header: "Criticality",
-    accessorKey: "Criticite",
+          id: "criticite",
+      header: "Criticality",
+      accessorKey: "criticite",
     cell: ({ row }) => {
       // Check if this is a fake row (padding row)
       const isFakeRow = row.original && typeof row.original === 'object' && '__isFakeRow' in row.original;
@@ -253,7 +253,7 @@ const columns: Column<Anomaly>[] = [
         );
       }
       
-      const value = row.original.Criticite;
+              const value = row.original.criticite;
       
       if (!value) {
         return (
@@ -392,8 +392,8 @@ const columns: Column<Anomaly>[] = [
       return (
         <div className="flex items-center justify-end whitespace-nowrap">
           <div 
-            className={`w-1 h-8 rounded-full flex-shrink-0 ${getCriticalityIndicatorColor(row.original.Criticite)}`}
-            title={getCriticalityLevel(row.original.Criticite)}
+                      className={`w-1 h-8 rounded-full flex-shrink-0 ${getCriticalityIndicatorColor(row.original.criticite)}`}
+          title={getCriticalityLevel(row.original.criticite)}
           />
         </div>
       );
@@ -416,7 +416,7 @@ const config: DataTableConfig<Anomaly> = {
   searchableColumns: ["num_equipments", "systeme", "descreption_anomalie", "origine"],
   // Default sorting: Critical anomalies first (highest criticality first)
   defaultSort: {
-    field: "Criticite",
+          field: "criticite",
     direction: "desc", // Descending order (highest criticality first)
   },
   // Default visible columns (most important ones in new order)
@@ -427,7 +427,7 @@ const config: DataTableConfig<Anomaly> = {
     process_safty: true, // Now visible by default
     fiablite_integrite: true, // Now visible by default
     disponsibilite: true, // Now visible by default
-    Criticite: true,
+            criticite: true,
     status: true,
     date_detection: false, // Hidden by default
     origine: false, // Hidden by default
@@ -480,7 +480,7 @@ export default function AnomaliesPage() {
   const processedAnomalies = useMemo(() => {
     return anomalies.map((anomaly: Anomaly) => ({
       ...anomaly,
-      criticality_filter: getCriticalityFilterValue(anomaly.Criticite)
+              criticality_filter: getCriticalityFilterValue(anomaly.criticite)
     }));
   }, [anomalies]);
 

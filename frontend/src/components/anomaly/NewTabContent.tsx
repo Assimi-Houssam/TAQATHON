@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef, useCallback, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,6 +18,7 @@ import {
   PlayCircle,
   Send
 } from "lucide-react";
+import { toast } from "sonner";
 import { AnomalyWithRelations, ActionPlan, calculateCriticalityFromStrings, getCriticalityLevel } from "@/types/anomaly";
 import { ActionPlanTable } from "./ActionPlanTable";
 
@@ -31,12 +32,13 @@ export function NewTabContent({ anomaly, onUpdate, onStatusChange }: NewTabConte
   const [isUpdating, setIsUpdating] = useState(false);
   const [criteriaTouched, setCriteriaTouched] = useState(false);
   const [feedbackText, setFeedbackText] = useState("");
+  const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const [formData, setFormData] = useState({
     process_safty: parseFloat(anomaly.process_safty || '1') || 1,
     fiablite_integrite: parseFloat(anomaly.fiablite_integrite || '1') || 1,
     disponsibilite: parseFloat(anomaly.disponsibilite || '1') || 1,
-    duration_of_intervention: 0,
-    requires_stopping: false
+    duree_intervention: anomaly.duree_intervention || '',
+    required_stoping: anomaly.required_stoping || false
   });
   
   const currentCriticality = calculateCriticalityFromStrings(
@@ -47,6 +49,15 @@ export function NewTabContent({ anomaly, onUpdate, onStatusChange }: NewTabConte
 
   const criticalityLevel = getCriticalityLevel(currentCriticality.toString());
 
+  // Cleanup debounce timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current);
+      }
+    };
+  }, []);
+
   const validateForm = () => {
     if (formData.process_safty < 1 || formData.process_safty > 5) return false;
     if (formData.fiablite_integrite < 1 || formData.fiablite_integrite > 5) return false;
@@ -55,7 +66,29 @@ export function NewTabContent({ anomaly, onUpdate, onStatusChange }: NewTabConte
     return true;
   };
 
-  const handleFieldChange = async (field: keyof typeof formData, value: number | boolean) => {
+  // Debounced save function for text inputs like duration
+  const debouncedSave = useCallback((field: string, value: string) => {
+    if (debounceTimeoutRef.current) {
+      clearTimeout(debounceTimeoutRef.current);
+    }
+    
+    debounceTimeoutRef.current = setTimeout(async () => {
+      setIsUpdating(true);
+      try {
+        await onUpdate({
+          [field]: value
+        });
+        toast.success('Duration updated successfully');
+      } catch (error) {
+        console.error(`Failed to update ${field}:`, error);
+        toast.error('Failed to update duration');
+      } finally {
+        setIsUpdating(false);
+      }
+    }, 800); // 800ms delay
+  }, [onUpdate]);
+
+  const handleFieldChange = async (field: keyof typeof formData, value: number | boolean | string) => {
     const newFormData = { ...formData, [field]: value };
     setFormData(newFormData);
 
@@ -64,27 +97,62 @@ export function NewTabContent({ anomaly, onUpdate, onStatusChange }: NewTabConte
       setCriteriaTouched(true);
     }
 
-    // Auto-save for criteria fields
-    if ((field === 'process_safty' || field === 'fiablite_integrite' || field === 'disponsibilite') && validateForm()) {
-      setIsUpdating(true);
-      try {
+    // Handle duration field with debounced save (no loading state)
+    if (field === 'duree_intervention') {
+      debouncedSave('duree_intervention', value as string);
+      return; // Exit early since we're using debounced save
+    }
+
+    // Auto-save functionality with improved UX for other fields
+    setIsUpdating(true);
+    try {
+      let updatePayload: any = {};
+
+      // Handle criticality fields - recalculate criticality when any of the 3 change
+      if (field === 'process_safty' || field === 'fiablite_integrite' || field === 'disponsibilite') {
+        if (!validateForm()) {
+          throw new Error('Invalid field values. Values must be between 1 and 5.');
+        }
+
         const newCriticality = calculateCriticalityFromStrings(
           (field === 'fiablite_integrite' ? value as number : newFormData.fiablite_integrite).toString(),
           (field === 'disponsibilite' ? value as number : newFormData.disponsibilite).toString(),
           (field === 'process_safty' ? value as number : newFormData.process_safty).toString()
         );
         
-        await onUpdate({
-          [field]: field === 'process_safty' ? (value as number).toString() : 
-                   field === 'fiablite_integrite' ? (value as number).toString() :
-                   field === 'disponsibilite' ? (value as number).toString() : value,
-          Criticite: newCriticality.toString(),
-        });
-      } catch (error) {
-        console.error("Failed to update anomaly data:", error);
-      } finally {
-        setIsUpdating(false);
+        updatePayload = {
+          [field]: (value as number).toString(),
+          criticite: newCriticality.toString(),
+        };
+      } 
+      // Handle requires stopping field
+      else if (field === 'required_stoping') {
+        updatePayload = {
+          required_stoping: value as boolean
+        };
       }
+
+      await onUpdate(updatePayload);
+      
+      // Show success message
+      if (field === 'process_safty' || field === 'fiablite_integrite' || field === 'disponsibilite') {
+        toast.success('Criticality assessment updated successfully');
+      } else if (field === 'required_stoping') {
+        toast.success('Stopping requirement updated successfully');
+      }
+      
+    } catch (error) {
+      console.error(`Failed to update ${field}:`, error);
+      // Revert the form data on error
+      setFormData(formData);
+      // Show error message to user
+      if (field === 'process_safty' || field === 'fiablite_integrite' || field === 'disponsibilite') {
+        toast.error('Failed to update criticality assessment');
+      } else if (field === 'required_stoping') {
+        toast.error('Failed to update stopping requirement');
+      }
+    } finally {
+      setIsUpdating(false);
     }
   };
 
@@ -216,6 +284,11 @@ export function NewTabContent({ anomaly, onUpdate, onStatusChange }: NewTabConte
                   {isUpdating && (
                     <div className="ml-2 w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
                   )}
+                  {criteriaTouched && !isUpdating && (
+                    <div className="ml-2 text-xs text-green-600 font-medium animate-pulse">
+                      Auto-calculated
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -228,23 +301,31 @@ export function NewTabContent({ anomaly, onUpdate, onStatusChange }: NewTabConte
                 <div className="flex items-center gap-1 px-2 py-1 bg-white rounded-md border border-gray-200 shadow-sm">
                   <Input
                     type="text"
-                    value={formData.duration_of_intervention || ''}
-                    onChange={(e) => handleFieldChange('duration_of_intervention', parseFloat(e.target.value) || 0)}
-                    placeholder="0"
-                    className="text-center border-0 bg-transparent text-sm w-16 focus:ring-0 p-0 font-medium"
+                    value={formData.duree_intervention || ''}
+                    onChange={(e) => {
+                      setFormData(prev => ({ ...prev, duree_intervention: e.target.value }));
+                      debouncedSave('duree_intervention', e.target.value);
+                    }}
+                    placeholder="e.g., 2 hours"
+                    className="text-center border-0 bg-transparent text-sm w-20 focus:ring-0 p-0 font-medium"
                   />
-                  <span className="text-xs text-gray-400">h</span>
                 </div>
               </div>
               
               {/* Requires Stopping */}
               <div className="flex items-center gap-2">
                 <span className="text-xs font-medium text-gray-600 uppercase tracking-wide">Requires Stopping</span>
-                <Switch
-                  checked={formData.requires_stopping}
-                  onCheckedChange={(checked) => handleFieldChange('requires_stopping', checked)}
-                  className="data-[state=checked]:bg-blue-600 scale-90"
-                />
+                <div className="relative">
+                  <Switch
+                    checked={formData.required_stoping}
+                    onCheckedChange={(checked) => handleFieldChange('required_stoping', checked)}
+                    className="data-[state=checked]:bg-blue-600 scale-90"
+                    disabled={isUpdating}
+                  />
+                  {isUpdating && (
+                    <div className="absolute -right-6 top-1/2 transform -translate-y-1/2 w-3 h-3 border border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
