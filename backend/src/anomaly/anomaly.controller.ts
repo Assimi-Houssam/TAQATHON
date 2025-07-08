@@ -531,7 +531,7 @@ export class AnomalyController {
   }
 
 
-    @ApiOperation({ summary: 'Get all action plans for an anomaly' })
+  @ApiOperation({ summary: 'Get all action plans for an anomaly' })
   @ApiParam({ name: 'anomalyId', description: 'Anomaly ID', type: 'string' })
   @ApiResponse({
     status: 200,
@@ -571,28 +571,28 @@ export class AnomalyController {
       throw new BadRequestException('Failed to retrieve action plans');
     }
   }
-  
-  // @Patch('updateActionPlan/:id')
-  // @ApiOperation({ summary: 'Update action plan for anomaly' })
-  // @ApiParam({ name: 'id', description: 'Anomaly ID', type:
-  //   'string' })
-  // @ApiResponse({
-  //   status: 200,
-  //   description: 'Action plan updated successfully',
-  // })
-  // @ApiResponse({
-  //   status: 404,
-  //   description: 'Anomaly not found',
-  // })
-  // async updateActionPlan( @Param('id') id: string, @Body() body: UpdateActionPlanDto) {
-  //   try {
-  //     return await this.anomalyService.updateActionPlan(id, body);
-  //   } catch (error) {
-  //     console.error('Error updating action plan:', error);
-  //     throw new BadRequestException('Failed to update action plan');
-  //   }
 
-  // }
+  @Patch('updateActionPlan/:id')
+  @ApiOperation({ summary: 'Update action plan for anomaly' })
+  @ApiParam({ name: 'id', description: 'Anomaly ID', type:
+    'string' })
+  @ApiResponse({
+    status: 200,
+    description: 'Action plan updated successfully',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Anomaly not found',
+  })
+  async updateActionPlan( @Param('id') id: string) {
+    try {
+      return await this.anomalyService.updateActionPlan(id);
+    } catch (error) {
+      console.error('Error updating action plan:', error);
+      throw new BadRequestException('Failed to update action plan');
+    }
+
+  }
 
 
 }
