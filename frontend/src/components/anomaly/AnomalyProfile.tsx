@@ -39,6 +39,7 @@ export function AnomalyProfile({ anomaly, onStatusChange, onUpdate, onValidate }
   const [rexSaveFunction, setRexSaveFunction] = useState<(() => Promise<void>) | null>(null);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [pendingAction, setPendingAction] = useState<string | null>(null);
+  const [isReloading, setIsReloading] = useState(false);
 
   // Auto-update active step when anomaly status changes
   useEffect(() => {
@@ -101,34 +102,54 @@ export function AnomalyProfile({ anomaly, onStatusChange, onUpdate, onValidate }
 
   const executeConfirmedAction = async () => {
     setIsActionLoading(true);
+    
+    const actions = {
+      validate: {
+        condition: () => anomaly.status === "NEW",
+        execute: async () => {
+          if (onValidate) {
+            await onValidate();
+          } else {
+            await handleStatusTransition("IN_PROGRESS");
+          }
+        },
+        successMessage: "Anomaly validated successfully!",
+        errorMessage: "Failed to validate anomaly. Please try again."
+      },
+      complete: {
+        condition: () => anomaly.status === "IN_PROGRESS",
+        execute: async () => await handleStatusTransition("CLOSED"),
+        successMessage: "Anomaly resolution completed and closed successfully!",
+        errorMessage: "Failed to complete resolution. Please try again."
+      },
+      document: {
+        condition: () => anomaly.status === "CLOSED" && rexSaveFunction,
+        execute: async () => await rexSaveFunction!(),
+        successMessage: "Documentation completed successfully!",
+        errorMessage: "Failed to complete documentation. Please try again."
+      }
+    };
+
     try {
-      if (pendingAction === "validate" && anomaly.status === "NEW") {
-        if (onValidate) {
-          // Wait for the markAsTreated mutation to complete
-          // React Query will automatically update the cache and invalidate queries
-          await onValidate();
-          toast.success("Anomaly validated and moved to In Progress successfully!");
-        } else {
-          await handleStatusTransition("IN_PROGRESS");
-          toast.success("Anomaly status updated to In Progress!");
-        }
-      } else if (pendingAction === "complete" && anomaly.status === "IN_PROGRESS") {
-        await handleStatusTransition("CLOSED");
-        toast.success("Anomaly resolution completed and closed successfully!");
-      } else if (pendingAction === "document" && anomaly.status === "CLOSED" && rexSaveFunction) {
-        await rexSaveFunction();
-        toast.success("Documentation completed successfully!");
+      const action = actions[pendingAction as keyof typeof actions];
+      if (action?.condition()) {
+        await action.execute();
+        toast.success(action.successMessage);
+        
+        // Show reloading state and reload page
+        setIsActionLoading(false);
+        setShowConfirmModal(false);
+        setIsReloading(true);
+        
+        setTimeout(() => {
+          window.location.reload();
+        }, 2000); // Give time for toast and reloading message to show
+        return; // Exit early to prevent finally block from resetting states
       }
     } catch (error) {
       console.error("Failed to execute main action:", error);
-      // Show appropriate error message based on the action
-      const errorMessage = 
-        pendingAction === "validate" ? "Failed to validate anomaly. Please try again." :
-        pendingAction === "complete" ? "Failed to complete resolution. Please try again." :
-        pendingAction === "document" ? "Failed to complete documentation. Please try again." :
-        "Failed to execute action. Please try again.";
-      
-      toast.error(errorMessage);
+      const action = actions[pendingAction as keyof typeof actions];
+      toast.error(action?.errorMessage || "Failed to execute action. Please try again.");
     } finally {
       setIsActionLoading(false);
       setShowConfirmModal(false);
@@ -311,6 +332,16 @@ export function AnomalyProfile({ anomaly, onStatusChange, onUpdate, onValidate }
 
   return (
     <div>
+      {/* Reloading Overlay */}
+      {isReloading && (
+        <div className="fixed inset-0 bg-white/80 backdrop-blur-2xl flex items-center justify-center z-50">
+          <div className="flex flex-col items-center">
+            <div className="animate-spin rounded-full h-16 w-16 border-4 border-gray-200 border-t-blue-600"></div>
+            <p className="mt-4 text-gray-700 font-medium">Updating...</p>
+          </div>
+        </div>
+      )}
+
       {/* Enhanced Confirmation Modal */}
       {showConfirmModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
