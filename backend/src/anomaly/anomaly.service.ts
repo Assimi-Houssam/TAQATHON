@@ -33,7 +33,7 @@ export class AnomalyService {
     }
     const whereClause: any = {};
     if (status && status.trim() !== '') {
-      const validStatuses = ['OPEN', 'IN_PROGRESS', 'CLOSED'];
+      const validStatuses = ['NEW', 'IN_PROGRESS', 'CLOSED'];
       if (!validStatuses.includes(status.toUpperCase())) {
         throw new Error(
           `Invalid status provided. Valid statuses are: ${validStatuses.join(', ')}`,
