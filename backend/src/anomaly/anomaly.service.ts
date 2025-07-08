@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma.service';
-import { CreateAnomalieDto } from './dto/anomalie.dto';
+import { CreateAnomalieDto, UpdateAnomalieDto } from './dto/anomalie.dto';
 import { ForceStopDto } from './dto/forceStop.dto';
 
 @Injectable()
@@ -223,7 +223,7 @@ export class AnomalyService {
     };
   }
 
-  async updateAnomaly(id: string, body: any) {
+  async updateAnomaly(id: string, body: UpdateAnomalieDto) {
     const anomaly = await this.Prisma.anomaly.findUnique({
       where: { id: id },
     });

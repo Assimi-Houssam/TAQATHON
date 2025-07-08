@@ -432,6 +432,7 @@ export class AnomalyController {
     @Param('id') id: string,
     @Body() body: UpdateAnomalieDto,
   ) {
+    console.log('Updating anomaly with ID:', id, 'and body:', body);
     return await this.anomalyService.updateAnomaly(id, body);
   }
 
