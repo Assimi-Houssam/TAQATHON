@@ -26,6 +26,15 @@ import { TableLoading } from "./utils/TableLoading";
 import { TableError } from "./utils/TableError";
 import { TableEmpty } from "./utils/TableEmpty";
 
+export interface ServerSideConfig {
+  enabled: boolean;
+  currentFilters?: Record<string, string>;
+  currentSort?: { field: string; direction: 'asc' | 'desc' } | null;
+  onFiltersChange?: (filters: Record<string, string>) => void;
+  onSortChange?: (sort: { field: string; direction: 'asc' | 'desc' } | null) => void;
+  onSearchChange?: (search: string) => void;
+}
+
 /**
  * Enhanced DataTable component with comprehensive features
  * 
@@ -34,7 +43,7 @@ import { TableEmpty } from "./utils/TableEmpty";
  * - Advanced filtering with dropdowns
  * - Column visibility controls
  * - Pagination
- * - Sorting
+ * - Sorting (client-side or server-side)
  * - Loading and error states
  * - Empty state handling
  * - Responsive design
@@ -52,7 +61,8 @@ export function DataTable<T extends Record<string, any>>({
   onColumnVisibilityChange: externalOnColumnVisibilityChange,
   rowClassName,
   pagination,
-}: DataTableProps<T>) {
+  serverSide,
+}: DataTableProps<T> & { serverSide?: ServerSideConfig }) {
   // Extract configuration with defaults
   const {
     enableSearch = config.searchable ?? true,
@@ -66,6 +76,9 @@ export function DataTable<T extends Record<string, any>>({
     defaultColumnVisibility = config.defaultColumnVisibility ?? {},
     defaultSort = config.defaultSort,
   } = config;
+
+  // Determine if we're using server-side operations
+  const isServerSide = serverSide?.enabled || false;
 
   // Loading delay state management
   const [showLoading, setShowLoading] = useState(false);
@@ -122,7 +135,7 @@ export function DataTable<T extends Record<string, any>>({
     };
   }, [loading]);
 
-  // Internal state
+  // Internal state for client-side operations
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(pagination?.currentPage || 1);
   const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' } | null>(
@@ -130,6 +143,12 @@ export function DataTable<T extends Record<string, any>>({
   );
   const [activeFilters, setActiveFilters] = useState<Record<string, string>>({});
   const [openDropdown, setOpenDropdown] = useState<'filter' | 'column' | null>(null);
+
+  // Use server-side state when available
+  const effectiveFilters = isServerSide ? (serverSide?.currentFilters || {}) : activeFilters;
+  const effectiveSortConfig = isServerSide ? 
+    (serverSide?.currentSort ? { key: serverSide.currentSort.field, direction: serverSide.currentSort.direction } : null) : 
+    sortConfig;
 
   // Column visibility state management
   const [internalColumnVisibility, setInternalColumnVisibility] = useState<ColumnVisibilityState<T>>(() => {
@@ -152,11 +171,16 @@ export function DataTable<T extends Record<string, any>>({
     });
   }, [columns, columnVisibility, enableColumnVisibility]);
 
-  // Data processing with enhanced filtering
-  const filteredData = useMemo(() => {
+  // Data processing - only for client-side mode
+  const processedData = useMemo(() => {
+    if (isServerSide) {
+      // For server-side, return data as-is since filtering/sorting is done on backend
+      return data;
+    }
+
     let result = data;
     
-    // Apply search filter
+    // Apply search filter (client-side only)
     if (enableSearch && searchTerm) {
       result = result.filter((item) => {
         const fieldsToSearch = searchableColumns.length > 0 ? searchableColumns : Object.keys(item);
@@ -166,10 +190,10 @@ export function DataTable<T extends Record<string, any>>({
       });
     }
     
-    // Apply custom filters
-    if (enableFilters && Object.keys(activeFilters).length > 0) {
+    // Apply custom filters (client-side only)
+    if (enableFilters && Object.keys(effectiveFilters).length > 0) {
       result = result.filter((item) => {
-        return Object.entries(activeFilters).every(([key, value]) => {
+        return Object.entries(effectiveFilters).every(([key, value]) => {
           if (!value) return true; // Skip empty filter values
           
           const itemValue = String(item[key as keyof T]);
@@ -178,30 +202,55 @@ export function DataTable<T extends Record<string, any>>({
       });
     }
     
-    return result;
-  }, [data, searchTerm, enableSearch, searchableColumns, enableFilters, activeFilters]);
-
-  // Sorting logic
-  const sortedData = useMemo(() => {
-    if (!enableSorting || !sortConfig) return filteredData;
+    // Apply sorting (client-side only)
+    if (enableSorting && effectiveSortConfig) {
+      result = [...result].sort((a, b) => {
+        const aValue = a[effectiveSortConfig.key as keyof T];
+        const bValue = b[effectiveSortConfig.key as keyof T];
+        
+        if (aValue < bValue) return effectiveSortConfig.direction === 'asc' ? -1 : 1;
+        if (aValue > bValue) return effectiveSortConfig.direction === 'asc' ? 1 : -1;
+        return 0;
+      });
+    }
     
-    return [...filteredData].sort((a, b) => {
-      const aValue = a[sortConfig.key as keyof T];
-      const bValue = b[sortConfig.key as keyof T];
-      
-      if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
-      if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
-      return 0;
-    });
-  }, [filteredData, sortConfig, enableSorting]);
+    return result;
+  }, [data, searchTerm, enableSearch, searchableColumns, enableFilters, effectiveFilters, enableSorting, effectiveSortConfig, isServerSide]);
 
   // Pagination logic with consistent height - always render pageSize rows
   const paginatedData = useMemo((): (T | (T & { __isFakeRow: boolean }))[] => {
-    if (!enablePagination) return sortedData;
+    if (!enablePagination || isServerSide) {
+      // For server-side pagination or no pagination, return processed data as-is
+      // Server handles pagination, but we still may need to add fake rows for consistent height
+      if (isServerSide && processedData.length < pageSize && processedData.length > 0) {
+        const emptyRowsNeeded = pageSize - processedData.length;
+        const templateRow = processedData[0];
+        const fakeRows = Array(emptyRowsNeeded).fill(null).map((_, index) => {
+          const fakeRow = { ...templateRow } as any;
+          
+          // Override with placeholder values
+          Object.keys(fakeRow).forEach(key => {
+            if (key === 'id') {
+              fakeRow[key] = `fake-${processedData.length + index}`;
+            } else if (typeof fakeRow[key] === 'string') {
+              fakeRow[key] = '';
+            } else if (typeof fakeRow[key] === 'number') {
+              fakeRow[key] = null;
+            }
+          });
+          
+          fakeRow.__isFakeRow = true;
+          return fakeRow as T & { __isFakeRow: boolean };
+        });
+        
+        return [...processedData, ...fakeRows];
+      }
+      return processedData;
+    }
     
     const startIndex = (currentPage - 1) * pageSize;
     const endIndex = startIndex + pageSize;
-    const pageData = sortedData.slice(startIndex, endIndex);
+    const pageData = processedData.slice(startIndex, endIndex);
     
     // Always ensure exactly pageSize rows are rendered on every page
     const emptyRowsNeeded = pageSize - pageData.length;
@@ -231,42 +280,80 @@ export function DataTable<T extends Record<string, any>>({
     }
     
     return pageData;
-  }, [sortedData, currentPage, pageSize, enablePagination]);
+  }, [processedData, currentPage, pageSize, enablePagination, isServerSide]);
 
-  const totalPages = pagination?.totalPages || Math.ceil(sortedData.length / pageSize);
-  const totalCount = pagination?.total || sortedData.length;
+  const totalPages = pagination?.totalPages || Math.ceil(processedData.length / pageSize);
+  const totalCount = pagination?.total || processedData.length;
   const actualCurrentPage = pagination?.currentPage || currentPage;
 
   // Event handlers
   const handleSearch = (value: string) => {
     setSearchTerm(value);
-    setCurrentPage(1); // Reset to first page when searching
+    if (!isServerSide) {
+      setCurrentPage(1); // Reset to first page when searching (client-side only)
+    }
+    
+    // Notify parent for server-side search
+    if (isServerSide && serverSide?.onSearchChange) {
+      serverSide.onSearchChange(value);
+    }
   };
 
   const handleSort = (columnId: string) => {
     if (!enableSorting) return;
     
-    setSortConfig(current => {
-      if (current?.key === columnId) {
-        return current.direction === 'asc' 
-          ? { key: columnId, direction: 'desc' }
+    if (isServerSide) {
+      // Server-side sorting
+      const currentSort = serverSide?.currentSort;
+      let newSort: { field: string; direction: 'asc' | 'desc' } | null = null;
+      
+      if (currentSort?.field === columnId) {
+        newSort = currentSort.direction === 'asc' 
+          ? { field: columnId, direction: 'desc' }
           : null;
+      } else {
+        newSort = { field: columnId, direction: 'asc' };
       }
-      return { key: columnId, direction: 'asc' };
-    });
+      
+      serverSide?.onSortChange?.(newSort);
+    } else {
+      // Client-side sorting
+      setSortConfig(current => {
+        if (current?.key === columnId) {
+          return current.direction === 'asc' 
+            ? { key: columnId, direction: 'desc' }
+            : null;
+        }
+        return { key: columnId, direction: 'asc' };
+      });
+    }
   };
 
   const handleFilterChange = (filterKey: string, value: string) => {
-    setActiveFilters(prev => ({
-      ...prev,
-      [filterKey]: value
-    }));
-    setCurrentPage(1); // Reset to first page when filtering
+    if (isServerSide) {
+      // Server-side filtering
+      const newFilters = {
+        ...serverSide?.currentFilters,
+        [filterKey]: value
+      };
+      serverSide?.onFiltersChange?.(newFilters);
+    } else {
+      // Client-side filtering
+      setActiveFilters(prev => ({
+        ...prev,
+        [filterKey]: value
+      }));
+      setCurrentPage(1); // Reset to first page when filtering
+    }
   };
 
   const handleClearFilters = () => {
-    setActiveFilters({});
-    setCurrentPage(1);
+    if (isServerSide) {
+      serverSide?.onFiltersChange?.({});
+    } else {
+      setActiveFilters({});
+      setCurrentPage(1);
+    }
   };
 
   const handlePageChange = (page: number) => {
@@ -289,10 +376,7 @@ export function DataTable<T extends Record<string, any>>({
       return <TableError message={error.message || 'An error occurred'} />;
     }
 
-    // Render empty state
-    if (data.length === 0) {
-      return <TableEmpty />;
-    }
+    // Remove the empty state return - let the table render normally with no rows
   }
 
   // If we're transitioning (not loading but not ready to show result), show loading
@@ -333,9 +417,9 @@ export function DataTable<T extends Record<string, any>>({
                   <Button className="" variant="outline" size="sm">
                     <Filter className="h-4 w-4 mr-2" />
                     Filter
-                    {Object.keys(activeFilters).length >= 0 && (
+                    {Object.keys(effectiveFilters).length >= 0 && (
                       <Badge variant="secondary" className="ml-2">
-                        {Object.keys(activeFilters).length}
+                        {Object.keys(effectiveFilters).length}
                       </Badge>
                     )}
                   </Button>
@@ -348,7 +432,7 @@ export function DataTable<T extends Record<string, any>>({
                     <div key={filterGroup.key} className="p-2">
                       <p className="text-sm font-medium mb-2">{filterGroup.label}</p>
                       {filterGroup.options.map((option) => {
-                        const isActive = activeFilters[filterGroup.key] === option.value;
+                        const isActive = effectiveFilters[filterGroup.key] === option.value;
                         const toggleFilter = () => {
                           if (isActive) {
                             handleFilterChange(filterGroup.key, "");
@@ -403,22 +487,22 @@ export function DataTable<T extends Record<string, any>>({
         </div>
         
         {/* Active Filters Display */}
-        {Object.keys(activeFilters).length > 0 && (
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-sm text-muted-foreground">Active filters:</span>
-            {Object.entries(activeFilters).map(([key, value]) => {
-              const filterGroup = filters.find(f => f.key === key);
-              const option = filterGroup?.options.find(o => o.value === value);
-              return (
-                <Badge key={`${key}-${value}`} variant="secondary" className="gap-1">
-                  {filterGroup?.label}: {option?.label || value}
-                  <X
-                    className="h-3 w-3 cursor-pointer hover:text-destructive"
-                    onClick={() => handleFilterChange(key, "")}
-                  />
-                </Badge>
-              );
-            })}
+        <div className="flex items-center gap-2 flex-wrap min-h-8">
+          <span className="text-sm text-muted-foreground">Active filters:</span>
+          {Object.entries(effectiveFilters).map(([key, value]) => {
+            const filterGroup = filters.find(f => f.key === key);
+            const option = filterGroup?.options.find(o => o.value === value);
+            return (
+              <Badge key={`${key}-${value}`} variant="secondary" className="gap-1">
+                {filterGroup?.label}: {option?.label || value}
+                <X
+                  className="h-3 w-3 cursor-pointer hover:text-destructive"
+                  onClick={() => handleFilterChange(key, "")}
+                />
+              </Badge>
+            );
+          })}
+          {Object.keys(effectiveFilters).length > 0 ? (
             <Button
               variant="ghost"
               size="sm"
@@ -427,8 +511,10 @@ export function DataTable<T extends Record<string, any>>({
             >
               Clear all
             </Button>
-          </div>
-        )}
+          ) : (
+            <span className="text-sm text-muted-foreground">None</span>
+          )}
+        </div>
       </div>
 
       {/* Data Table */}
@@ -445,9 +531,9 @@ export function DataTable<T extends Record<string, any>>({
                 >
                   <div className="flex items-center gap-2 justify-start whitespace-nowrap">
                     {column.header}
-                    {enableSorting && sortConfig?.key === column.id && (
+                    {enableSorting && effectiveSortConfig?.key === column.id && (
                       <span className="text-xs">
-                        {sortConfig.direction === 'asc' ? '↑' : '↓'}
+                        {effectiveSortConfig.direction === 'asc' ? '↑' : '↓'}
                       </span>
                     )}
                   </div>
@@ -456,18 +542,7 @@ export function DataTable<T extends Record<string, any>>({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {paginatedData.length === 0 ? (
-              <TableRow className="h-14">
-                <TableCell colSpan={visibleColumns.length} className="text-center py-8">
-                  <div className="text-muted-foreground whitespace-nowrap">
-                    {searchTerm || Object.keys(activeFilters).length > 0 
-                      ? "No results found. Try adjusting your search or filters."
-                      : "No data available."
-                    }
-                  </div>
-                </TableCell>
-              </TableRow>
-            ) : (
+            {paginatedData.length > 0 ? (
               paginatedData.map((row, index) => {
                 // Handle fake disabled rows
                 const isFakeRow = row && typeof row === 'object' && '__isFakeRow' in row;
@@ -498,6 +573,25 @@ export function DataTable<T extends Record<string, any>>({
                   </TableRow>
                 );
               })
+            ) : (
+              // Render fake rows when no data to maintain consistent height
+              Array(pageSize).fill(null).map((_, index) => (
+                <TableRow 
+                  key={`empty-fake-row-${index}`}
+                  className="h-14 opacity-30 pointer-events-none"
+                >
+                  {visibleColumns.map((column) => (
+                    <TableCell 
+                      key={`empty-${index}-${column.id}`}
+                      className="whitespace-nowrap overflow-hidden"
+                    >
+                      <div className="whitespace-nowrap truncate">
+                        -
+                      </div>
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
             )}
           </TableBody>
         </Table>

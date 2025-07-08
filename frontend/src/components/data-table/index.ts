@@ -1,5 +1,6 @@
 // Main Components
 export { DataTable } from "./DataTable";
+export type { ServerSideConfig } from "./DataTable";
 export { BaseDataTable } from "./core/BaseDataTable";
 export { SearchBar } from "./core/SearchBar";
 export { Pagination } from "./core/Pagination";

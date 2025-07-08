@@ -5,12 +5,68 @@ import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Plus, AlertTriangle, FileText, Wrench } from "lucide-react";
-import { DataTable } from "@/components/data-table";
+import { DataTable, ServerSideConfig } from "@/components/data-table";
 import { Column, DataTableConfig } from "@/components/data-table/types";
 import { useRouter } from "next/navigation";
 import { Anomaly, AnomalyStatus, getCriticalityLevel } from "@/types/anomaly";
 import { AnomalyStatus as AnomalyStatusComponent, AnomalyCriticalityIndicator } from "@/components/anomaly";
 import { useAnomalies } from "@/hooks/useAnomalies";
+
+// Filter mapping functions
+const mapFrontendStatusToBackend = (frontendStatus: string): string => {
+  const statusMap: Record<string, string> = {
+    'New': 'NEW',
+    'In Progress': 'IN_PROGRESS', 
+    'Closed': 'CLOSED'
+  };
+  return statusMap[frontendStatus] || frontendStatus;
+};
+
+const mapFrontendCriticalityToBackend = (frontendCriticality: string): string => {
+  const criticalityMap: Record<string, string> = {
+    'critical': 'HIGH',
+    'high': 'HIGH', 
+    'medium': 'MEDIUM',
+    'low': 'LOW'
+  };
+  return criticalityMap[frontendCriticality] || frontendCriticality;
+};
+
+// Convert frontend filters to backend format
+const mapFiltersToBackend = (frontendFilters: Record<string, string>) => {
+  const backendFilters: Record<string, string> = {};
+  
+  Object.entries(frontendFilters).forEach(([key, value]) => {
+    if (!value) return;
+    
+    switch (key) {
+      case 'status':
+        backendFilters.status = mapFrontendStatusToBackend(value);
+        break;
+      case 'criticality_filter':
+        backendFilters.criticity = mapFrontendCriticalityToBackend(value);
+        break;
+      case 'origine':
+        // For now, we'll skip origine mapping since backend expects different section values
+        // TODO: Add proper origine to section mapping if needed
+        break;
+      default:
+        backendFilters[key] = value;
+    }
+  });
+  
+  return backendFilters;
+};
+
+// Convert frontend sort to backend format  
+const mapSortToBackend = (sort: { field: string; direction: 'asc' | 'desc' } | null): 'LOW' | 'HIGH' | undefined => {
+  if (!sort || sort.field !== 'criticite') {
+    return 'HIGH'; // Default to HIGH criticality first
+  }
+  
+  // Backend only supports sorting by criticality (LOW/HIGH)
+  return sort.direction === 'desc' ? 'HIGH' : 'LOW';
+};
 
 // Helper function to get criticality filter value
 const getCriticalityFilterValue = (criticality?: string): string => {
@@ -470,19 +526,59 @@ const filters = [
 
 export default function AnomaliesPage() {
   const router = useRouter();
+  
+  // Server-side state management
   const [currentPage, setCurrentPage] = useState(1);
+  const [activeFilters, setActiveFilters] = useState<Record<string, string>>({});
+  const [sort, setSort] = useState<{ field: string; direction: 'asc' | 'desc' } | null>({
+    field: 'criticite',
+    direction: 'desc' // Start with highest criticality first
+  });
+  const [searchTerm, setSearchTerm] = useState("");
 
-  // Fetch anomalies from backend
-  const { data, isLoading, error } = useAnomalies();
+  // Map frontend filters and sort to backend format
+  const backendFilters = mapFiltersToBackend(activeFilters);
+  const backendSort = mapSortToBackend(sort);
+
+  // Fetch anomalies with server-side parameters
+  const { data, isLoading, error } = useAnomalies({
+    page: currentPage,
+    limit: 10,
+    status: backendFilters.status,
+    criticity: backendFilters.criticity,
+    section: backendFilters.section,
+    orderBy: backendSort,
+  });
+
   const anomalies = data?.anomalies || [];
 
-  // Add computed criticality filter field to the data
+  // Add computed criticality filter field to the data for client-side display
   const processedAnomalies = useMemo(() => {
     return anomalies.map((anomaly: Anomaly) => ({
       ...anomaly,
-              criticality_filter: getCriticalityFilterValue(anomaly.criticite)
+      criticality_filter: getCriticalityFilterValue(anomaly.criticite)
     }));
   }, [anomalies]);
+
+  // Server-side configuration for DataTable
+  const serverSideConfig: ServerSideConfig = {
+    enabled: true,
+    currentFilters: activeFilters,
+    currentSort: sort,
+    onFiltersChange: (newFilters: Record<string, string>) => {
+      setActiveFilters(newFilters);
+      setCurrentPage(1); // Reset to first page when filters change
+    },
+    onSortChange: (newSort: { field: string; direction: 'asc' | 'desc' } | null) => {
+      setSort(newSort);
+      setCurrentPage(1); // Reset to first page when sort changes
+    },
+    onSearchChange: (search: string) => {
+      setSearchTerm(search);
+      setCurrentPage(1); // Reset to first page when search changes
+      // Note: Search is not implemented in backend yet, this is for future use
+    },
+  };
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -507,7 +603,7 @@ export default function AnomaliesPage() {
         </div>
       </div>
 
-            {/* Data Table with unified loading/error/empty states */}
+      {/* Data Table with server-side operations */}
       <div className="overflow-hidden">
         <DataTable
           data={processedAnomalies}
@@ -524,6 +620,7 @@ export default function AnomaliesPage() {
             total: data?.total || 0,
             onPageChange: handlePageChange,
           }}
+          serverSide={serverSideConfig}
         />
       </div>
     </div>

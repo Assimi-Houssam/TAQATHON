@@ -4,6 +4,23 @@ import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tansta
 
 export interface UseAnomaliesOptions {
   enabled?: boolean;
+  page?: number;
+  limit?: number;
+  // Server-side filters
+  status?: string;
+  criticity?: string;
+  section?: string;
+  // Server-side sorting
+  orderBy?: 'LOW' | 'HIGH';
+}
+
+export interface AnomaliesQueryParams {
+  page?: number;
+  limit?: number;
+  status?: string;
+  criticity?: string;
+  section?: string;
+  filter?: string; // This maps to orderBy in backend
 }
 
 interface AnomaliesResponse {
@@ -24,13 +41,32 @@ interface AnomalyStatsResponse {
 
 export function useAnomalies(options: UseAnomaliesOptions = {}) {
   const { 
-    enabled = true 
+    enabled = true,
+    page = 1,
+    limit = 10,
+    status,
+    criticity,
+    section,
+    orderBy = 'HIGH'
   } = options;
 
   return useQuery({
-    queryKey: ["anomalies"],
+    queryKey: ["anomalies", { page, limit, status, criticity, section, orderBy }],
     queryFn: async () => {
-      const { data } = await apiClient.get<AnomaliesResponse>('/anomaly/getAnomaly');
+      // Build query parameters
+      const params = new URLSearchParams();
+      
+      if (page) params.append('page', page.toString());
+      if (limit) params.append('limit', limit.toString());
+      if (status && status.trim() !== '') params.append('status', status);
+      if (criticity && criticity.trim() !== '') params.append('criticity', criticity);
+      if (section && section.trim() !== '') params.append('section', section);
+      if (orderBy) params.append('filter', orderBy);
+
+      const queryString = params.toString();
+      const url = `/anomaly/getAnomaly${queryString ? `?${queryString}` : ''}`;
+      
+      const { data } = await apiClient.get<AnomaliesResponse>(url);
       
       return {
         anomalies: data.data || [],
