@@ -13,13 +13,13 @@ export default function AnomalyDetailPage() {
   const anomalyId = searchParams.get('id');
   
   // Fetch anomaly data from backend
-  const { anomaly, loading: isLoading, error } = useAnomaly(anomalyId || '');
+  const { data: anomaly, isLoading, error } = useAnomaly(anomalyId || '');
   const { updateAnomaly, updateAnomalyStatus } = useAnomalyMutations();
 
   const handleStatusChange = async (newStatus: AnomalyWithRelations['status']) => {
     if (!anomalyId || !newStatus) return;
     try {
-      await updateAnomalyStatus(anomalyId, newStatus);
+      await updateAnomalyStatus.mutateAsync({ id: anomalyId, status: newStatus });
     } catch (error) {
       console.error("Failed to update status:", error);
     }
@@ -28,7 +28,7 @@ export default function AnomalyDetailPage() {
   const handleUpdate = async (updates: Partial<AnomalyWithRelations>) => {
     if (!anomalyId) return;
     try {
-      await updateAnomaly(anomalyId, updates);
+      await updateAnomaly.mutateAsync({ id: anomalyId, data: updates });
     } catch (error) {
       console.error("Failed to update anomaly:", error);
     }
@@ -147,6 +147,9 @@ export default function AnomalyDetailPage() {
     );
   }
 
+  var id_to_print = anomaly?.num_equipments || anomaly?.id || 'Anomaly';
+  id_to_print = id_to_print.slice(-5).toUpperCase();
+
   return (
     <div className="container mx-auto px-6 py-6">
       {/* Header with consistent layout matching other pages */}
@@ -170,7 +173,7 @@ export default function AnomalyDetailPage() {
         <div>
             <h1 className="text-2xl font-bold text-gray-900 mb-1">Anomaly Profile</h1>
           <p className="text-sm text-gray-600">
-              Managing {anomaly?.num_equipments || anomaly?.id || 'Anomaly'} through its lifecycle
+              Managing {id_to_print} through its lifecycle
           </p>
           </div>
         </div>
