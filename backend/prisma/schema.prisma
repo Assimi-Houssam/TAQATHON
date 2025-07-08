@@ -51,7 +51,7 @@ model anomaly {
   systeme   String?
   descreption_anomalie String?
   date_detection DateTime @default(now())
-  origine origine?
+  origine origine? @default(ORACLE)
   resolution_date DateTime?
   date_traitement DateTime?
   section_proprietaire String?
@@ -62,8 +62,8 @@ model anomaly {
   process_safty String?
   process_safty_conf String?
   Criticite String?
-  status Status?
-  source source?
+  status Status? @default(NEW)
+  source source? @default(MC)
   comment String?
   rex_entrie   rex_entrie[] 
   actions  action_plan[]
