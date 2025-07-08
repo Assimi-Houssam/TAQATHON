@@ -36,7 +36,7 @@ const mockAnomalies: Anomaly[] = [
   { id: "ANO-004", title: "Motor Vibration", criticality: "high", equipment: "Motor D-401", status: "New", assignedToWindow: "MW-004" },
   { id: "ANO-005", title: "Flow Rate Issue", criticality: "low", equipment: "Pump E-501", status: "New", assignedToWindow: "MW-003" },
   { id: "ANO-006", title: "Bearing Noise", criticality: "medium", equipment: "Compressor F-601", status: "New", assignedToWindow: "MW-002" },
-  { id: "ANO-007", title: "Seal Deterioration", criticality: "critical", equipment: "Pump G-701", status: "New", assignedToWindow: "MW-005" },
+  { id: "ANO-007", title: "Seal Deterioration", criticality: "critical", equipment: "Pump G-701", status: "New", assignedToWindow: "MW-004" },
   { id: "ANO-008", title: "Control System Error", criticality: "high", equipment: "PLC H-801", status: "New", assignedToWindow: "MW-003" },
 ];
 
