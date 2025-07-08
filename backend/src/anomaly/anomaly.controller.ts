@@ -491,4 +491,7 @@ export class AnomalyController {
   async addingMaintenanceWindow(@Body() data: ForceStopDto) {
     return await this.anomalyService.addingMaintenanceWindow(data);
   }
+
+
 }
+

@@ -271,18 +271,9 @@ export class AnomalyService {
   async markAsTreated(id: string) {
     const anomaly = await this.Prisma.anomaly.findUnique({
       where: { id: id },
-      include: {
-        atachments: true,
-        actions: true,
-      },
     });
     if (!anomaly) {
       throw new Error('Anomaly not found');
-    }
-    if (anomaly.actions.length === 0) {
-      throw new Error(
-        "Le plan d'action est vide, veuillez le remplir avant de résoudre l'anomalie",
-      );
     }
     if (
       anomaly.duree_intervention === null ||
@@ -299,17 +290,22 @@ export class AnomalyService {
         date_traitement: new Date(),
       },
     });
-
+    if (!anomaly.required_stoping &&  anomaly.duree_intervention !== '0') {
     const maintenanceWindow = await this.anomalyToMaintenanceWindow(id);
     if (!maintenanceWindow.success) {
       throw new Error(`Failed to attach anomaly to maintenance window`);
     }
-
     return {
       success: true,
       message: 'Anomaly resolved successfully',
       updatedAnomaly: maintenanceWindow.updatedAnomaly,
       maintenanceWindow: maintenanceWindow.maintenanceWindow,
+    };
+  }
+    return {
+      success: true,
+      message: 'Anomaly marked as treated successfully',
+      updatedAnomaly: anomaly,
     };
   }
 

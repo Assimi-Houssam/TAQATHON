@@ -46,7 +46,7 @@ model anomaly {
   id          String   @id @default(cuid())
   required_stoping Boolean?
   num_equipments String?
-  duree_intervention String?
+  duree_intervention String? @default("0")
   unite      String?
   systeme   String?
   descreption_anomalie String?
