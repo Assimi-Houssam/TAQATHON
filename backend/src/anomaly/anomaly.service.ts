@@ -301,10 +301,14 @@ export class AnomalyService {
         date_traitement: new Date(),
       },
     });
-    if (!anomaly.required_stoping && anomaly.duree_intervention !== '0' && anomaly.required_stoping !== false) {
+    if (anomaly.required_stoping === true && anomaly.duree_intervention !== '0') {
       const maintenanceWindow = await this.anomalyToMaintenanceWindow(id);
       if (!maintenanceWindow.success) {
-        throw new Error(`Failed to attach anomaly to maintenance window`);
+        return {
+          success: false,
+          message: maintenanceWindow.message,
+          updatedAnomaly: maintenanceWindow.updatedAnomaly,
+        };
       }
       return {
         success: true,
@@ -354,7 +358,8 @@ export class AnomalyService {
       orderBy: {
         date_debut_arret: 'asc',
       },
-    });
+    }); 
+
     const suitableWindow = maintenanceWindows.find((window) => {
       const windowHours = this.extractHours(window.duree_heure || '0');
       return windowHours >= requiredHours;
@@ -364,13 +369,13 @@ export class AnomalyService {
         where: { titlte: 'ORPHANS' },
       });
       if (!orphans) {
-        const newOrphans = await this.Prisma.maintenance_window.create({
+        orphans = await this.Prisma.maintenance_window.create({
           data: {
             titlte: 'ORPHANS',
           },
         });
       }
-      await this.Prisma.anomaly.update({
+      const updatedAnomaly = await this.Prisma.anomaly.update({
         where: { id: anomalyId },
         data: {
           maintenance_window: {
@@ -381,8 +386,7 @@ export class AnomalyService {
       return {
         success: false,
         message: 'No suitable maintenance window found, assigned to ORPHANS',
-        updatedAnomaly: anomaly,
-        maintenanceWindow: orphans,
+        updatedAnomaly: updatedAnomaly,
       };
     }
     const updatedAnomaly = await this.Prisma.anomaly.update({
