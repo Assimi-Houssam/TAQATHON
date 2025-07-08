@@ -733,7 +733,7 @@ export default function AddAnomaliesPage() {
                       <Input
                         id="date_apparition"
                         type="date"
-                        value={formData.date_apparition}
+                        defaultValue={new Date().toISOString().split('T')[0]}
                         onChange={(e) => handleInputChange('date_apparition', e.target.value)}
                         className={cn(
                           "mt-1",
