@@ -428,7 +428,16 @@ export class AnomalyService {
 
   async autoAssigmentAnomalyToMaintenanceWindowForceStop() {
     try {
-      
+      let orphans = await this.Prisma.maintenance_window.findFirst({
+        where: { titlte: 'ORPHANS' },
+      });
+      if (!orphans) {
+        orphans = await this.Prisma.maintenance_window.create({
+          data: {
+            titlte: 'ORPHANS',
+          },
+        });
+      }
       const maintenance_window =
         await this.Prisma.maintenance_window.findMany();
       const anomaly = await this.Prisma.anomaly.findMany({
@@ -466,7 +475,12 @@ export class AnomalyService {
               assigned: false,
               reason: 'No suitable window found',
             });
-
+            await this.Prisma.anomaly.update({
+              where: { id: anom.id },
+              data: {
+                maintenance_window: { connect: { id: orphans.id } },
+              },
+            });
             continue;
           }
 
