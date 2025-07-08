@@ -61,7 +61,7 @@ model anomaly {
   disponibilite_conf String?
   process_safty String?
   process_safty_conf String?
-  Criticite String?
+  criticite String?
   status Status? @default(NEW)
   section source? @default(MC)
   comment String?

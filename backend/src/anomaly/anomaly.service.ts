@@ -22,11 +22,11 @@ export class AnomalyService {
     if (order == 'LOW' || order == 'HIGH') {
       if (order == 'LOW') {
         criticalityFilter = {
-          Criticite: 'asc',
+          criticite: 'asc',
         };
       } else if (order == 'HIGH') {
         criticalityFilter = {
-          Criticite: 'desc',
+          criticite: 'desc',
         };
       }
     }
@@ -41,26 +41,24 @@ export class AnomalyService {
       whereClause.status = status;
     }
     if (criticity && criticity.trim() !== '') {
-      // Convert string-based criticity to numeric ranges for string comparison
       switch (criticity.toUpperCase()) {
         case 'LOW':
-          // For string comparison, you might need to use exact values or ranges
-          whereClause.Criticite = {
+          whereClause.criticite = {
             in: ['0', '1', '2', '3', '4', '5'], // Specific values
           };
           break;
         case 'MEDIUM':
-          whereClause.Criticite = {
+          whereClause.criticite = {
             in: ['5', '6', '7', '8', '9', '10'],
           };
           break;
         case 'HIGH':
-          whereClause.Criticite = {
+          whereClause.criticite = {
             in: ['10', '11', '12', '13', '14', '15'],
           };
           break;
         default:
-          whereClause.Criticite = criticity;
+          whereClause.criticite = criticity;
       }
     }
     if (section && section.trim() !== '') {
@@ -76,7 +74,7 @@ export class AnomalyService {
       skip: skip,
       take: limit,
       where: whereClause,
-      orderBy: [{ Criticite: criticalityFilter.Criticite }, { status: 'desc' }],
+      orderBy: [{ criticite: criticalityFilter.criticite }, { status: 'desc' }],
     });
     if (!anomaly || anomaly.length === 0) {
       return { message: 'No anomalies found' };
