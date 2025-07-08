@@ -44,7 +44,7 @@ enum origine {
 
 model anomaly {
   id          String   @id @default(cuid())
-  required_stoping Boolean?
+  required_stoping Boolean? @default(false)
   num_equipments String?
   duree_intervention String? @default("0")
   unite      String?

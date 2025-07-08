@@ -22,9 +22,9 @@ import {
 } from '@nestjs/swagger';
 import { MlApiService } from './ml_api.service';
 import { Public } from 'src/metadata';
-import { CreateAnomalieDto } from 'src/anomaly/dto/anomalie.dto';
 import { PrioritySuggestionDto } from './dto/prioritysuggestion.dto';
 import { PythonExecutorService } from 'src/anomaly/python.service';
+import { CAnomalieDto } from './dto/anomaly.dto';
 
 @ApiTags('ml-api')
 @Controller('ml')
@@ -32,7 +32,6 @@ import { PythonExecutorService } from 'src/anomaly/python.service';
 export class MlApiController {
   constructor(
     private readonly mlApiService: MlApiService,
-    private readonly pythonExecutorService: PythonExecutorService,
   ) {}
 
   @ApiOperation({ summary: 'Get priority suggestion for anomaly' })
@@ -141,8 +140,23 @@ export class MlApiController {
     },
   })
   @Public()
-  @Post('receive-fastapi-response')
-  async receiveFastApiResponse(@Body() data: CreateAnomalieDto) {
-    return { message: 'Data received successfully', data };
+  @Post('ml-response')
+  async receiveFastApiResponse(@Body() data: CAnomalieDto[]) {
+    try {
+        if (!data || !Array.isArray(data) || data.length === 0) {
+          throw new BadRequestException('No valid array data received from FastAPI');
+        }
+      // Process the received data
+      for (const item of data) {
+        const processedData = await this.mlApiService.processFastApiResponse(item);
+      }
+      return {
+        success: true,
+        message: 'Data received and processed successfully',
+      };
+    } catch (error) {
+      console.error('Error processing FastAPI response:', error);
+      throw new BadRequestException(`Failed to process FastAPI response: ${error.message}`);
+    }
   }
 }

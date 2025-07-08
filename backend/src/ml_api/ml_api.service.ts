@@ -3,9 +3,13 @@ import { PrioritySuggestionDto } from './dto/prioritysuggestion.dto';
 import axios from 'axios';
 import * as FormData from 'form-data';
 import * as fs from 'fs';
+import { CAnomalieDto } from './dto/anomaly.dto';
+import { PrismaService } from 'src/prisma.service';
 
 @Injectable()
 export class MlApiService {
+  constructor(private readonly Prisma : PrismaService) {}
+
   async sendPriorityRequest(data: PrioritySuggestionDto) {
     try {
       const response = await axios.post('http://fastapi:4000', data, {
@@ -60,4 +64,27 @@ export class MlApiService {
       throw new Error(`ML API file upload failed: ${error.message}`);
     }
   }
+
+  async processFastApiResponse(data: CAnomalieDto) {
+    try {
+      // Save the anomaly data to the database
+      const anomaly = await this.Prisma.anomaly.create({
+        data: {
+          num_equipments: data.num_equipments,
+          systeme: data.systeme,
+          descreption_anomalie: data.descreption_anomalie,
+          date_detection: new Date(data.date_detection),
+          descreption_equipment: data.descreption_equipment,
+          section_proprietaire: data.section_proprietaire,
+          fiablite_integrite: data.fiablite_integrite,
+        },
+      });
+      return { message: 'Anomaly processed successfully', anomaly };
+    } catch (error) {
+      console.error('Error processing FastAPI response:', error.message);
+      throw new Error(`Error processing FastAPI response: ${error.message}`);
+    }
+
+  }
+  
 }
