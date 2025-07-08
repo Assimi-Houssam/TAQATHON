@@ -50,6 +50,7 @@ model anomaly {
   unite      String?
   systeme   String?
   descreption_anomalie String?
+  descreption_equipment String?
   date_detection DateTime @default(now())
   origine origine? @default(ORACLE)
   resolution_date DateTime?
