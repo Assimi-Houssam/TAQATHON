@@ -630,5 +630,40 @@ export class AnomalyController {
   }
 
 
+  @ApiOperation({ summary: 'Get action plan statistics' })
+  @ApiResponse({
+    status: 200,
+    description: 'Action plan statistics retrieved successfully',
+    schema: {
+      type: 'object',
+      properties: {
+        action: {
+          type: 'object',
+          properties: {
+            total: { type: 'number', example: 150 },
+            completed: { type: 'number', example: 75 },
+            inProgress: { type: 'number', example: 50 },
+          },
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 500,
+    description: 'Internal server error',
+  })
+  @Get('getactionplanstatistics/:id')
+  async getActionPlanStatistics(@Param('id') id: string) {
+    try {
+      return await this.anomalyService.getactionOfAnomaly(id);
+    } catch (error) {
+      console.error('Error retrieving action plan statistics:', error);
+      throw new BadRequestException('Failed to retrieve action plan statistics');
+    }
+
+  }
+
+
+
 }
 

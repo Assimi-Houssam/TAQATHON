@@ -174,4 +174,5 @@ export class KpiService {
             percentageNotRequiringStop: total > 0 ? Math.round((notRequiringStop / total) * 100 * 100) / 100 : 0,
         };
         }
+       
 }
