@@ -33,7 +33,7 @@ export class AnomalyService {
     }
     const whereClause: any = {};
     if (status && status.trim() !== '') {
-      const validStatuses = ['OPEN', 'IN_PROGRESS', 'CLOSED'];
+      const validStatuses = ['NEW', 'IN_PROGRESS', 'CLOSED'];
       if (!validStatuses.includes(status.toUpperCase())) {
         throw new Error(
           `Invalid status provided. Valid statuses are: ${validStatuses.join(', ')}`,
@@ -628,7 +628,21 @@ export class AnomalyService {
       data: updatedActionPlan,
     };
   }
-
+  async deleteActionPlan(id: string) {
+    const actionPlan = await this.Prisma.action_plan.findUnique({
+      where: { id: id },
+    });
+    if (!actionPlan) {
+      throw new Error('Action plan not found');
+    }
+    await this.Prisma.action_plan.delete({
+      where: { id: id },
+    });
+    return {
+      success: true,
+      message: 'Action plan deleted successfully',
+    };
+  }
 }
 
 //  when status is traite with  attach with -> the action plan  chanfe to traite and attach it to a maintenance window
