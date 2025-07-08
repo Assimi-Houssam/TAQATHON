@@ -42,6 +42,14 @@ export function AnomalySummary({ anomaly }: AnomalySummaryProps) {
     return value && value !== "" ? value : fallback;
   };
 
+  // Helper function to safely format anomaly ID
+  const formatAnomalyId = (id?: string) => {
+    if (!id || typeof id !== 'string') {
+      return "#LOADING...";
+    }
+    return `#${id.slice(-8).toUpperCase()}`;
+  };
+
   return (
     <div className="space-y-4">
       {/* Main Summary Card - Important Data Only */}
@@ -56,7 +64,7 @@ export function AnomalySummary({ anomaly }: AnomalySummaryProps) {
               <div>
                 <p className="text-sm font-medium text-gray-500">Anomaly ID</p>
                 <p className="font-mono text-sm font-semibold text-gray-900">
-                  {`#${anomaly.id.slice(-8).toUpperCase()}`}
+                  {formatAnomalyId(anomaly.id)}
                 </p>
               </div>
             </div>
@@ -129,7 +137,7 @@ export function AnomalySummary({ anomaly }: AnomalySummaryProps) {
                     <div>
                       <span>Anomaly Details</span>
                       <p className="text-sm font-normal text-gray-500 mt-1">
-                        {`#${anomaly.id.slice(-8).toUpperCase()}`}
+                        {formatAnomalyId(anomaly.id)}
                       </p>
                     </div>
                   </DialogTitle>

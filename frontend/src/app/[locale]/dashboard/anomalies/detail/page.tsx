@@ -23,6 +23,7 @@ export default function AnomalyDetailPage() {
       await markAsTreated.mutateAsync(anomalyId);
     } catch (error) {
       console.error("Failed to validate anomaly:", error);
+      throw error; // Re-throw to let the component handle the error
     }
   };
 
@@ -32,6 +33,7 @@ export default function AnomalyDetailPage() {
       await updateAnomaly.mutateAsync({ id: anomalyId, data: updates });
     } catch (error) {
       console.error("Failed to update anomaly:", error);
+      throw error; // Re-throw to let the component handle the error
     }
   };
 
@@ -153,6 +155,18 @@ export default function AnomalyDetailPage() {
 
   return (
     <div className="container mx-auto px-6 py-6">
+      {/* Loading Overlay for Mutations */}
+      {markAsTreated.isPending && (
+        <div className="fixed inset-0 bg-black bg-opacity-20 flex items-center justify-center z-40">
+          <div className="bg-white rounded-xl p-6 shadow-xl">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-3"></div>
+              <p className="text-sm text-gray-600 font-medium">Updating anomaly status...</p>
+            </div>
+          </div>
+        </div>
+      )}
+      
       {/* Header with consistent layout matching other pages */}
       <div className="mb-8 pb-6 border-b border-gray-200">
         <div className="flex items-center gap-3 mb-4">
@@ -161,6 +175,7 @@ export default function AnomalyDetailPage() {
               size="sm" 
               onClick={() => router.push("/dashboard/anomalies")}
               className="h-8 w-8 p-0 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-md"
+              disabled={markAsTreated.isPending}
             >
               <ArrowLeft className="h-4 w-4" />
             </Button>

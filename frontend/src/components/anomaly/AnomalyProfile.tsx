@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle, Circle, PlayCircle, Save, AlertTriangle } from "lucide-react";
+import { toast } from "sonner";
 import { AnomalyWithRelations, STATUS_TRANSITIONS } from "@/types/anomaly";
 import { AnomalySummary } from "./AnomalySummary";
 import { NewTabContent } from "./NewTabContent";
@@ -39,6 +40,21 @@ export function AnomalyProfile({ anomaly, onStatusChange, onUpdate, onValidate }
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [pendingAction, setPendingAction] = useState<string | null>(null);
 
+  // Auto-update active step when anomaly status changes
+  useEffect(() => {
+    switch (anomaly.status) {
+      case "NEW":
+        setActiveStep("new");
+        break;
+      case "IN_PROGRESS":
+        setActiveStep("in-progress");
+        break;
+      case "CLOSED":
+        setActiveStep("closed");
+        break;
+    }
+  }, [anomaly.status]);
+
   const getCurrentStepIndex = () => {
     return LIFECYCLE_STEPS.findIndex(step => step.key === activeStep);
   };
@@ -66,11 +82,7 @@ export function AnomalyProfile({ anomaly, onStatusChange, onUpdate, onValidate }
     
     try {
       await onStatusChange(newStatus);
-      if (newStatus === "IN_PROGRESS") {
-        setActiveStep("in-progress");
-      } else if (newStatus === "CLOSED") {
-        setActiveStep("closed");
-      }
+      // The tab will be updated automatically via useEffect when anomaly.status changes
     } catch (error) {
       console.error("Failed to update status:", error);
     }
@@ -92,19 +104,31 @@ export function AnomalyProfile({ anomaly, onStatusChange, onUpdate, onValidate }
     try {
       if (pendingAction === "validate" && anomaly.status === "NEW") {
         if (onValidate) {
-          // Use the markAsTreated mutation for validation
+          // Wait for the markAsTreated mutation to complete
+          // React Query will automatically update the cache and invalidate queries
           await onValidate();
-          setActiveStep("in-progress");
+          toast.success("Anomaly validated and moved to In Progress successfully!");
         } else {
           await handleStatusTransition("IN_PROGRESS");
+          toast.success("Anomaly status updated to In Progress!");
         }
       } else if (pendingAction === "complete" && anomaly.status === "IN_PROGRESS") {
         await handleStatusTransition("CLOSED");
+        toast.success("Anomaly resolution completed and closed successfully!");
       } else if (pendingAction === "document" && anomaly.status === "CLOSED" && rexSaveFunction) {
         await rexSaveFunction();
+        toast.success("Documentation completed successfully!");
       }
     } catch (error) {
       console.error("Failed to execute main action:", error);
+      // Show appropriate error message based on the action
+      const errorMessage = 
+        pendingAction === "validate" ? "Failed to validate anomaly. Please try again." :
+        pendingAction === "complete" ? "Failed to complete resolution. Please try again." :
+        pendingAction === "document" ? "Failed to complete documentation. Please try again." :
+        "Failed to execute action. Please try again.";
+      
+      toast.error(errorMessage);
     } finally {
       setIsActionLoading(false);
       setShowConfirmModal(false);
@@ -128,26 +152,25 @@ export function AnomalyProfile({ anomaly, onStatusChange, onUpdate, onValidate }
   const getConfirmationMessage = () => {
     switch (pendingAction) {
       case "validate":
-        return "Are you sure you want to validate this anomaly and move it to In Progress?";
+        return {
+          title: "Validate Anomaly",
+          description: "This will mark the anomaly as validated and move it to In Progress status."
+        };
       case "complete":
-        return "Are you sure you want to complete the resolution and close this anomaly?";
+        return {
+          title: "Complete Resolution", 
+          description: "This will mark the anomaly resolution as complete and close the anomaly."
+        };
       case "document":
-        return "Are you sure you want to complete the documentation for this anomaly?";
+        return {
+          title: "Complete Documentation",
+          description: "This will finalize all documentation for this anomaly."
+        };
       default:
-        return "Are you sure you want to proceed?";
-    }
-  };
-
-  const getConfirmationTitle = () => {
-    switch (pendingAction) {
-      case "validate":
-        return "Validate Anomaly";
-      case "complete":
-        return "Complete Resolution";
-      case "document":
-        return "Complete Documentation";
-      default:
-        return "Confirm Action";
+        return {
+          title: "Confirm Action",
+          description: "Are you sure you want to proceed?"
+        };
     }
   };
 
@@ -157,11 +180,20 @@ export function AnomalyProfile({ anomaly, onStatusChange, onUpdate, onValidate }
         <Button
           onClick={handleMainAction}
           disabled={isActionLoading}
-          className="w-full border px-6 py-4 rounded-lg font-medium transition-all duration-200"
+          className="w-full border px-6 py-4 rounded-lg font-medium transition-all duration-200 disabled:opacity-70"
           size="lg"
         >
-          <CheckCircle className="h-5 w-5 mr-3" />
-          {isActionLoading ? "Processing..." : "Validate Anomaly"}
+          {isActionLoading ? (
+            <>
+              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-3"></div>
+              Validating Anomaly...
+            </>
+          ) : (
+            <>
+              <CheckCircle className="h-5 w-5 mr-3" />
+              Validate Anomaly
+            </>
+          )}
         </Button>
       );
     }
@@ -171,11 +203,20 @@ export function AnomalyProfile({ anomaly, onStatusChange, onUpdate, onValidate }
         <Button
           onClick={handleMainAction}
           disabled={isActionLoading}
-          className="w-full border px-6 py-4 rounded-lg font-medium transition-all duration-200"
+          className="w-full border px-6 py-4 rounded-lg font-medium transition-all duration-200 disabled:opacity-70"
           size="lg"
         >
-          <CheckCircle className="h-5 w-5 mr-3" />
-          {isActionLoading ? "Processing..." : "Complete Resolution"}
+          {isActionLoading ? (
+            <>
+              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-3"></div>
+              Completing Resolution...
+            </>
+          ) : (
+            <>
+              <CheckCircle className="h-5 w-5 mr-3" />
+              Complete Resolution
+            </>
+          )}
         </Button>
       );
     }
@@ -188,8 +229,17 @@ export function AnomalyProfile({ anomaly, onStatusChange, onUpdate, onValidate }
           className="w-full border px-6 py-4 rounded-lg font-medium transition-all duration-200 disabled:opacity-50"
           size="lg"
         >
-          <CheckCircle className="h-5 w-5 mr-3" />
-          {isActionLoading ? "Processing..." : "Complete Documentation"}
+          {isActionLoading ? (
+            <>
+              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-3"></div>
+              Completing Documentation...
+            </>
+          ) : (
+            <>
+              <CheckCircle className="h-5 w-5 mr-3" />
+              Complete Documentation
+            </>
+          )}
         </Button>
       );
     }
@@ -261,33 +311,57 @@ export function AnomalyProfile({ anomaly, onStatusChange, onUpdate, onValidate }
 
   return (
     <div>
-      {/* Confirmation Modal */}
+      {/* Enhanced Confirmation Modal */}
       {showConfirmModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4 shadow-xl">
-            <div className="flex items-center mb-4">
-              {/* <AlertTriangle className="h-6 w-6 text-orange-500 mr-3" /> */}
-              <h3 className="text-lg font-semibold text-gray-900">{getConfirmationTitle()}</h3>
+          <div className="bg-white rounded-xl p-6 max-w-lg w-full mx-4 shadow-xl">
+            {/* Loading Overlay */}
+            {isActionLoading && (
+              <div className="absolute inset-0 bg-white bg-opacity-90 rounded-xl flex items-center justify-center z-10">
+                <div className="text-center">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-3"></div>
+                  <p className="text-sm text-gray-600 font-medium">
+                    {pendingAction === "validate" ? "Validating anomaly..." :
+                     pendingAction === "complete" ? "Completing resolution..." :
+                     pendingAction === "document" ? "Finalizing documentation..." :
+                     "Processing..."}
+                  </p>
+                </div>
+              </div>
+            )}
+            
+            <div className="mb-4">
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                {getConfirmationMessage().title}
+              </h3>
+              <p className="text-gray-600 text-sm">
+                {getConfirmationMessage().description}
+              </p>
             </div>
-            <p className="text-gray-600 mb-6">{getConfirmationMessage()}</p>
-            <div className="flex space-x-3">
+            
+            <div className="flex justify-between space-x-3">
               <Button
                 onClick={() => {
                   setShowConfirmModal(false);
                   setPendingAction(null);
                 }}
                 variant="outline"
-                className="flex-1"
+                className=""
                 disabled={isActionLoading}
               >
                 Cancel
               </Button>
               <Button
                 onClick={executeConfirmedAction}
-                className="flex-1"
+                className=""
                 disabled={isActionLoading}
               >
-                {isActionLoading ? "Processing..." : "Confirm"}
+                {isActionLoading ? 
+                  (pendingAction === "validate" ? "Validating..." :
+                   pendingAction === "complete" ? "Completing..." :
+                   pendingAction === "document" ? "Documenting..." :
+                   "Processing...") 
+                  : "Confirm"}
               </Button>
             </div>
           </div>
