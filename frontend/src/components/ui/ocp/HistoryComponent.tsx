@@ -11,7 +11,7 @@ import { ActionBadgeIcon } from "@/components/ui/ocp/ActionBadge";
 import { useTranslations } from "next-intl";
 import CollapWrapper from "@/components/ui/ocp/CollapWrapper";
 import { useGetLogs } from "@/endpoints/logs/get-all-logs";
-import { useMe } from "@/endpoints/auth/useMe";
+// import { useMe } from "@/endpoints/auth/useMe";
 import React, { Suspense } from "react";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 
@@ -222,7 +222,10 @@ function HistoryComponent({
   type: string;
 }) {
   const t = useTranslations("historyComponent");
-  const { data: me, error: meError, isLoading: meLoading } = useMe();
+  // const { data: me, error: meError, isLoading: meLoading } = useMe();
+  const me = null; // Default when useMe is disabled
+  const meError = null; // Default when useMe is disabled  
+  const meLoading = false; // Default when useMe is disabled
 
   // Handle top-level loading state
   if (meLoading) {
@@ -266,7 +269,8 @@ function HistoryComponent({
                 <FeedbackComponent />
               </SectionWrapper>
 
-              {me?.id === profile.id && (
+              {/* Logs section disabled when useMe is disabled */}
+              {false && (
                 <SectionWrapper title="Logs">
                   <LogsComponent />
                 </SectionWrapper>

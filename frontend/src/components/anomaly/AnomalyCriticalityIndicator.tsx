@@ -1,7 +1,7 @@
 import { AnomalyCriticality, getCriticalityLevel } from "@/types/anomaly";
 
 interface AnomalyCriticalityIndicatorProps {
-  criticality: number; // 1-15 scale
+  criticality: number | string; // 1-15 scale (accepts both number and string)
   showScore?: boolean;
   variant?: "dot" | "text" | "full" | "badge";
   className?: string;
@@ -13,7 +13,9 @@ export function AnomalyCriticalityIndicator({
   variant = "badge",
   className 
 }: AnomalyCriticalityIndicatorProps) {
-  const level = getCriticalityLevel(criticality);
+  const criticalityStr = typeof criticality === 'number' ? criticality.toString() : criticality;
+  const criticalityNum = typeof criticality === 'string' ? parseFloat(criticality) || 0 : criticality;
+  const level = getCriticalityLevel(criticalityStr);
   
   // Modern, flat, pill-style config
   const criticalityConfig = {
@@ -41,7 +43,7 @@ export function AnomalyCriticalityIndicator({
       >
         {level}
         {showScore && (
-          <span className="ml-1 opacity-70 font-normal">({criticality})</span>
+          <span className="ml-1 opacity-70 font-normal">({criticalityNum})</span>
         )}
       </span>
     );
@@ -52,7 +54,7 @@ export function AnomalyCriticalityIndicator({
       <div className={`flex items-center gap-2 ${className}`}>
         <div className={`w-2 h-2 rounded-full bg-${level.toLowerCase()}-500`} />
         <span className="text-sm font-medium">{level}</span>
-        {showScore && <span className="text-xs text-gray-500">({criticality})</span>}
+        {showScore && <span className="text-xs text-gray-500">({criticalityNum})</span>}
       </div>
     );
   }
@@ -65,7 +67,7 @@ export function AnomalyCriticalityIndicator({
         </div>
         <div className="flex flex-col">
           <span className="text-sm font-medium">{level}</span>
-          {showScore && <span className="text-xs text-gray-500">{criticality}/15</span>}
+          {showScore && <span className="text-xs text-gray-500">{criticalityNum}/15</span>}
         </div>
       </div>
     );
@@ -75,7 +77,7 @@ export function AnomalyCriticalityIndicator({
   return (
     <span className={`text-sm font-medium text-${level.toLowerCase()}-600 ${className}`}>
       {level}
-      {showScore && <span className="text-xs text-gray-500 ml-1">({criticality})</span>}
+      {showScore && <span className="text-xs text-gray-500 ml-1">({criticalityNum})</span>}
     </span>
   );
 } 

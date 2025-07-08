@@ -18,17 +18,17 @@ interface AnomalyProfileProps {
 }
 
 const LIFECYCLE_STEPS = [
-  { key: "new", label: "New", description: "Configure anomaly", status: "New" },
-  { key: "in-progress", label: "In Progress", description: "Execute maintenance", status: "In Progress" },
-  { key: "closed", label: "Closed", description: "Document resolution", status: "Closed" }
+  { key: "new", label: "New", description: "Configure anomaly", status: "NEW" },
+  { key: "in-progress", label: "In Progress", description: "Execute maintenance", status: "IN_PROGRESS" },
+  { key: "closed", label: "Closed", description: "Document resolution", status: "CLOSED" }
 ];
 
 export function AnomalyProfile({ anomaly, onStatusChange, onUpdate }: AnomalyProfileProps) {
   const [activeStep, setActiveStep] = useState(() => {
     switch (anomaly.status) {
-      case "New": return "new";
-      case "In Progress": return "in-progress"; 
-      case "Closed": return "closed";
+      case "NEW": return "new";
+      case "IN_PROGRESS": return "in-progress"; 
+      case "CLOSED": return "closed";
       default: return "new";
     }
   });
@@ -53,21 +53,21 @@ export function AnomalyProfile({ anomaly, onStatusChange, onUpdate }: AnomalyPro
 
   const canAccessStep = (stepKey: string) => {
     switch (stepKey) {
-      case "new": return anomaly.status === "New";
-      case "in-progress": return anomaly.status === "In Progress" || anomaly.status === "Closed";
-      case "closed": return anomaly.status === "Closed";
+      case "new": return anomaly.status === "NEW";
+      case "in-progress": return anomaly.status === "IN_PROGRESS" || anomaly.status === "CLOSED";
+      case "closed": return anomaly.status === "CLOSED";
       default: return false;
     }
   };
 
   const handleStatusTransition = async (newStatus: AnomalyWithRelations['status']) => {
-    if (!STATUS_TRANSITIONS[anomaly.status].includes(newStatus) || !onStatusChange) return;
+    if (!anomaly.status || !newStatus || !STATUS_TRANSITIONS[anomaly.status].includes(newStatus) || !onStatusChange) return;
     
     try {
       await onStatusChange(newStatus);
-      if (newStatus === "In Progress") {
+      if (newStatus === "IN_PROGRESS") {
         setActiveStep("in-progress");
-      } else if (newStatus === "Closed") {
+      } else if (newStatus === "CLOSED") {
         setActiveStep("closed");
       }
     } catch (error) {
@@ -89,11 +89,11 @@ export function AnomalyProfile({ anomaly, onStatusChange, onUpdate }: AnomalyPro
   const executeConfirmedAction = async () => {
     setIsActionLoading(true);
     try {
-      if (pendingAction === "validate" && anomaly.status === "New") {
-        await handleStatusTransition("In Progress");
-      } else if (pendingAction === "complete" && anomaly.status === "In Progress") {
-        await handleStatusTransition("Closed");
-      } else if (pendingAction === "document" && anomaly.status === "Closed" && rexSaveFunction) {
+      if (pendingAction === "validate" && anomaly.status === "NEW") {
+        await handleStatusTransition("IN_PROGRESS");
+      } else if (pendingAction === "complete" && anomaly.status === "IN_PROGRESS") {
+        await handleStatusTransition("CLOSED");
+      } else if (pendingAction === "document" && anomaly.status === "CLOSED" && rexSaveFunction) {
         await rexSaveFunction();
       }
     } catch (error) {
@@ -106,13 +106,13 @@ export function AnomalyProfile({ anomaly, onStatusChange, onUpdate }: AnomalyPro
   };
 
   const handleMainAction = async () => {
-    if (activeStep === "new" && anomaly.status === "New") {
+    if (activeStep === "new" && anomaly.status === "NEW") {
       setPendingAction("validate");
       setShowConfirmModal(true);
-    } else if (activeStep === "in-progress" && anomaly.status === "In Progress") {
+    } else if (activeStep === "in-progress" && anomaly.status === "IN_PROGRESS") {
       setPendingAction("complete");
       setShowConfirmModal(true);
-    } else if (activeStep === "closed" && anomaly.status === "Closed" && rexSaveFunction) {
+    } else if (activeStep === "closed" && anomaly.status === "CLOSED" && rexSaveFunction) {
       setPendingAction("document");
       setShowConfirmModal(true);
     }
@@ -145,7 +145,7 @@ export function AnomalyProfile({ anomaly, onStatusChange, onUpdate }: AnomalyPro
   };
 
   const getMainActionButton = () => {
-    if (activeStep === "new" && anomaly.status === "New") {
+    if (activeStep === "new" && anomaly.status === "NEW") {
       return (
         <Button
           onClick={handleMainAction}
@@ -159,7 +159,7 @@ export function AnomalyProfile({ anomaly, onStatusChange, onUpdate }: AnomalyPro
       );
     }
     
-    if (activeStep === "in-progress" && anomaly.status === "In Progress") {
+    if (activeStep === "in-progress" && anomaly.status === "IN_PROGRESS") {
       return (
         <Button
           onClick={handleMainAction}
@@ -173,7 +173,7 @@ export function AnomalyProfile({ anomaly, onStatusChange, onUpdate }: AnomalyPro
       );
     }
     
-    if (activeStep === "closed" && anomaly.status === "Closed") {
+    if (activeStep === "closed" && anomaly.status === "CLOSED") {
       return (
         <Button
           onClick={handleMainAction}
@@ -205,7 +205,7 @@ export function AnomalyProfile({ anomaly, onStatusChange, onUpdate }: AnomalyPro
   const renderStepContent = () => {
     switch (activeStep) {
       case "new":
-        return anomaly.status === "New" && onStatusChange && onUpdate ? (
+        return anomaly.status === "NEW" && onStatusChange && onUpdate ? (
           <NewTabContent 
             anomaly={anomaly} 
             onUpdate={handleUpdate}
@@ -220,7 +220,7 @@ export function AnomalyProfile({ anomaly, onStatusChange, onUpdate }: AnomalyPro
         );
       
       case "in-progress":
-        return (anomaly.status === "In Progress" || anomaly.status === "Closed") && onStatusChange && onUpdate ? (
+        return (anomaly.status === "IN_PROGRESS" || anomaly.status === "CLOSED") && onStatusChange && onUpdate ? (
           <InProgressTabContent 
             anomaly={anomaly} 
             onUpdate={handleUpdate}
@@ -235,7 +235,7 @@ export function AnomalyProfile({ anomaly, onStatusChange, onUpdate }: AnomalyPro
         );
       
       case "closed":
-        return anomaly.status === "Closed" && onUpdate ? (
+        return anomaly.status === "CLOSED" && onUpdate ? (
           <ClosedTabContent 
             anomaly={anomaly} 
           />

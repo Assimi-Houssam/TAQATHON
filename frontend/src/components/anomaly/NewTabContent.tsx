@@ -18,7 +18,7 @@ import {
   PlayCircle,
   Send
 } from "lucide-react";
-import { AnomalyWithRelations, ActionPlan, calculateCriticality, getCriticalityLevel } from "@/types/anomaly";
+import { AnomalyWithRelations, ActionPlan, calculateCriticalityFromStrings, getCriticalityLevel } from "@/types/anomaly";
 import { ActionPlanTable } from "./ActionPlanTable";
 
 interface NewTabContentProps {
@@ -32,25 +32,25 @@ export function NewTabContent({ anomaly, onUpdate, onStatusChange }: NewTabConte
   const [criteriaTouched, setCriteriaTouched] = useState(false);
   const [feedbackText, setFeedbackText] = useState("");
   const [formData, setFormData] = useState({
-    process_safety: anomaly.process_safety,
-    fiabilite_integrite: anomaly.fiabilite_integrite,
-    disponibilite: anomaly.disponibilite,
+    process_safty: parseFloat(anomaly.process_safty || '1') || 1,
+    fiablite_integrite: parseFloat(anomaly.fiablite_integrite || '1') || 1,
+    disponsibilite: parseFloat(anomaly.disponsibilite || '1') || 1,
     duration_of_intervention: 0,
     requires_stopping: false
   });
   
-  const currentCriticality = calculateCriticality(
-    formData.process_safety,
-    formData.fiabilite_integrite,
-    formData.disponibilite
+  const currentCriticality = calculateCriticalityFromStrings(
+    formData.fiablite_integrite.toString(),
+    formData.disponsibilite.toString(),
+    formData.process_safty.toString()
   );
 
-  const criticalityLevel = getCriticalityLevel(currentCriticality);
+  const criticalityLevel = getCriticalityLevel(currentCriticality.toString());
 
   const validateForm = () => {
-    if (formData.process_safety < 1 || formData.process_safety > 5) return false;
-    if (formData.fiabilite_integrite < 1 || formData.fiabilite_integrite > 5) return false;
-    if (formData.disponibilite < 1 || formData.disponibilite > 5) return false;
+    if (formData.process_safty < 1 || formData.process_safty > 5) return false;
+    if (formData.fiablite_integrite < 1 || formData.fiablite_integrite > 5) return false;
+    if (formData.disponsibilite < 1 || formData.disponsibilite > 5) return false;
     
     return true;
   };
@@ -60,23 +60,25 @@ export function NewTabContent({ anomaly, onUpdate, onStatusChange }: NewTabConte
     setFormData(newFormData);
 
     // Mark criteria as touched if it's one of the 3 criteria fields
-    if (field === 'process_safety' || field === 'fiabilite_integrite' || field === 'disponibilite') {
+    if (field === 'process_safty' || field === 'fiablite_integrite' || field === 'disponsibilite') {
       setCriteriaTouched(true);
     }
 
     // Auto-save for criteria fields
-    if ((field === 'process_safety' || field === 'fiabilite_integrite' || field === 'disponibilite') && validateForm()) {
+    if ((field === 'process_safty' || field === 'fiablite_integrite' || field === 'disponsibilite') && validateForm()) {
       setIsUpdating(true);
       try {
-        const newCriticality = calculateCriticality(
-          field === 'process_safety' ? value as number : newFormData.process_safety,
-          field === 'fiabilite_integrite' ? value as number : newFormData.fiabilite_integrite,
-          field === 'disponibilite' ? value as number : newFormData.disponibilite
+        const newCriticality = calculateCriticalityFromStrings(
+          (field === 'fiablite_integrite' ? value as number : newFormData.fiablite_integrite).toString(),
+          (field === 'disponsibilite' ? value as number : newFormData.disponsibilite).toString(),
+          (field === 'process_safty' ? value as number : newFormData.process_safty).toString()
         );
         
         await onUpdate({
-          [field]: value,
-          criticality: newCriticality,
+          [field]: field === 'process_safty' ? (value as number).toString() : 
+                   field === 'fiablite_integrite' ? (value as number).toString() :
+                   field === 'disponsibilite' ? (value as number).toString() : value,
+          Criticite: newCriticality.toString(),
         });
       } catch (error) {
         console.error("Failed to update anomaly data:", error);
@@ -115,22 +117,22 @@ export function NewTabContent({ anomaly, onUpdate, onStatusChange }: NewTabConte
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => handleFieldChange('process_safety', Math.max(1, formData.process_safety - 1))}
-                  disabled={formData.process_safety <= 1 || isUpdating}
+                  onClick={() => handleFieldChange('process_safty', Math.max(1, formData.process_safty - 1))}
+                  disabled={formData.process_safty <= 1 || isUpdating}
                   className="h-6 w-6 p-0 text-gray-400 hover:text-gray-600 hover:bg-white/80"
                 >
                   <Minus className="h-3 w-3" />
                 </Button>
                 
                 <div className="flex-1 text-center">
-                  <span className="text-base font-semibold text-gray-900">{formData.process_safety}</span>
+                  <span className="text-base font-semibold text-gray-900">{formData.process_safty}</span>
                 </div>
                 
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => handleFieldChange('process_safety', Math.min(5, formData.process_safety + 1))}
-                  disabled={formData.process_safety >= 5 || isUpdating}
+                  onClick={() => handleFieldChange('process_safty', Math.min(5, formData.process_safty + 1))}
+                  disabled={formData.process_safty >= 5 || isUpdating}
                   className="h-6 w-6 p-0 text-gray-400 hover:text-gray-600 hover:bg-white/80"
                 >
                   <Plus className="h-3 w-3" />
@@ -145,22 +147,22 @@ export function NewTabContent({ anomaly, onUpdate, onStatusChange }: NewTabConte
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => handleFieldChange('fiabilite_integrite', Math.max(1, formData.fiabilite_integrite - 1))}
-                  disabled={formData.fiabilite_integrite <= 1 || isUpdating}
+                  onClick={() => handleFieldChange('fiablite_integrite', Math.max(1, formData.fiablite_integrite - 1))}
+                  disabled={formData.fiablite_integrite <= 1 || isUpdating}
                   className="h-6 w-6 p-0 text-gray-400 hover:text-gray-600 hover:bg-white/80"
                 >
                   <Minus className="h-3 w-3" />
                 </Button>
                 
                 <div className="flex-1 text-center">
-                  <span className="text-base font-semibold text-gray-900">{formData.fiabilite_integrite}</span>
+                  <span className="text-base font-semibold text-gray-900">{formData.fiablite_integrite}</span>
                 </div>
                 
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => handleFieldChange('fiabilite_integrite', Math.min(5, formData.fiabilite_integrite + 1))}
-                  disabled={formData.fiabilite_integrite >= 5 || isUpdating}
+                  onClick={() => handleFieldChange('fiablite_integrite', Math.min(5, formData.fiablite_integrite + 1))}
+                  disabled={formData.fiablite_integrite >= 5 || isUpdating}
                   className="h-6 w-6 p-0 text-gray-400 hover:text-gray-600 hover:bg-white/80"
                 >
                   <Plus className="h-3 w-3" />
@@ -175,22 +177,22 @@ export function NewTabContent({ anomaly, onUpdate, onStatusChange }: NewTabConte
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => handleFieldChange('disponibilite', Math.max(1, formData.disponibilite - 1))}
-                  disabled={formData.disponibilite <= 1 || isUpdating}
+                  onClick={() => handleFieldChange('disponsibilite', Math.max(1, formData.disponsibilite - 1))}
+                  disabled={formData.disponsibilite <= 1 || isUpdating}
                   className="h-6 w-6 p-0 text-gray-400 hover:text-gray-600 hover:bg-white/80"
                 >
                   <Minus className="h-3 w-3" />
                 </Button>
                 
                 <div className="flex-1 text-center">
-                  <span className="text-base font-semibold text-gray-900">{formData.disponibilite}</span>
+                  <span className="text-base font-semibold text-gray-900">{formData.disponsibilite}</span>
                 </div>
                 
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => handleFieldChange('disponibilite', Math.min(5, formData.disponibilite + 1))}
-                  disabled={formData.disponibilite >= 5 || isUpdating}
+                  onClick={() => handleFieldChange('disponsibilite', Math.min(5, formData.disponsibilite + 1))}
+                  disabled={formData.disponsibilite >= 5 || isUpdating}
                   className="h-6 w-6 p-0 text-gray-400 hover:text-gray-600 hover:bg-white/80"
                 >
                   <Plus className="h-3 w-3" />

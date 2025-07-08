@@ -78,7 +78,7 @@ export function BaseDataTable<T>({
                   maxWidth: column.width || "200px",
                 }}
                 onClick={() => {
-                  if (column.clickable && onSort) {
+                  if (column.clickable && onSort && column.accessor) {
                     onSort(column.accessor);
                   }
                 }}
@@ -160,9 +160,11 @@ export function BaseDataTable<T>({
                         maxWidth: column.width || "200px",
                       }}
                     >
-                      {column.render
+                      {column.render && column.accessor
                         ? column.render(item[column.accessor], item)
-                        : String(item[column.accessor])}
+                        : column.accessor 
+                        ? String(item[column.accessor])
+                        : ""}
                     </TableCell>
                   ))}
                 </TableRow>

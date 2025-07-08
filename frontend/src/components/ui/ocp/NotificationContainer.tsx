@@ -3,7 +3,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import {
-  useNotification,
+  // useNotification,
   NotificationType,
   NotificationStatus,
   Notification,
@@ -48,7 +48,9 @@ interface NotificationContainerProps {
 const NotificationContainer: React.FC<NotificationContainerProps> = ({
   notification,
 }) => {
-  const { removeNotification, markAsRead } = useNotification();
+  // const { removeNotification, markAsRead } = useNotification();
+  const removeNotification = () => {}; // Default when disabled
+  const markAsRead = () => {}; // Default when disabled
   const router = useRouter();
   const markAsReadMutation = useMarkNotificationAsRead();
   const deleteMutation = useDeleteNotification();

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -8,15 +8,16 @@ import { Plus, AlertTriangle, FileText, Wrench } from "lucide-react";
 import { DataTable } from "@/components/data-table";
 import { Column, DataTableConfig } from "@/components/data-table/types";
 import { useRouter } from "next/navigation";
-import { Anomaly, AnomalyStatus, calculateCriticality, getCriticalityLevel } from "@/types/anomaly";
+import { Anomaly, AnomalyStatus, getCriticalityLevel } from "@/types/anomaly";
 import { AnomalyStatus as AnomalyStatusComponent, AnomalyCriticalityIndicator } from "@/components/anomaly";
 import { useAnomalies } from "@/hooks/useAnomalies";
 
 // Helper function to get criticality filter value
-const getCriticalityFilterValue = (criticality: number): string => {
-  if (criticality >= 13) return 'critical';
-  if (criticality >= 10) return 'high';
-  if (criticality >= 7) return 'medium';
+const getCriticalityFilterValue = (criticality?: string): string => {
+  const criticalityValue = parseFloat(criticality || '0') || 0;
+  if (criticalityValue >= 13) return 'critical';
+  if (criticalityValue >= 10) return 'high';
+  if (criticalityValue >= 7) return 'medium';
   return 'low';
 };
 
@@ -24,16 +25,17 @@ const getCriticalityFilterValue = (criticality: number): string => {
 // const { data: anomalies = [], isLoading, error } = useAnomalies();
 
 // Helper function to calculate red color opacity based on value (1-5 scale)
-const getRedOpacity = (value: number): string => {
+const getRedOpacity = (value?: string): string => {
+  const numValue = parseFloat(value || '0') || 0;
   // Only values 4 and 5 should be red (less colored), others transparent
-  if (value === 4 || value === 5) {
+  if (numValue === 4 || numValue === 5) {
     return 'rgba(239, 68, 68, 0.15)'; // 30% red for values 4 and 5 (less colored)
   }
   return 'transparent'; // values 1, 2, 3 stay transparent
 };
 
 // Helper function to get criticality indicator color
-const getCriticalityIndicatorColor = (criticality: number): string => {
+const getCriticalityIndicatorColor = (criticality?: string): string => {
   const level = getCriticalityLevel(criticality);
   
   switch (level) {
@@ -53,128 +55,200 @@ const getCriticalityIndicatorColor = (criticality: number): string => {
 // Column definitions using new components - reordered and enhanced
 const columns: Column<Anomaly>[] = [
   {
-    id: "code",
-    header: "Code",
-    accessorKey: "code",
-    cell: ({ row }) => (
-      <div className="font-mono text-sm font-medium text-zinc-900">
-        {row.original.code}
-      </div>
-    ),
-    size: 100,
+    id: "num_equipments",
+    header: "Equipment ID",
+    accessorKey: "num_equipments",
+    cell: ({ row }) => {
+      const isFakeRow = row.original && typeof row.original === 'object' && '__isFakeRow' in row.original;
+      
+      if (isFakeRow) {
+        return (
+          <div className="font-mono text-sm font-medium text-zinc-400">
+            -
+          </div>
+        );
+      }
+      
+      return (
+        <div className="font-mono text-sm font-medium text-zinc-900">
+          {row.original.num_equipments}
+        </div>
+      );
+    },
+    size: 120,
     enableSorting: true,
     enableHiding: false, // Always visible
   },
   {
-    id: "equipment",
-    header: "Equipment",
-    accessorKey: "equipment",
-    cell: ({ row }) => (
-      <div className="max-w-[200px]">
-        <div className="font-medium text-zinc-900 truncate" title={row.original.equipment}>
-          {row.original.equipment}
+    id: "systeme",
+    header: "System",
+    accessorKey: "systeme",
+    cell: ({ row }) => {
+      const isFakeRow = row.original && typeof row.original === 'object' && '__isFakeRow' in row.original;
+      
+      if (isFakeRow) {
+        return (
+          <div className="text-zinc-400">
+            -
+          </div>
+        );
+      }
+      
+      return (
+        <div className="max-w-[200px]">
+          <div className="font-medium text-zinc-900 truncate" title={row.original.systeme || ""}>
+            {row.original.systeme || "N/A"}
+          </div>
         </div>
-      </div>
-    ),
+      );
+    },
     size: 200,
     enableSorting: true,
     enableHiding: false, // Always visible
   },
   {
-    id: "description",
+    id: "descreption_anomalie",
     header: "Description",
-    accessorKey: "description",
-    cell: ({ row }) => (
-      <div className="max-w-[300px]">
-        <div className="text-sm text-zinc-600 truncate" title={row.original.description}>
-          {row.original.description}
+    accessorKey: "descreption_anomalie",
+    cell: ({ row }) => {
+      const isFakeRow = row.original && typeof row.original === 'object' && '__isFakeRow' in row.original;
+      
+      if (isFakeRow) {
+        return (
+          <div className="text-zinc-400">
+            -
+          </div>
+        );
+      }
+      
+      return (
+        <div className="max-w-[300px]">
+          <div className="text-sm text-zinc-600 truncate" title={row.original.descreption_anomalie || ""}>
+            {row.original.descreption_anomalie || "No description"}
+          </div>
         </div>
-      </div>
-    ),
+      );
+    },
     size: 300,
     enableSorting: false,
     enableHiding: false, // Always visible
   },
   {
-    id: "process_safety",
+    id: "process_safty",
     header: "Process Safety",
-    accessorKey: "process_safety",
-    cell: ({ row }) => (
-      <div className="flex items-center justify-center">
-        <div 
-          className="w-8 h-8 rounded-lg flex items-center justify-center"
-          style={{ backgroundColor: getRedOpacity(row.original.process_safety) }}
-        >
-          <span className="text-sm font-medium text-zinc-900">
-            {row.original.process_safety}
-          </span>
+    accessorKey: "process_safty",
+    cell: ({ row }) => {
+      const isFakeRow = row.original && typeof row.original === 'object' && '__isFakeRow' in row.original;
+      
+      if (isFakeRow) {
+        return (
+          <div className="text-zinc-400">
+            -
+          </div>
+        );
+      }
+      
+      return (
+        <div className="flex items-center">
+          <div 
+            className="w-8 h-8 rounded-lg flex items-center justify-center"
+            style={{ backgroundColor: getRedOpacity(row.original.process_safty) }}
+          >
+            <span className="text-sm font-medium text-zinc-900">
+              {row.original.process_safty || "0"}
+            </span>
+          </div>
         </div>
-      </div>
-    ),
+      );
+    },
     size: 120,
     enableSorting: true,
     enableHiding: false, // Always visible
   },
   {
-    id: "fiabilite_integrite",
+    id: "fiablite_integrite",
     header: "Reliability",
-    accessorKey: "fiabilite_integrite",
-    cell: ({ row }) => (
-      <div className="flex items-center justify-center">
-        <div 
-          className="w-8 h-8 rounded-lg flex items-center justify-center"
-          style={{ backgroundColor: getRedOpacity(row.original.fiabilite_integrite) }}
-        >
-          <span className="text-sm font-medium text-zinc-900">
-            {row.original.fiabilite_integrite}
-          </span>
+    accessorKey: "fiablite_integrite",
+    cell: ({ row }) => {
+      const isFakeRow = row.original && typeof row.original === 'object' && '__isFakeRow' in row.original;
+      
+      if (isFakeRow) {
+        return (
+          <div className="text-zinc-400">
+            -
+          </div>
+        );
+      }
+      
+      return (
+        <div className="flex items-center">
+          <div 
+            className="w-8 h-8 rounded-lg flex items-center justify-center"
+            style={{ backgroundColor: getRedOpacity(row.original.fiablite_integrite) }}
+          >
+            <span className="text-sm font-medium text-zinc-900">
+              {row.original.fiablite_integrite || "0"}
+            </span>
+          </div>
         </div>
-      </div>
-    ),
+      );
+    },
     size: 120,
     enableSorting: true,
     enableHiding: false, // Always visible
   },
   {
-    id: "disponibilite",
+    id: "disponsibilite",
     header: "Availability",
-    accessorKey: "disponibilite",
-    cell: ({ row }) => (
-      <div className="flex items-center justify-center">
-        <div 
-          className="w-8 h-8 rounded-lg flex items-center justify-center"
-          style={{ backgroundColor: getRedOpacity(row.original.disponibilite) }}
-        >
-          <span className="text-sm font-medium text-zinc-900">
-            {row.original.disponibilite}
-          </span>
+    accessorKey: "disponsibilite",
+    cell: ({ row }) => {
+      const isFakeRow = row.original && typeof row.original === 'object' && '__isFakeRow' in row.original;
+      
+      if (isFakeRow) {
+        return (
+          <div className="text-zinc-400">
+            -
+          </div>
+        );
+      }
+      
+      return (
+        <div className="flex items-center">
+          <div 
+            className="w-8 h-8 rounded-lg flex items-center justify-center"
+            style={{ backgroundColor: getRedOpacity(row.original.disponsibilite) }}
+          >
+            <span className="text-sm font-medium text-zinc-900">
+              {row.original.disponsibilite || "0"}
+            </span>
+          </div>
         </div>
-      </div>
-    ),
+      );
+    },
     size: 120,
     enableSorting: true,
     enableHiding: false, // Always visible
   },
   {
-    id: "criticality",
+    id: "Criticite",
     header: "Criticality",
-    accessorKey: "criticality",
+    accessorKey: "Criticite",
     cell: ({ row }) => {
       // Check if this is a fake row (padding row)
       const isFakeRow = row.original && typeof row.original === 'object' && '__isFakeRow' in row.original;
       
       if (isFakeRow) {
         return (
-          <div className="flex items-center justify-center">
+          <div className="flex items-center">
             <span className="text-zinc-400">-</span>
           </div>
         );
       }
       
       return (
-        <div className="flex items-center justify-center">
+        <div className="flex items-center">
           <AnomalyCriticalityIndicator 
-            criticality={row.original.criticality}
+            criticality={parseFloat(row.original.Criticite || '0') || 0}
             variant="badge"
           />
         </div>
@@ -188,43 +262,79 @@ const columns: Column<Anomaly>[] = [
     id: "status",
     header: "Status",
     accessorKey: "status",
-    cell: ({ row }) => (
-      <div className="text-center">
-        <AnomalyStatusComponent 
-          status={row.original.status}
-        />
-      </div>
-    ),
+    cell: ({ row }) => {
+      const isFakeRow = row.original && typeof row.original === 'object' && '__isFakeRow' in row.original;
+      
+      if (isFakeRow) {
+        return (
+          <div className="text-zinc-400">
+            -
+          </div>
+        );
+      }
+      
+      return (
+        <div>
+          <AnomalyStatusComponent 
+            status={row.original.status || 'NEW'}
+          />
+        </div>
+      );
+    },
     size: 150,
     enableSorting: true,
     enableHiding: false, // Always visible
   },
   {
-    id: "date_apparition",
+    id: "date_detection",
     header: "Date Detected",
-    accessorKey: "date_apparition",
-    cell: ({ row }) => (
-      <div className="text-sm text-zinc-600">
-        {new Date(row.original.date_apparition).toLocaleDateString('en-US', {
-          year: 'numeric',
-          month: 'short',
-          day: 'numeric'
-        })}
-      </div>
-    ),
+    accessorKey: "date_detection",
+    cell: ({ row }) => {
+      const isFakeRow = row.original && typeof row.original === 'object' && '__isFakeRow' in row.original;
+      
+      if (isFakeRow) {
+        return (
+          <div className="text-zinc-400">
+            -
+          </div>
+        );
+      }
+      
+      return (
+        <div className="text-sm text-zinc-600">
+          {row.original.date_detection ? new Date(row.original.date_detection).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
+          }) : "No date"}
+        </div>
+      );
+    },
     size: 120,
     enableSorting: true,
     enableHiding: true, // Can be hidden
   },
   {
-    id: "origin",
+    id: "origine",
     header: "Origin",
-    accessorKey: "origin",
-    cell: ({ row }) => (
-      <div className="text-sm text-zinc-600">
-        {row.original.origin || "Unknown"}
-      </div>
-    ),
+    accessorKey: "origine",
+    cell: ({ row }) => {
+      const isFakeRow = row.original && typeof row.original === 'object' && '__isFakeRow' in row.original;
+      
+      if (isFakeRow) {
+        return (
+          <div className="text-zinc-400">
+            -
+          </div>
+        );
+      }
+      
+      return (
+        <div className="text-sm text-zinc-600">
+          {row.original.origine || "Unknown"}
+        </div>
+      );
+    },
     size: 150,
     enableSorting: true,
     enableHiding: true, // Can be hidden
@@ -233,14 +343,29 @@ const columns: Column<Anomaly>[] = [
   {
     id: "criticality_indicator",
     header: "",
-    cell: ({ row }) => (
-      <div className="flex items-center justify-center">
-        <div 
-          className={`w-1 h-8 rounded-full ${getCriticalityIndicatorColor(row.original.criticality)}`}
-          title={getCriticalityLevel(row.original.criticality)}
-        />
-      </div>
-    ),
+    cell: ({ row }) => {
+      const isFakeRow = row.original && typeof row.original === 'object' && '__isFakeRow' in row.original;
+      
+      if (isFakeRow) {
+        return (
+          <div className="flex items-center justify-end">
+            <div 
+              className="w-1 h-8 rounded-full bg-zinc-400"
+              title="Empty row"
+            />
+          </div>
+        );
+      }
+      
+      return (
+        <div className="flex items-center justify-end">
+          <div 
+            className={`w-1 h-8 rounded-full ${getCriticalityIndicatorColor(row.original.Criticite)}`}
+            title={getCriticalityLevel(row.original.Criticite)}
+          />
+        </div>
+      );
+    },
     size: 20,
     enableSorting: false,
     enableHiding: false,
@@ -256,24 +381,24 @@ const config: DataTableConfig<Anomaly> = {
   enablePagination: true,
   pageSize: 10,
   searchPlaceholder: "Search anomalies...",
-  searchableColumns: ["code", "equipment", "description", "origin"],
+  searchableColumns: ["num_equipments", "systeme", "descreption_anomalie", "origine"],
   // Default sorting: Critical anomalies first (highest criticality first)
   defaultSort: {
-    field: "criticality",
+    field: "Criticite",
     direction: "desc", // Descending order (highest criticality first)
   },
   // Default visible columns (most important ones in new order)
   defaultColumnVisibility: {
-    code: true,
-    equipment: true,
-    description: true,
-    process_safety: true, // Now visible by default
-    fiabilite_integrite: true, // Now visible by default
-    disponibilite: true, // Now visible by default
-    criticality: true,
+    num_equipments: true,
+    systeme: true,
+    descreption_anomalie: true,
+    process_safty: true, // Now visible by default
+    fiablite_integrite: true, // Now visible by default
+    disponsibilite: true, // Now visible by default
+    Criticite: true,
     status: true,
-    date_apparition: false, // Hidden by default
-    origin: false, // Hidden by default
+    date_detection: false, // Hidden by default
+    origine: false, // Hidden by default
     criticality_indicator: true, // Always visible, now last
   },
 };
@@ -300,7 +425,7 @@ const filters = [
     ],
   },
   {
-    key: "origin",
+    key: "origine",
     label: "Origin",
     options: [
       { value: "Oracle", label: "Oracle" },
@@ -311,21 +436,25 @@ const filters = [
   },
 ];
 
-
-
 export default function AnomaliesPage() {
   const router = useRouter();
+  const [currentPage, setCurrentPage] = useState(1);
 
   // Fetch anomalies from backend
-  const { anomalies, loading: isLoading, error } = useAnomalies();
+  const { data, isLoading, error } = useAnomalies();
+  const anomalies = data?.anomalies || [];
 
   // Add computed criticality filter field to the data
   const processedAnomalies = useMemo(() => {
-    return anomalies.map(anomaly => ({
+    return anomalies.map((anomaly: Anomaly) => ({
       ...anomaly,
-      criticality_filter: getCriticalityFilterValue(anomaly.criticality)
+      criticality_filter: getCriticalityFilterValue(anomaly.Criticite)
     }));
   }, [anomalies]);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
 
   // Loading state
   if (isLoading) {
@@ -399,8 +528,14 @@ export default function AnomaliesPage() {
           filters={filters}
           onRowClick={(anomaly) => router.push(`/dashboard/anomalies/detail?id=${anomaly.id}`)}
           className="w-full"
+          pagination={{
+            currentPage: data?.currentPage || 1,
+            totalPages: data?.totalPages || 1,
+            total: data?.total || 0,
+            onPageChange: handlePageChange,
+          }}
         />
       </div>
     </div>
   );
-} 
+}

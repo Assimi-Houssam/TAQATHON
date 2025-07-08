@@ -37,6 +37,9 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { useAnomalyMutations } from "@/hooks/useAnomalies";
+import { AnomalyFormData, AnomalyOrigin, AnomalySource } from "@/types/anomaly";
+import { toast } from "sonner";
 
 interface FormData {
   // Step 1 - Mandatory
@@ -65,6 +68,7 @@ interface UploadedFile {
   recordsValid?: number;
   recordsInvalid?: number;
   errors?: string[];
+  file?: File; // Store the actual file object
 }
 
 interface PreviewRecord {
@@ -84,12 +88,14 @@ export default function AddAnomaliesPage() {
   const t = useTranslations("sidebar.pages");
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  
+  // React Query mutations
+  const { createAnomaly, batchUpload } = useAnomalyMutations();
 
   // New Anomaly Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Batch Upload State
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
@@ -178,16 +184,34 @@ export default function AddAnomaliesPage() {
   };
 
   const handleSubmit = async () => {
-    setIsSubmitting(true);
-
     try {
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      console.log("Submitting anomaly:", formData);
+      // Validate required fields one more time
+      if (!validateStep1()) {
+        toast.error("Please fill in all required fields.");
+        return;
+      }
+
+      // Map form data to API structure
+      const anomalyData: AnomalyFormData = {
+        num_equipments: formData.equipment,
+        descreption_anomalie: formData.description,
+        date_detection: formData.date_apparition,
+        origine: formData.origin as AnomalyOrigin,
+        process_safty: formData.process_safety.toString(),
+        fiablite_integrite: formData.fiabilite_integrite.toString(),
+        disponsibilite: formData.disponibilite.toString(),
+        comment: formData.code || undefined,
+      };
+
+      await createAnomaly.mutateAsync(anomalyData);
+      
+      toast.success("Anomaly created successfully!");
       setIsModalOpen(false);
       router.push("/dashboard/anomalies");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error submitting anomaly:", error);
-      setIsSubmitting(false);
+      const errorMessage = error?.response?.data?.message || error?.message || "Failed to create anomaly. Please try again.";
+      toast.error(errorMessage);
     }
   };
 
@@ -222,7 +246,8 @@ export default function AddAnomaliesPage() {
         id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
         name: file.name,
         size: file.size,
-        status: 'pending'
+        status: 'pending',
+        file: file // Store the actual file object
       };
 
       setUploadedFiles(prev => [...prev, newFile]);
@@ -261,7 +286,12 @@ export default function AddAnomaliesPage() {
     });
   };
 
-  const handleUpload = () => {
+  const handleUpload = async () => {
+    if (uploadedFiles.length === 0) {
+      toast.error("Please upload at least one file.");
+      return;
+    }
+
     setIsUploading(true);
     setUploadProgress(0);
     setIsRequiredFieldsOpen(false); // Auto-close required fields when upload starts
@@ -271,17 +301,51 @@ export default function AddAnomaliesPage() {
       setBatchCurrentStep(3);
     }
 
-    const interval = setInterval(() => {
-      setUploadProgress(prev => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          setIsUploading(false);
-          setUploadComplete(true);
-          return 100;
+    try {
+      // Upload each file using the batch upload mutation
+      for (let i = 0; i < uploadedFiles.length; i++) {
+        const uploadedFile = uploadedFiles[i];
+        
+        if (!uploadedFile.file) {
+          throw new Error(`File object missing for ${uploadedFile.name}`);
         }
-        return prev + 10;
-      });
-    }, 200);
+        
+        // Upload the file
+        const result = await batchUpload.mutateAsync(uploadedFile.file);
+        
+        // Update progress
+        setUploadProgress(((i + 1) / uploadedFiles.length) * 100);
+        
+        // Update file status
+        setUploadedFiles(prev => prev.map(f =>
+          f.id === uploadedFile.id
+            ? {
+                ...f,
+                status: 'success',
+                recordsTotal: result.success + (result.errors?.length || 0),
+                recordsProcessed: result.success + (result.errors?.length || 0),
+                recordsValid: result.success,
+                recordsInvalid: result.errors?.length || 0,
+                errors: result.errors
+              }
+            : f
+        ));
+      }
+      
+      setUploadComplete(true);
+      setIsUploading(false);
+      
+      const totalSuccess = uploadedFiles.reduce((sum, file) => {
+        return sum + (file.recordsValid || 0);
+      }, 0);
+      
+      toast.success(`Successfully uploaded ${totalSuccess} anomaly records from ${uploadedFiles.length} file(s)`);
+    } catch (error: any) {
+      console.error("Upload error:", error);
+      const errorMessage = error?.response?.data?.message || error?.message || "Failed to upload files. Please try again.";
+      toast.error(errorMessage);
+      setIsUploading(false);
+    }
   };
 
   const handleRemoveFile = (fileId: string) => {
@@ -328,6 +392,7 @@ export default function AddAnomaliesPage() {
     });
     setCurrentStep(1);
     setErrors({});
+    createAnomaly.reset(); // Reset mutation state
   };
 
   const openModal = () => {
@@ -601,6 +666,18 @@ export default function AddAnomaliesPage() {
               <StepIndicator />
 
               <div className="space-y-6">
+                {/* Error Alert */}
+                {createAnomaly.isError && (
+                  <Alert className="border-red-200 bg-red-50">
+                    <AlertTriangle className="h-4 w-4 text-red-600" />
+                    <AlertDescription className="text-red-800">
+                      {(createAnomaly.error as any)?.response?.data?.message || 
+                       (createAnomaly.error as Error)?.message || 
+                       "An error occurred while creating the anomaly."}
+                    </AlertDescription>
+                  </Alert>
+                )}
+
                 {/* Step 1: Mandatory Inputs */}
                 {currentStep === 1 && (
                   <div className="space-y-4">
@@ -680,8 +757,8 @@ export default function AddAnomaliesPage() {
                           <SelectValue placeholder="Select origin system" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="IBM Maximo">IBM Maximo</SelectItem>
-                          <SelectItem value="Oracle">Oracle</SelectItem>
+                          <SelectItem value="MAXIMO">IBM Maximo</SelectItem>
+                          <SelectItem value="ORACLE">Oracle</SelectItem>
                           <SelectItem value="APM">APM</SelectItem>
                           <SelectItem value="EMC">EMC</SelectItem>
                         </SelectContent>
@@ -835,10 +912,10 @@ export default function AddAnomaliesPage() {
                     {currentStep === 4 && (
                       <Button
                         onClick={handleSubmit}
-                        disabled={isSubmitting}
+                        disabled={createAnomaly.isPending}
                         className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700"
                       >
-                        {isSubmitting ? (
+                        {createAnomaly.isPending ? (
                           <>
                             <Loader2 className="w-4 h-4 animate-spin" />
                             Submitting...
