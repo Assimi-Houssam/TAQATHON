@@ -199,6 +199,7 @@ export interface AnomalyFormData {
   section_proprietaire?: string;
   fiablite_integrite?: string;
   fiablite_conf?: string;
+  Criticite?: string;
   disponsibilite?: string;
   disponibilite_conf?: string;
   process_safty?: string;
