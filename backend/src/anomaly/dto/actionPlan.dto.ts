@@ -55,14 +55,6 @@ export class CreateActionPlanDto {
   @IsString()
   @IsOptional()
   status?: string;
-
-  @ApiProperty({
-    description: 'Anomaly ID',
-    example: 'anom_clr123abc456',
-  })
-  @IsString()
-  @IsNotEmpty()
-  anomaly_id: string; // Required when creating action plan
 }
 
 export class UpdateActionPlanDto {

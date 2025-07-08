@@ -83,7 +83,9 @@ export class AnomalyController {
     @Query('limit') limit: number = 10,
     @Query('filter') orderby: string = 'HIGH',
   ) {
-    return await this.anomalyService.getAnomaly(page, limit, orderby);
+     const pageNum = parseInt(page.toString()) || 1;
+      const limitNum = parseInt(limit.toString()) || 10;
+    return await this.anomalyService.getAnomaly(pageNum, limitNum, orderby);
   }
 
   @Get('getAnomalyById/:id')
@@ -115,7 +117,7 @@ export class AnomalyController {
     return await this.anomalyService.createAnomaly(data);
   }
 
-  // with comment
+  // with comment NOT TEsTed
   @ApiOperation({ summary: 'Upload attachment for anomaly' })
   @ApiConsumes('multipart/form-data')
   @ApiParam({ name: 'id', description: 'Anomaly ID', type: 'string' })
@@ -483,7 +485,8 @@ export class AnomalyController {
     status: 400,
     description: 'Invalid request data',
   })
-  @Patch('adding_maintenance_window')
+  
+  @Post('adding_maintenance_window')
   async addingMaintenanceWindow(@Body() data: ForceStopDto) {
     return await this.anomalyService.addingMaintenanceWindow(data);
   }
