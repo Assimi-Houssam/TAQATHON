@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -18,19 +18,18 @@ import {
   X,
   CheckCircle2,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  Loader2
 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
-
-interface ActionPlanItem {
-  id: string;
-  action: string;
-  responsible: string;
-  pdrsAvailable: boolean;
-  internalResources: string;
-  externalResources: string;
-  isDone: boolean;
-}
+import { toast } from "sonner";
+import { 
+  ActionPlanItem, 
+  ActionPlanFormData,
+  ActionPlanStatus,
+  actionPlanToItem
+} from "@/types/action-plan";
+import { useActionPlans, useActionPlanMutations } from "@/hooks/useActionPlans";
 
 interface ActionPlanTableProps {
   title?: string;
@@ -38,10 +37,11 @@ interface ActionPlanTableProps {
   collapsible?: boolean;
   defaultOpen?: boolean;
   className?: string;
+  anomalyId?: string; // For server-side data management
   onAddAction?: () => void;
   onEditAction?: (item: ActionPlanItem) => void;
   onDeleteAction?: (id: string) => void;
-  items?: ActionPlanItem[];
+  items?: ActionPlanItem[]; // For local/fallback data
 }
 
 export function ActionPlanTable({ 
@@ -50,16 +50,35 @@ export function ActionPlanTable({
   collapsible = false,
   defaultOpen = true,
   className = "",
+  anomalyId,
   onAddAction,
   onEditAction,
   onDeleteAction,
   items = []
 }: ActionPlanTableProps) {
-  const [actionPlanItems, setActionPlanItems] = useState<ActionPlanItem[]>(items);
+  // Server-side data management when anomalyId is provided
+  const { 
+    data: actionPlansData, 
+    isLoading: isLoadingActionPlans, 
+    error: actionPlansError 
+  } = useActionPlans({ 
+    anomalyId, 
+    enabled: !!anomalyId 
+  });
+
+  const {
+    createActionPlan,
+    deleteActionPlan,
+    updateActionPlanFromItem,
+    toggleActionPlanStatus
+  } = useActionPlanMutations();
+
+  // Local state management for fallback or when no anomalyId
+  const [localActionPlanItems, setLocalActionPlanItems] = useState<ActionPlanItem[]>(items);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(defaultOpen);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<ActionPlanFormData>({
     action: '',
     responsible: '',
     pdrsAvailable: false,
@@ -67,6 +86,20 @@ export function ActionPlanTable({
     externalResources: '',
     isDone: false
   });
+
+  // Determine which data source to use
+  const actionPlanItems = anomalyId 
+    ? actionPlansData?.actionPlanItems || [] 
+    : localActionPlanItems;
+
+  const isDataLoading = anomalyId ? isLoadingActionPlans : isLoading;
+
+  // Update local items when props change (for local mode)
+  useEffect(() => {
+    if (!anomalyId) {
+      setLocalActionPlanItems(items);
+    }
+  }, [items, anomalyId]);
 
   const getStatusBadge = (isDone: boolean) => {
     return isDone ? (
@@ -91,22 +124,55 @@ export function ActionPlanTable({
     }
   };
 
-  const handleDeleteAction = (id: string) => {
+  const handleDeleteAction = async (id: string) => {
     if (onDeleteAction) {
       onDeleteAction(id);
+      return;
+    }
+
+    if (anomalyId) {
+      // Server-side deletion
+      try {
+        await deleteActionPlan.mutateAsync(id);
+        toast.success('Action deleted successfully');
+      } catch (error) {
+        console.error('Failed to delete action:', error);
+        toast.error('Failed to delete action');
+      }
     } else {
-      setActionPlanItems(prev => prev.filter(item => item.id !== id));
+      // Local deletion
+      setLocalActionPlanItems(prev => prev.filter(item => item.id !== id));
     }
   };
 
-  const handleToggleComplete = (id: string) => {
-    setActionPlanItems(prev => 
-      prev.map(item => 
-        item.id === id 
-          ? { ...item, isDone: !item.isDone }
-          : item
-      )
-    );
+  const handleToggleComplete = async (id: string) => {
+    if (anomalyId) {
+      // Server-side toggle
+      const item = actionPlanItems.find(item => item.id === id);
+      if (!item) return;
+
+      try {
+        const updatedItem = { ...item, isDone: !item.isDone };
+        await updateActionPlanFromItem.mutateAsync({ 
+          id, 
+          item: updatedItem, 
+          anomalyId 
+        });
+        toast.success('Action status updated successfully');
+      } catch (error) {
+        console.error('Failed to update action status:', error);
+        toast.error('Failed to update action status');
+      }
+    } else {
+      // Local toggle
+      setLocalActionPlanItems(prev => 
+        prev.map(item => 
+          item.id === id 
+            ? { ...item, isDone: !item.isDone }
+            : item
+        )
+      );
+    }
   };
 
   const resetForm = () => {
@@ -129,24 +195,34 @@ export function ActionPlanTable({
     e.preventDefault();
     
     if (!formData.action.trim() || !formData.responsible.trim()) {
-      alert('Please fill in the required fields (Action and Responsible).');
+      toast.error('Please fill in the required fields (Action and Responsible).');
       return;
     }
 
     setIsLoading(true);
     
     try {
-      const newItem: ActionPlanItem = {
-        id: `action-${Date.now()}`,
-        action: formData.action.trim(),
-        responsible: formData.responsible.trim(),
-        pdrsAvailable: formData.pdrsAvailable,
-        internalResources: formData.internalResources.trim(),
-        externalResources: formData.externalResources.trim(),
-        isDone: formData.isDone
-      };
+      if (anomalyId) {
+        // Server-side creation
+        await createActionPlan.mutateAsync({
+          anomalyId,
+          data: formData
+        });
+        toast.success('Action plan created successfully');
+      } else {
+        // Local creation
+        const newItem: ActionPlanItem = {
+          id: `action-${Date.now()}`,
+          action: formData.action.trim(),
+          responsible: formData.responsible.trim(),
+          pdrsAvailable: formData.pdrsAvailable || false,
+          internalResources: formData.internalResources?.trim() || '',
+          externalResources: formData.externalResources?.trim() || '',
+          isDone: formData.isDone || false
+        };
 
-      setActionPlanItems(prev => [...prev, newItem]);
+        setLocalActionPlanItems(prev => [...prev, newItem]);
+      }
       
       // Auto-open the collapsible section when adding an action
       if (collapsible && !isOpen) {
@@ -156,13 +232,13 @@ export function ActionPlanTable({
       handleCloseModal();
     } catch (error) {
       console.error('Failed to add action:', error);
-      alert('Failed to add action. Please try again.');
+      toast.error('Failed to add action. Please try again.');
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleFieldChange = (field: keyof typeof formData, value: string | boolean) => {
+  const handleFieldChange = (field: keyof ActionPlanFormData, value: string | boolean) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
@@ -222,7 +298,16 @@ export function ActionPlanTable({
                 </tr>
               </thead>
               <tbody>
-                {actionPlanItems.length === 0 ? (
+                {isDataLoading ? (
+                  <tr>
+                    <td colSpan={7} className="text-center py-12">
+                      <div className="flex flex-col items-center gap-3">
+                        <Loader2 className="h-8 w-8 text-blue-600 animate-spin" />
+                        <p className="text-sm text-gray-500">Loading action plans...</p>
+                      </div>
+                    </td>
+                  </tr>
+                ) : actionPlanItems.length === 0 ? (
                   <tr>
                     <td colSpan={7} className="text-center py-12">
                       <div className="flex flex-col items-center gap-3">
@@ -246,16 +331,16 @@ export function ActionPlanTable({
                 ) : (
                   actionPlanItems.map((item, index) => (
                     <tr key={item.id} className={`border-b border-gray-100 hover:bg-gray-50 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-25'}`}>
-                      <td className="py-3 px-4 text-sm text-gray-900">{item.action}</td>
+                      <td className="py-3 px-4 text-sm text-gray-900">{item.action || '-'}</td>
                       <td className="py-3 px-4 text-sm text-gray-700">
                         <div className="flex items-center gap-2">
                           <User className="h-4 w-4 text-gray-400" />
-                          {item.responsible}
+                          {item.responsible || '-'}
                         </div>
                       </td>
                       <td className="py-3 px-4 text-sm text-gray-700">{item.pdrsAvailable ? "Yes" : "No"}</td>
-                      <td className="py-3 px-4 text-sm text-gray-700">{item.internalResources}</td>
-                      <td className="py-3 px-4 text-sm text-gray-700">{item.externalResources}</td>
+                      <td className="py-3 px-4 text-sm text-gray-700">{item.internalResources || '-'}</td>
+                      <td className="py-3 px-4 text-sm text-gray-700">{item.externalResources || '-'}</td>
                       <td className="py-3 px-4">{getStatusBadge(item.isDone)}</td>
                       <td className="py-3 px-4">
                         <div className="flex items-center gap-2">
@@ -263,12 +348,14 @@ export function ActionPlanTable({
                             checked={item.isDone}
                             onCheckedChange={() => handleToggleComplete(item.id)}
                             className="data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
+                            disabled={isDataLoading}
                           />
                           <Button
                             size="sm"
                             variant="ghost"
                             className="h-8 w-8 p-0 hover:bg-red-50 hover:text-red-600"
                             onClick={() => handleDeleteAction(item.id)}
+                            disabled={isDataLoading}
                           >
                             <Trash2 className="h-3 w-3" />
                           </Button>

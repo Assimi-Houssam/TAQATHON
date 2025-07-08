@@ -329,6 +329,7 @@ export function NewTabContent({ anomaly, onUpdate, onStatusChange }: NewTabConte
 
       {/* Action Plan */}
       <ActionPlanTable 
+        anomalyId={anomaly.id}
         showHeader={true} 
         collapsible={true} 
         defaultOpen={false} 

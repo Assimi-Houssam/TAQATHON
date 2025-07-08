@@ -13,7 +13,7 @@ interface InProgressTabContentProps {
 export function InProgressTabContent({ anomaly, onUpdate, onStatusChange }: InProgressTabContentProps) {
   return (
     <div className="space-y-6">
-      <ActionPlanTable />
+      <ActionPlanTable anomalyId={anomaly.id} />
     </div>
   );
 } 
