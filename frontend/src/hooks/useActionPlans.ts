@@ -27,7 +27,7 @@ export function useActionPlans(options: UseActionPlansOptions = {}) {
     queryKey: ["action-plans", anomalyId],
     queryFn: async () => {
       const url = anomalyId 
-        ? `/anomaly/${anomalyId}/action-plans` 
+        ? `/anomaly/action_plans/${anomalyId}` 
         : '/action-plans';
       
       const { data } = await apiClient.get<ActionPlansResponse>(url);
@@ -250,7 +250,7 @@ export function useActionPlanStats(anomalyId?: string, enabled: boolean = true) 
     queryKey: ["action-plan-stats", anomalyId],
     queryFn: async () => {
       const url = anomalyId 
-        ? `/anomaly/${anomalyId}/action-plans/stats` 
+        ? `/anomaly/action_plans/${anomalyId}/stats` 
         : '/action-plans/stats';
       
       const { data } = await apiClient.get<{
