@@ -643,6 +643,7 @@ export class AnomalyService {
       message: 'Action plan deleted successfully',
     };
   }
+  
 }
 
 //  when status is traite with  attach with -> the action plan  chanfe to traite and attach it to a maintenance window

@@ -70,13 +70,8 @@ export class MlApiService {
       // Save the anomaly data to the database
       const anomaly = await this.Prisma.anomaly.create({
         data: {
-          num_equipments: data.num_equipments,
-          systeme: data.systeme,
-          descreption_anomalie: data.descreption_anomalie,
+          ...data,
           date_detection: new Date(data.date_detection),
-          descreption_equipment: data.descreption_equipment,
-          section_proprietaire: data.section_proprietaire,
-          fiablite_integrite: data.fiablite_integrite,
         },
       });
       return { message: 'Anomaly processed successfully', anomaly };
