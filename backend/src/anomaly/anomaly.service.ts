@@ -301,7 +301,7 @@ export class AnomalyService {
         date_traitement: new Date(),
       },
     });
-    if (!anomaly.required_stoping && anomaly.duree_intervention !== '0') {
+    if (!anomaly.required_stoping && anomaly.duree_intervention !== '0' && anomaly.required_stoping !== false) {
       const maintenanceWindow = await this.anomalyToMaintenanceWindow(id);
       if (!maintenanceWindow.success) {
         throw new Error(`Failed to attach anomaly to maintenance window`);
@@ -596,27 +596,34 @@ export class AnomalyService {
 
 
   
-  // async updateActionPlan(id: string, body: UpdateActionPlanDto){
-  //   const actionplan = await this.Prisma.action_plan.findUnique({
-  //     where: { id: id },
-  //   });
-  //   if (!actionplan) {
-  //     throw new Error('Action plan not found');
-  //   }
-    
-  //   const updatedActionPlan = await this.Prisma.action_plan.update({
-  //     where: { id: id },
-  //     data: {
-  //       ...body,
-  //     },
-  //   });
-  //   return {
-  //     success: true,
-  //     message: 'Action plan updated successfully',
-  //     data: updatedActionPlan,
-  //   };
-
-  // }
+  async updateActionPlan(id: string){
+    const actionplan = await this.Prisma.action_plan.findUnique({
+      where: { id: id },
+    });
+    if (!actionplan) {
+      throw new Error('Action plan not found');
+    }
+    let status ;
+    if (actionplan.status === 'NOT_COMPLETED') {
+      status = 'COMPLETED';
+    } else if (actionplan.status === 'COMPLETED') {
+      status = 'NOT_COMPLETED';
+    }else
+    {
+      throw new Error('Action plan status is not valid for update');
+    }
+    const updatedActionPlan = await this.Prisma.action_plan.update({
+      where: { id: id },
+        data : {
+            status: status
+        }
+    });
+    return {
+      success: true,
+      message: 'Action plan updated successfully',
+      data: updatedActionPlan,
+    };
+  }
 
 }
 
