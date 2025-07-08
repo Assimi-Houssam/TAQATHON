@@ -128,7 +128,7 @@ export class CreateAnomalieDto {
   })
   @IsString()
   @IsOptional()
-  Criticite?: string;
+  criticite?: string;
 
   @ApiPropertyOptional({
     description: 'Anomaly status',
@@ -300,7 +300,7 @@ export class UpdateAnomalieDto {
   @ApiPropertyOptional({ description: 'Criticality level', example: 'High' })
   @IsString()
   @IsOptional()
-  Criticite?: string;
+  criticite?: string;
 
   @ApiPropertyOptional({
     description: 'Anomaly status',
