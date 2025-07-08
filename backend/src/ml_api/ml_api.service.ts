@@ -8,16 +8,17 @@ import { PrismaService } from 'src/prisma.service';
 
 @Injectable()
 export class MlApiService {
-  constructor(private readonly Prisma : PrismaService) {}
+  constructor(private readonly Prisma: PrismaService) {}
 
   async sendPriorityRequest(data: PrioritySuggestionDto) {
+    
     try {
-      const response = await axios.post('http://fastapi:4000', data, {
-        headers: {
-          'Content-Type': 'multipart/form-data/json',
-        },
-        timeout: 10000, // 10 seconds timeout
-      });
+      const response = await axios.post(
+        'http://localhost:8000/predict',
+        data, // pass the object directly
+        { headers: { 'Content-Type': 'application/json' }, timeout: 10000 }
+      );
+      
 
       return response.data;
     } catch (error) {
@@ -79,7 +80,5 @@ export class MlApiService {
       console.error('Error processing FastAPI response:', error.message);
       throw new Error(`Error processing FastAPI response: ${error.message}`);
     }
-
   }
-  
 }
