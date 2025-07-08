@@ -1,4 +1,6 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, UploadFile, File
+from openpyxl import load_workbook
+import io
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import torch
@@ -207,6 +209,98 @@ async def batch_predict(texts: list[str]):
     except Exception as e:
         logger.error(f"Unexpected error in batch prediction: {str(e)}")
         raise HTTPException(status_code=500, detail="Internal server error")
+
+@app.post("/predict_excel")
+async def predict_excel(file: UploadFile = File(...)):
+    """
+    Upload Excel file and get predictions for all descriptions
+    
+    Expected Excel columns:
+    - Num_equipement
+    - Systeme  
+    - Description
+    - Date de détéction de l'anomalie
+    - Description de l'équipement
+    - Section propriétaire
+    """
+    # Validate file type
+    if not file.filename.endswith(('.xlsx', '.xls')):
+        raise HTTPException(status_code=400, detail="File must be Excel format (.xlsx or .xls)")
+    
+    # Required columns
+    required_columns = [
+        "Num_equipement",
+        "Systeme", 
+        "Description",
+        "Date de détéction de l'anomalie",
+        "Description de l'équipement",
+        "Section propriétaire"
+    ]
+    
+    try:
+        # Read Excel file
+        contents = await file.read()
+        workbook = load_workbook(io.BytesIO(contents))
+        sheet = workbook.active
+        
+        # Get headers from first row
+        headers = [cell.value for cell in sheet[1]]
+        print(f"Headers found: {headers}")
+        
+        # Check if all required columns exist
+        missing_columns = []
+        column_indices = {}
+        
+        for required_col in required_columns:
+            try:
+                column_indices[required_col] = headers.index(required_col)
+            except ValueError:
+                missing_columns.append(required_col)
+        
+        if missing_columns:
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Excel file must contain these columns: {', '.join(missing_columns)}"
+            )
+        
+        # Process each row
+        results = []
+        for row_idx, row in enumerate(sheet.iter_rows(min_row=2, values_only=True), start=2):
+            description = row[column_indices["Description"]]
+            
+            if description:  # If description exists
+                description = str(description).strip()
+                
+                if description:
+                    # Get prediction
+                    predictions = predict_text(description)
+                    
+                    # Create row data with required fields
+                    row_data = {
+                        'Num_equipement': row[column_indices["Num_equipement"]],
+                        'Systeme': row[column_indices["Systeme"]],
+                        'Description': row[column_indices["Description"]],
+                        'Date de détéction de l\'anomalie': row[column_indices["Date de détéction de l'anomalie"]],
+                        'Description de l\'équipement': row[column_indices["Description de l'équipement"]],
+                        'Section propriétaire': row[column_indices["Section propriétaire"]],
+                        'Fiabilité Intégrité': predictions['fiabilite_integrite'],
+                        'Disponibilité': predictions['disponibilite'], 
+                        'Process Safety': predictions['process_safety'],
+                        'Criticité': predictions['criticite']
+                    }
+                    results.append(row_data)
+            
+            if row_idx % 100 == 0:
+                break
+        
+        return {
+            "results": results
+        }
+        
+    except Exception as e:
+        logger.error(f"Error processing Excel file: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to process Excel file: {str(e)}")
+    
 
 if __name__ == "__main__":
     uvicorn.run(
