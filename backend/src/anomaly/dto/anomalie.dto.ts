@@ -146,7 +146,7 @@ export class CreateAnomalieDto {
   })
   @IsEnum(['MC', 'MM', 'MD', 'CT', 'EL'])
   @IsOptional()
-  source?: 'MC' | 'MM' | 'MD' | 'CT' | 'EL';
+  section?: 'MC' | 'MM' | 'MD' | 'CT' | 'EL';
 
   @ApiPropertyOptional({
     description: 'Additional comments',
@@ -342,7 +342,7 @@ export class UpdateAnomalieDto {
   })
   @IsEnum(['MC', 'MM', 'MD', 'CT', 'EL'])
   @IsOptional()
-  source?: 'MC' | 'MM' | 'MD' | 'CT' | 'EL';
+  section?: 'MC' | 'MM' | 'MD' | 'CT' | 'EL';
 
   @ApiPropertyOptional({
     description: 'Resolution date',
