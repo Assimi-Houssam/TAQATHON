@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import {
   Table,
   TableBody,
@@ -66,6 +66,61 @@ export function DataTable<T extends Record<string, any>>({
     defaultColumnVisibility = config.defaultColumnVisibility ?? {},
     defaultSort = config.defaultSort,
   } = config;
+
+  // Loading delay state management
+  const [showLoading, setShowLoading] = useState(false);
+  const [canShowResult, setCanShowResult] = useState(false);
+  const loadingStartTimeRef = useRef<number | null>(null);
+  const loadingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Minimum loading display duration (in milliseconds)
+  const MIN_LOADING_DURATION = 1500;
+
+  // Handle loading state transitions with delay
+  useEffect(() => {
+    if (loading) {
+      // Start loading
+      setShowLoading(true);
+      setCanShowResult(false);
+      loadingStartTimeRef.current = Date.now();
+      
+      // Clear any existing timeout
+      if (loadingTimeoutRef.current) {
+        clearTimeout(loadingTimeoutRef.current);
+      }
+    } else {
+      // Loading finished - check if minimum duration has passed
+      if (loadingStartTimeRef.current) {
+        const elapsedTime = Date.now() - loadingStartTimeRef.current;
+        const remainingTime = Math.max(0, MIN_LOADING_DURATION - elapsedTime);
+        
+        if (remainingTime > 0) {
+          // Still need to wait - set timeout for remaining time
+          loadingTimeoutRef.current = setTimeout(() => {
+            setShowLoading(false);
+            setCanShowResult(true);
+            loadingStartTimeRef.current = null;
+          }, remainingTime);
+        } else {
+          // Minimum duration already passed
+          setShowLoading(false);
+          setCanShowResult(true);
+          loadingStartTimeRef.current = null;
+        }
+      } else {
+        // No loading start time recorded (shouldn't happen, but handle gracefully)
+        setShowLoading(false);
+        setCanShowResult(true);
+      }
+    }
+
+    // Cleanup timeout on unmount or dependency change
+    return () => {
+      if (loadingTimeoutRef.current) {
+        clearTimeout(loadingTimeoutRef.current);
+      }
+    };
+  }, [loading]);
 
   // Internal state
   const [searchTerm, setSearchTerm] = useState("");
@@ -222,19 +277,27 @@ export function DataTable<T extends Record<string, any>>({
     }
   };
 
-  // Render loading state
-  if (loading) {
+  // Render loading state (with delay)
+  if (showLoading) {
     return <TableLoading columns={columns.length} />;
   }
 
-  // Render error state
-  if (error) {
-    return <TableError message={error.message || 'An error occurred'} />;
+  // Only show error/empty states after loading delay has completed
+  if (canShowResult) {
+    // Render error state
+    if (error) {
+      return <TableError message={error.message || 'An error occurred'} />;
+    }
+
+    // Render empty state
+    if (data.length === 0) {
+      return <TableEmpty />;
+    }
   }
 
-  // Render empty state
-  if (data.length === 0) {
-    return <TableEmpty />;
+  // If we're transitioning (not loading but not ready to show result), show loading
+  if (!showLoading && !canShowResult) {
+    return <TableLoading columns={columns.length} />;
   }
 
   return (
@@ -372,15 +435,15 @@ export function DataTable<T extends Record<string, any>>({
       <div className="bg-white rounded-lg border border-zinc-200 shadow-sm">
         <Table>
           <TableHeader>
-            <TableRow>
+            <TableRow className="h-12">
               {visibleColumns.map((column, index) => (
                 <TableHead 
                   key={column.id}
-                  className={`${column.enableSorting ? 'cursor-pointer hover:bg-muted/50' : ''}`}
+                  className={`${column.enableSorting ? 'cursor-pointer hover:bg-muted/50' : ''} whitespace-nowrap`}
                   onClick={() => column.enableSorting && handleSort(column.id)}
                   style={{ width: column.size ? `${column.size}px` : undefined }}
                 >
-                  <div className="flex items-center gap-2 justify-start">
+                  <div className="flex items-center gap-2 justify-start whitespace-nowrap">
                     {column.header}
                     {enableSorting && sortConfig?.key === column.id && (
                       <span className="text-xs">
@@ -394,9 +457,9 @@ export function DataTable<T extends Record<string, any>>({
           </TableHeader>
           <TableBody>
             {paginatedData.length === 0 ? (
-              <TableRow>
+              <TableRow className="h-14">
                 <TableCell colSpan={visibleColumns.length} className="text-center py-8">
-                  <div className="text-muted-foreground">
+                  <div className="text-muted-foreground whitespace-nowrap">
                     {searchTerm || Object.keys(activeFilters).length > 0 
                       ? "No results found. Try adjusting your search or filters."
                       : "No data available."
@@ -412,15 +475,21 @@ export function DataTable<T extends Record<string, any>>({
                 return (
                   <TableRow 
                     key={isFakeRow ? `fake-row-${index}` : `row-${index}`}
-                    className={`${!isFakeRow && onRowClick ? "cursor-pointer hover:bg-muted/50" : ""} ${!isFakeRow && rowClassName ? rowClassName(row as T) : ""} ${isFakeRow ? "opacity-30 pointer-events-none" : ""}`}
+                    className={`h-14 ${!isFakeRow && onRowClick ? "cursor-pointer hover:bg-muted/50" : ""} ${!isFakeRow && rowClassName ? rowClassName(row as T) : ""} ${isFakeRow ? "opacity-30 pointer-events-none" : ""}`}
                     onClick={() => !isFakeRow && onRowClick?.(row as T)}
                   >
                     {visibleColumns.map((column) => (
-                      <TableCell key={`${index}-${column.id}`}>
+                      <TableCell 
+                        key={`${index}-${column.id}`}
+                        className="whitespace-nowrap overflow-hidden"
+                        style={{ 
+                          maxWidth: column.size ? `${column.size}px` : 'auto',
+                        }}
+                      >
                         {column.cell ? (
                           column.cell({ row: { original: row as T } })
                         ) : (
-                          <div>
+                          <div className="whitespace-nowrap truncate">
                             {column.accessorKey ? String((row as T)[column.accessorKey]) : ''}
                           </div>
                         )}

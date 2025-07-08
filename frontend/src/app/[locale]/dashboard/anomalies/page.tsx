@@ -63,7 +63,7 @@ const columns: Column<Anomaly>[] = [
       
       if (isFakeRow) {
         return (
-          <div className="font-mono text-sm font-medium text-zinc-400">
+          <div className="font-mono text-sm font-medium text-zinc-400 whitespace-nowrap">
             -
           </div>
         );
@@ -72,7 +72,7 @@ const columns: Column<Anomaly>[] = [
       const value = row.original.num_equipments;
       
       return (
-        <div className="font-mono text-sm font-medium text-zinc-900">
+        <div className="font-mono text-sm font-medium text-zinc-900 whitespace-nowrap truncate max-w-[100px]" title={value || ""}>
           {value || "-"}
         </div>
       );
@@ -90,7 +90,7 @@ const columns: Column<Anomaly>[] = [
       
       if (isFakeRow) {
         return (
-          <div className="text-zinc-400">
+          <div className="text-zinc-400 whitespace-nowrap">
             -
           </div>
         );
@@ -99,10 +99,8 @@ const columns: Column<Anomaly>[] = [
       const value = row.original.systeme;
       
       return (
-        <div className="max-w-[200px]">
-          <div className="font-medium text-zinc-900 truncate" title={value || ""}>
-            {value || "-"}
-          </div>
+        <div className="font-medium text-zinc-900 whitespace-nowrap truncate max-w-[180px]" title={value || ""}>
+          {value || "-"}
         </div>
       );
     },
@@ -119,7 +117,7 @@ const columns: Column<Anomaly>[] = [
       
       if (isFakeRow) {
         return (
-          <div className="text-zinc-400">
+          <div className="text-zinc-400 whitespace-nowrap">
             -
           </div>
         );
@@ -128,10 +126,8 @@ const columns: Column<Anomaly>[] = [
       const value = row.original.descreption_anomalie;
       
       return (
-        <div className="max-w-[300px]">
-          <div className="text-sm text-zinc-600 truncate" title={value || ""}>
-            {value || "-"}
-          </div>
+        <div className="text-sm text-zinc-600 whitespace-nowrap truncate max-w-[280px]" title={value || ""}>
+          {value || "-"}
         </div>
       );
     },
@@ -148,7 +144,7 @@ const columns: Column<Anomaly>[] = [
       
       if (isFakeRow) {
         return (
-          <div className="text-zinc-400">
+          <div className="text-zinc-400 whitespace-nowrap">
             -
           </div>
         );
@@ -157,9 +153,9 @@ const columns: Column<Anomaly>[] = [
       const value = row.original.process_safty;
       
       return (
-        <div className="flex items-center">
+        <div className="flex items-center whitespace-nowrap">
           <div 
-            className="w-8 h-8 rounded-lg flex items-center justify-center"
+            className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
             style={{ backgroundColor: value ? getRedOpacity(value) : 'transparent' }}
           >
             <span className="text-sm font-medium text-zinc-900">
@@ -182,7 +178,7 @@ const columns: Column<Anomaly>[] = [
       
       if (isFakeRow) {
         return (
-          <div className="text-zinc-400">
+          <div className="text-zinc-400 whitespace-nowrap">
             -
           </div>
         );
@@ -191,9 +187,9 @@ const columns: Column<Anomaly>[] = [
       const value = row.original.fiablite_integrite;
       
       return (
-        <div className="flex items-center">
+        <div className="flex items-center whitespace-nowrap">
           <div 
-            className="w-8 h-8 rounded-lg flex items-center justify-center"
+            className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
             style={{ backgroundColor: value ? getRedOpacity(value) : 'transparent' }}
           >
             <span className="text-sm font-medium text-zinc-900">
@@ -216,7 +212,7 @@ const columns: Column<Anomaly>[] = [
       
       if (isFakeRow) {
         return (
-          <div className="text-zinc-400">
+          <div className="text-zinc-400 whitespace-nowrap">
             -
           </div>
         );
@@ -225,9 +221,9 @@ const columns: Column<Anomaly>[] = [
       const value = row.original.disponsibilite;
       
       return (
-        <div className="flex items-center">
+        <div className="flex items-center whitespace-nowrap">
           <div 
-            className="w-8 h-8 rounded-lg flex items-center justify-center"
+            className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
             style={{ backgroundColor: value ? getRedOpacity(value) : 'transparent' }}
           >
             <span className="text-sm font-medium text-zinc-900">
@@ -251,7 +247,7 @@ const columns: Column<Anomaly>[] = [
       
       if (isFakeRow) {
         return (
-          <div className="flex items-center">
+          <div className="flex items-center whitespace-nowrap">
             <span className="text-zinc-400">-</span>
           </div>
         );
@@ -261,14 +257,14 @@ const columns: Column<Anomaly>[] = [
       
       if (!value) {
         return (
-          <div className="flex items-center">
+          <div className="flex items-center whitespace-nowrap">
             <span className="text-zinc-400">-</span>
           </div>
         );
       }
       
       return (
-        <div className="flex items-center">
+        <div className="flex items-center whitespace-nowrap">
           <AnomalyCriticalityIndicator 
             criticality={parseFloat(value) || 0}
             variant="badge"
@@ -289,7 +285,7 @@ const columns: Column<Anomaly>[] = [
       
       if (isFakeRow) {
         return (
-          <div className="text-zinc-400">
+          <div className="text-zinc-400 whitespace-nowrap">
             -
           </div>
         );
@@ -299,14 +295,14 @@ const columns: Column<Anomaly>[] = [
       
       if (!value) {
         return (
-          <div className="text-zinc-400">
+          <div className="text-zinc-400 whitespace-nowrap">
             -
           </div>
         );
       }
       
       return (
-        <div>
+        <div className="whitespace-nowrap">
           <AnomalyStatusComponent 
             status={value}
           />
@@ -326,7 +322,7 @@ const columns: Column<Anomaly>[] = [
       
       if (isFakeRow) {
         return (
-          <div className="text-zinc-400">
+          <div className="text-zinc-400 whitespace-nowrap">
             -
           </div>
         );
@@ -335,7 +331,7 @@ const columns: Column<Anomaly>[] = [
       const value = row.original.date_detection;
       
       return (
-        <div className="text-sm text-zinc-600">
+        <div className="text-sm text-zinc-600 whitespace-nowrap">
           {value ? new Date(value).toLocaleDateString('en-US', {
             year: 'numeric',
             month: 'short',
@@ -357,7 +353,7 @@ const columns: Column<Anomaly>[] = [
       
       if (isFakeRow) {
         return (
-          <div className="text-zinc-400">
+          <div className="text-zinc-400 whitespace-nowrap">
             -
           </div>
         );
@@ -366,7 +362,7 @@ const columns: Column<Anomaly>[] = [
       const value = row.original.origine;
       
       return (
-        <div className="text-sm text-zinc-600">
+        <div className="text-sm text-zinc-600 whitespace-nowrap truncate max-w-[130px]" title={value || ""}>
           {value || "-"}
         </div>
       );
@@ -384,9 +380,9 @@ const columns: Column<Anomaly>[] = [
       
       if (isFakeRow) {
         return (
-          <div className="flex items-center justify-end">
+          <div className="flex items-center justify-end whitespace-nowrap">
             <div 
-              className="w-1 h-8 rounded-full bg-zinc-400"
+              className="w-1 h-8 rounded-full bg-zinc-400 flex-shrink-0"
               title="Empty row"
             />
           </div>
@@ -394,9 +390,9 @@ const columns: Column<Anomaly>[] = [
       }
       
       return (
-        <div className="flex items-center justify-end">
+        <div className="flex items-center justify-end whitespace-nowrap">
           <div 
-            className={`w-1 h-8 rounded-full ${getCriticalityIndicatorColor(row.original.Criticite)}`}
+            className={`w-1 h-8 rounded-full flex-shrink-0 ${getCriticalityIndicatorColor(row.original.Criticite)}`}
             title={getCriticalityLevel(row.original.Criticite)}
           />
         </div>

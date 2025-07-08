@@ -1,30 +1,18 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from "@/components/ui/select";
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
 import {
   ArrowLeft,
-  ArrowRight,
   Send,
   Upload,
   CheckCircle,
   Loader2,
-  Star,
   Plus,
   X,
   Download,
@@ -32,31 +20,15 @@ import {
   AlertTriangle,
   AlertCircle,
   Info,
-  FileSpreadsheet,
-  ChevronDown
+  FileSpreadsheet
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useAnomalyMutations } from "@/hooks/useAnomalies";
-import { AnomalyFormData, AnomalyOrigin, AnomalySource } from "@/types/anomaly";
 import { toast } from "sonner";
+import NewAnomalyModal from "@/components/anomaly/NewAnomalyModal";
 
-interface FormData {
-  // Step 1 - Mandatory
-  equipment: string;
-  description: string;
-  date_apparition: string;
-  origin: string;
 
-  // Step 2 - Secondary
-  code: string;
-  file?: File;
-
-  // Step 4 - AI Generated
-  process_safety: number;
-  fiabilite_integrite: number;
-  disponibilite: number;
-}
 
 interface UploadedFile {
   id: string;
@@ -90,12 +62,10 @@ export default function AddAnomaliesPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   // React Query mutations
-  const { createAnomaly, batchUpload } = useAnomalyMutations();
+  const { batchUpload } = useAnomalyMutations();
 
   // New Anomaly Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [currentStep, setCurrentStep] = useState(1);
-  const [isLoading, setIsLoading] = useState(false);
 
   // Batch Upload State
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
@@ -110,122 +80,8 @@ export default function AddAnomaliesPage() {
   const [isBatchModalOpen, setIsBatchModalOpen] = useState(false);
   const [batchCurrentStep, setBatchCurrentStep] = useState(1);
 
-  const [formData, setFormData] = useState<FormData>({
-    equipment: "",
-    description: "",
-    date_apparition: "",
-    origin: "",
-    code: "",
-    process_safety: 0,
-    fiabilite_integrite: 0,
-    disponibilite: 0,
-  });
-
-  const [errors, setErrors] = useState<Record<string, string>>({});
-
   // TODO: Replace with API call to process uploaded files and return preview data
   // const { data: previewData, error: previewError } = useProcessUploadedFile(uploadedFile);
-
-  const handleInputChange = (field: keyof FormData, value: string | number | File) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-    if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: "" }));
-    }
-  };
-
-  const validateStep1 = () => {
-    const newErrors: Record<string, string> = {};
-
-    if (!formData.equipment.trim()) {
-      newErrors.equipment = "Equipment name is required";
-    }
-    if (!formData.description.trim()) {
-      newErrors.description = "Description is required";
-    }
-    if (!formData.date_apparition) {
-      newErrors.date_apparition = "Date of apparition is required";
-    }
-    if (!formData.origin) {
-      newErrors.origin = "Origin is required";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleNext = () => {
-    if (currentStep === 1 && !validateStep1()) {
-      return;
-    }
-
-    if (currentStep === 2) {
-      setCurrentStep(3);
-      setIsLoading(true);
-
-      setTimeout(() => {
-        setFormData(prev => ({
-          ...prev,
-          process_safety: Math.floor(Math.random() * 5) + 1,
-          fiabilite_integrite: Math.floor(Math.random() * 5) + 1,
-          disponibilite: Math.floor(Math.random() * 5) + 1,
-        }));
-        setIsLoading(false);
-        setCurrentStep(4);
-      }, 4500);
-    } else if (currentStep < 4) {
-      setCurrentStep(currentStep + 1);
-    }
-  };
-
-  const handlePrevious = () => {
-    if (currentStep > 1 && currentStep !== 3) {
-      setCurrentStep(currentStep - 1);
-    }
-  };
-
-  const handleSubmit = async () => {
-    try {
-      // Validate required fields one more time
-      if (!validateStep1()) {
-        toast.error("Please fill in all required fields.");
-        return;
-      }
-
-      // Map form data to API structure
-      const anomalyData: AnomalyFormData = {
-        num_equipments: formData.equipment,
-        descreption_anomalie: formData.description,
-        date_detection: formData.date_apparition,
-        origine: formData.origin as AnomalyOrigin,
-        process_safty: formData.process_safety.toString(),
-        fiablite_integrite: formData.fiabilite_integrite.toString(),
-        disponsibilite: formData.disponibilite.toString(),
-        comment: formData.code || undefined,
-      };
-
-      await createAnomaly.mutateAsync(anomalyData);
-      
-      toast.success("Anomaly created successfully!");
-      setIsModalOpen(false);
-      router.push("/dashboard/anomalies");
-    } catch (error: any) {
-      console.error("Error submitting anomaly:", error);
-      const errorMessage = error?.response?.data?.message || error?.message || "Failed to create anomaly. Please try again.";
-      toast.error(errorMessage);
-    }
-  };
-
-  const handleModalFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const validTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/jpg'];
-      if (validTypes.includes(file.type)) {
-        handleInputChange('file', file);
-      } else {
-        alert('Please upload a valid file format (.pdf, .jpg, .png)');
-      }
-    }
-  };
 
   // Batch Upload Functions
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -379,30 +235,16 @@ export default function AddAnomaliesPage() {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
-  const resetForm = () => {
-    setFormData({
-      equipment: "",
-      description: "",
-      date_apparition: "",
-      origin: "",
-      code: "",
-      process_safety: 0,
-      fiabilite_integrite: 0,
-      disponibilite: 0,
-    });
-    setCurrentStep(1);
-    setErrors({});
-    createAnomaly.reset(); // Reset mutation state
-  };
-
   const openModal = () => {
-    resetForm();
     setIsModalOpen(true);
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
-    resetForm();
+  };
+
+  const handleModalSuccess = () => {
+    router.push("/dashboard/anomalies");
   };
 
   const openBatchModal = () => {
@@ -440,32 +282,7 @@ export default function AddAnomaliesPage() {
     }
   };
 
-  const StepIndicator = () => (
-    <div className="flex items-center justify-center mb-6">
-      {[1, 2, 3, 4].map((step) => (
-        <div key={step} className="flex items-center">
-          <div
-            className={cn(
-              "w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-all duration-300",
-              step <= currentStep
-                ? "bg-blue-600 text-white shadow-lg"
-                : "bg-gray-200 text-gray-500"
-            )}
-          >
-            {step < currentStep ? <CheckCircle className="w-4 h-4" /> : step}
-          </div>
-          {step < 4 && (
-            <div
-              className={cn(
-                "w-12 h-0.5 mx-2 transition-all duration-300",
-                step < currentStep ? "bg-blue-600" : "bg-gray-200"
-              )}
-            />
-          )}
-        </div>
-      ))}
-    </div>
-  );
+
 
   const BatchStepIndicator = () => (
     <div className="flex items-center justify-center mb-8">
@@ -510,23 +327,7 @@ export default function AddAnomaliesPage() {
     </div>
   );
 
-  const RatingDisplay = ({ value, label }: { value: number; label: string }) => (
-    <div className="space-y-2">
-      <Label className="text-sm font-medium text-gray-700">{label}</Label>
-      <div className="flex items-center gap-1">
-        {[1, 2, 3, 4, 5].map((star) => (
-          <Star
-            key={star}
-            className={cn(
-              "w-5 h-5 transition-all duration-200",
-              star <= value ? "text-yellow-400 fill-current" : "text-gray-300"
-            )}
-          />
-        ))}
-        <span className="ml-2 text-sm font-medium text-gray-600">({value}/5)</span>
-      </div>
-    </div>
-  );
+
 
   const validRecords = previewRecords.filter(r => r.status === 'valid');
   const invalidRecords = previewRecords.filter(r => r.status === 'invalid');
@@ -637,304 +438,11 @@ export default function AddAnomaliesPage() {
       </div>
 
       {/* Individual Anomaly Modal */}
-      {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div
-            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-            onClick={closeModal}
-          />
-
-          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-300">
-            <div className="sticky top-0 bg-white border-b border-gray-200 rounded-t-2xl p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h2 className="text-2xl font-bold text-gray-900">New Anomaly Report</h2>
-                  <p className="text-sm text-gray-600 mt-1">Complete the form to submit your anomaly report</p>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={closeModal}
-                  className="h-8 w-8 p-0 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full"
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-
-            <div className="p-6">
-              <StepIndicator />
-
-              <div className="space-y-6">
-                {/* Error Alert */}
-                {createAnomaly.isError && (
-                  <Alert className="border-red-200 bg-red-50">
-                    <AlertTriangle className="h-4 w-4 text-red-600" />
-                    <AlertDescription className="text-red-800">
-                      {(createAnomaly.error as any)?.response?.data?.message || 
-                       (createAnomaly.error as Error)?.message || 
-                       "An error occurred while creating the anomaly."}
-                    </AlertDescription>
-                  </Alert>
-                )}
-
-                {/* Step 1: Mandatory Inputs */}
-                {currentStep === 1 && (
-                  <div className="space-y-4">
-                    <div className="text-center mb-6">
-                      <h3 className="text-lg font-semibold text-gray-900 mb-2">Mandatory Information</h3>
-                      <p className="text-sm text-gray-600">Please provide the required details about the anomaly</p>
-                    </div>
-
-                    <div>
-                      <Label htmlFor="equipment" className="text-sm font-medium text-gray-700">
-                        Equipment Name *
-                      </Label>
-                      <Input
-                        id="equipment"
-                        type="text"
-                        placeholder="Enter equipment name"
-                        value={formData.equipment}
-                        onChange={(e) => handleInputChange('equipment', e.target.value)}
-                        className={cn(
-                          "mt-1",
-                          errors.equipment && "border-red-500"
-                        )}
-                      />
-                      {errors.equipment && (
-                        <p className="text-red-500 text-xs mt-1">{errors.equipment}</p>
-                      )}
-                    </div>
-
-                    <div>
-                      <Label htmlFor="description" className="text-sm font-medium text-gray-700">
-                        Description *
-                      </Label>
-                      <Textarea
-                        id="description"
-                        placeholder="Describe the anomaly in detail..."
-                        value={formData.description}
-                        onChange={(e) => handleInputChange('description', e.target.value)}
-                        rows={4}
-                        className={cn(
-                          "mt-1",
-                          errors.description && "border-red-500"
-                        )}
-                      />
-                      {errors.description && (
-                        <p className="text-red-500 text-xs mt-1">{errors.description}</p>
-                      )}
-                    </div>
-
-                    <div>
-                      <Label htmlFor="date_apparition" className="text-sm font-medium text-gray-700">
-                        Date of Apparition *
-                      </Label>
-                      <Input
-                        id="date_apparition"
-                        type="date"
-                        value={formData.date_apparition}
-                        onChange={(e) => handleInputChange('date_apparition', e.target.value)}
-                        className={cn(
-                          "mt-1",
-                          errors.date_apparition && "border-red-500"
-                        )}
-                      />
-                      {errors.date_apparition && (
-                        <p className="text-red-500 text-xs mt-1">{errors.date_apparition}</p>
-                      )}
-                    </div>
-
-                    <div>
-                      <Label htmlFor="origin" className="text-sm font-medium text-gray-700">
-                        Origin *
-                      </Label>
-                      <Select value={formData.origin} onValueChange={(value) => handleInputChange('origin', value)}>
-                        <SelectTrigger className={cn(
-                          "mt-1",
-                          errors.origin && "border-red-500"
-                        )}>
-                          <SelectValue placeholder="Select origin system" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="MAXIMO">IBM Maximo</SelectItem>
-                          <SelectItem value="ORACLE">Oracle</SelectItem>
-                          <SelectItem value="APM">APM</SelectItem>
-                          <SelectItem value="EMC">EMC</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      {errors.origin && (
-                        <p className="text-red-500 text-xs mt-1">{errors.origin}</p>
-                      )}
-                    </div>
-                  </div>
-                )}
-
-                {/* Step 2: Secondary Input */}
-                {currentStep === 2 && (
-                  <div className="space-y-4">
-                    <div className="text-center mb-6">
-                      <h3 className="text-lg font-semibold text-gray-900 mb-2">Additional Details</h3>
-                      <p className="text-sm text-gray-600">Optional information to enhance your report</p>
-                    </div>
-
-                    <div>
-                      <Label htmlFor="code" className="text-sm font-medium text-gray-700">
-                        Code (Optional)
-                      </Label>
-                      <Input
-                        id="code"
-                        type="text"
-                        placeholder="Enter anomaly code"
-                        value={formData.code}
-                        onChange={(e) => handleInputChange('code', e.target.value)}
-                        className="mt-1"
-                      />
-                    </div>
-
-                    <div>
-                      <Label htmlFor="modal-file" className="text-sm font-medium text-gray-700">
-                        Upload File (Optional)
-                      </Label>
-                      <div className="mt-1 flex items-center gap-3">
-                        <Input
-                          id="modal-file"
-                          type="file"
-                          accept=".pdf,.jpg,.jpeg,.png"
-                          onChange={handleModalFileChange}
-                          className="hidden"
-                        />
-                        <Button
-                          type="button"
-                          variant="outline"
-                          onClick={() => document.getElementById('modal-file')?.click()}
-                          className="flex items-center gap-2 hover:bg-gray-50"
-                        >
-                          <Upload className="w-4 h-4" />
-                          Choose File
-                        </Button>
-                        {formData.file && (
-                          <span className="text-sm text-gray-600 bg-gray-50 px-3 py-1 rounded-full">
-                            {formData.file.name}
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-xs text-gray-500 mt-1">
-                        Supported formats: PDF, JPG, PNG (Max 10MB)
-                      </p>
-                    </div>
-                  </div>
-                )}
-
-                {/* Step 3: AI Loading */}
-                {currentStep === 3 && (
-                  <div className="text-center py-12">
-                    <div className="relative mx-auto w-24 h-24 mb-6">
-                      <div className="absolute inset-0 border-4 border-blue-200 rounded-full"></div>
-                      <div className="absolute inset-0 border-4 border-blue-600 rounded-full border-t-transparent animate-spin"></div>
-                      <div className="absolute inset-2 border-2 border-blue-300 rounded-full border-b-transparent animate-spin animate-reverse"></div>
-                    </div>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                      AI Analysis in Progress
-                    </h3>
-                    <p className="text-gray-600 mb-4">
-                      Our system is analyzing the anomaly... Please wait.
-                    </p>
-                    <div className="flex justify-center">
-                      <div className="bg-blue-50 rounded-full px-4 py-2">
-                        <Loader2 className="w-4 h-4 animate-spin text-blue-600 inline mr-2" />
-                        <span className="text-sm text-blue-600">Processing data...</span>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Step 4: Criticality Review */}
-                {currentStep === 4 && (
-                  <div className="space-y-6">
-                    <div className="text-center mb-6">
-                      <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                        AI-Generated Criticality Assessment
-                      </h3>
-                      <p className="text-sm text-gray-600">
-                        Our AI system has analyzed your anomaly and generated the following criticality scores:
-                      </p>
-                    </div>
-
-                    <div className="grid gap-4">
-                      <RatingDisplay
-                        value={formData.process_safety}
-                        label="Process Safety"
-                      />
-                      <RatingDisplay
-                        value={formData.fiabilite_integrite}
-                        label="Reliability & Integrity"
-                      />
-                      <RatingDisplay
-                        value={formData.disponibilite}
-                        label="Availability"
-                      />
-                    </div>
-
-                    <div className="bg-blue-50 rounded-lg p-4">
-                      <h4 className="font-medium text-blue-900 mb-2">Summary</h4>
-                      <p className="text-sm text-blue-800">
-                        Based on the analysis, this anomaly has been classified with the above criticality scores.
-                        Please review and confirm to submit the anomaly report.
-                      </p>
-                    </div>
-                  </div>
-                )}
-
-                {/* Navigation Buttons */}
-                <div className="flex justify-between pt-6 border-t">
-                  <Button
-                    variant="outline"
-                    onClick={handlePrevious}
-                    disabled={currentStep === 1 || currentStep === 3}
-                    className="flex items-center gap-2"
-                  >
-                    <ArrowLeft className="w-4 h-4" />
-                    Previous
-                  </Button>
-
-                  <div className="flex gap-2">
-                    {currentStep < 4 && currentStep !== 3 && (
-                      <Button
-                        onClick={handleNext}
-                        className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700"
-                      >
-                        Next
-                        <ArrowRight className="w-4 h-4" />
-                      </Button>
-                    )}
-
-                    {currentStep === 4 && (
-                      <Button
-                        onClick={handleSubmit}
-                        disabled={createAnomaly.isPending}
-                        className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700"
-                      >
-                        {createAnomaly.isPending ? (
-                          <>
-                            <Loader2 className="w-4 h-4 animate-spin" />
-                            Submitting...
-                          </>
-                        ) : (
-                          <>
-                            <Send className="w-4 h-4" />
-                            Confirm & Submit
-                          </>
-                        )}
-                      </Button>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      <NewAnomalyModal 
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        onSuccess={handleModalSuccess}
+      />
 
       {/* Batch Upload Modal */}
       {isBatchModalOpen && (

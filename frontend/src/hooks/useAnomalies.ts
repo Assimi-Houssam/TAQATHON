@@ -121,6 +121,111 @@ export function useAnomalyMutations() {
     },
   });
 
+  const attachMaintenanceWindow = useMutation({
+    mutationFn: async ({ anomalyId, maintenanceId }: { anomalyId: string; maintenanceId: string }): Promise<Anomaly> => {
+      const response = await apiClient.patch<Anomaly>(`/anomaly/attach_mw/${anomalyId}/${maintenanceId}`);
+      return response.data;
+    },
+    onSuccess: (data, variables) => {
+      // Update the specific anomaly in cache
+      queryClient.setQueryData(["anomaly", variables.anomalyId], data);
+      // Invalidate anomalies list
+      queryClient.invalidateQueries({ queryKey: ["anomalies"] });
+    },
+  });
+
+  const uploadAttachment = useMutation({
+    mutationFn: async ({ id, file }: { id: string; file: File }): Promise<any> => {
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      const response = await apiClient.post(`/anomaly/attachment/${id}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      return response.data;
+    },
+    onSuccess: (_, variables) => {
+      // Update the specific anomaly in cache
+      queryClient.invalidateQueries({ queryKey: ["anomaly", variables.id] });
+      // Invalidate anomalies list
+      queryClient.invalidateQueries({ queryKey: ["anomalies"] });
+    },
+  });
+
+  const createActionPlan = useMutation({
+    mutationFn: async ({ anomalyId, actionPlan }: { anomalyId: string; actionPlan: any }): Promise<any> => {
+      const response = await apiClient.post(`/anomaly/action_plan/${anomalyId}`, actionPlan);
+      return response.data;
+    },
+    onSuccess: (_, variables) => {
+      // Update the specific anomaly in cache
+      queryClient.invalidateQueries({ queryKey: ["anomaly", variables.anomalyId] });
+      // Invalidate anomalies list
+      queryClient.invalidateQueries({ queryKey: ["anomalies"] });
+    },
+  });
+
+  const createMaintenanceWindow = useMutation({
+    mutationFn: async (file: File): Promise<any> => {
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      const response = await apiClient.post('/anomaly/maintenance_window', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      return response.data;
+    },
+    onSuccess: () => {
+      // Invalidate anomalies list as maintenance windows might affect anomalies
+      queryClient.invalidateQueries({ queryKey: ["anomalies"] });
+      queryClient.invalidateQueries({ queryKey: ["maintenance-windows"] });
+    },
+  });
+
+  const addMaintenanceWindow = useMutation({
+    mutationFn: async (maintenanceWindowData: any): Promise<any> => {
+      const response = await apiClient.post('/anomaly/adding_maintenance_window', maintenanceWindowData);
+      return response.data;
+    },
+    onSuccess: () => {
+      // Invalidate anomalies list and maintenance windows
+      queryClient.invalidateQueries({ queryKey: ["anomalies"] });
+      queryClient.invalidateQueries({ queryKey: ["maintenance-windows"] });
+    },
+  });
+
+  const markAsResolved = useMutation({
+    mutationFn: async (id: string): Promise<Anomaly> => {
+      const response = await apiClient.post<Anomaly>(`/anomaly/mark_as_resolved/${id}`);
+      return response.data;
+    },
+    onSuccess: (data, id) => {
+      // Update the specific anomaly in cache
+      queryClient.setQueryData(["anomaly", id], data);
+      // Invalidate anomalies list and stats
+      queryClient.invalidateQueries({ queryKey: ["anomalies"] });
+      queryClient.invalidateQueries({ queryKey: ["anomaly-stats"] });
+    },
+  });
+
+  const markAsTreated = useMutation({
+    mutationFn: async (id: string): Promise<Anomaly> => {
+      const response = await apiClient.patch<Anomaly>(`/anomaly/traited/${id}`);
+      return response.data;
+    },
+    onSuccess: (data, id) => {
+      // Update the specific anomaly in cache
+      queryClient.setQueryData(["anomaly", id], data);
+      // Invalidate anomalies list and stats
+      queryClient.invalidateQueries({ queryKey: ["anomalies"] });
+      queryClient.invalidateQueries({ queryKey: ["anomaly-stats"] });
+    },
+  });
+
   const deleteAnomaly = useMutation({
     mutationFn: async (id: string): Promise<void> => {
       await apiClient.delete(`/anomaly/deleteAnomaly/${id}`);
@@ -162,6 +267,13 @@ export function useAnomalyMutations() {
     updateAnomaly,
     updateAnomalyStatus,
     assignMaintenanceWindow,
+    attachMaintenanceWindow,
+    uploadAttachment,
+    createActionPlan,
+    createMaintenanceWindow,
+    addMaintenanceWindow,
+    markAsResolved,
+    markAsTreated,
     deleteAnomaly,
     batchUpload,
   };
