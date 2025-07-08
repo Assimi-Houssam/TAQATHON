@@ -13,7 +13,7 @@ export class AnomalyService {
     order: string = 'HIGH',
     status: string = '',
     criticity: string = '',
-    source: string = '',
+    section: string = '',
   ) {
     const skip = (page - 1) * limit;
     let anomaly: any;
@@ -32,13 +32,45 @@ export class AnomalyService {
     }
     const whereClause: any = {};
     if (status && status.trim() !== '') {
+      const validStatuses = ['OPEN', 'IN_PROGRESS', 'CLOSED'];
+      if (!validStatuses.includes(status.toUpperCase())) {
+        throw new Error(
+          `Invalid status provided. Valid statuses are: ${validStatuses.join(', ')}`,
+        );
+      }
       whereClause.status = status;
     }
     if (criticity && criticity.trim() !== '') {
-      whereClause.Criticite = criticity;
+      // Convert string-based criticity to numeric ranges for string comparison
+      switch (criticity.toUpperCase()) {
+        case 'LOW':
+          // For string comparison, you might need to use exact values or ranges
+          whereClause.Criticite = {
+            in: ['0', '1', '2', '3', '4', '5'], // Specific values
+          };
+          break;
+        case 'MEDIUM':
+          whereClause.Criticite = {
+            in: ['5', '6', '7', '8', '9', '10'],
+          };
+          break;
+        case 'HIGH':
+          whereClause.Criticite = {
+            in: ['10', '11', '12', '13', '14', '15'],
+          };
+          break;
+        default:
+          whereClause.Criticite = criticity;
+      }
     }
-    if (source && source.trim() !== '') {
-      whereClause.source = source;
+    if (section && section.trim() !== '') {
+      const validSections = ['MC', 'MM', 'MD', 'CT', 'EL'];
+      if (!validSections.includes(section.toUpperCase())) {
+        throw new Error(
+          `Invalid section provided. Valid sections are: ${validSections.join(', ')}`,
+        );
+      }
+      whereClause.section = section;
     }
     anomaly = await this.Prisma.anomaly.findMany({
       skip: skip,
@@ -60,7 +92,6 @@ export class AnomalyService {
       hasPrevious: page > 1,
     };
   }
-
   async getAnomalyById(id: string) {
     const anomaly = await this.Prisma.anomaly.findUnique({
       where: { id: id },

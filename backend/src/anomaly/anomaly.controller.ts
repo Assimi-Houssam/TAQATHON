@@ -65,7 +65,7 @@ export class AnomalyController {
     description: 'Filter criteria (e.g., asc, desc, low, high, medium)',
   })
   @ApiQuery({
-    name: 'source',
+    name: 'section',
     required: false,
     type: String,
     description: 'Filter by source (e.g., "EMC", "APM")',
@@ -102,11 +102,11 @@ export class AnomalyController {
     @Query('filter') orderby: string = 'HIGH',
     @Query('status') status: string = '',
     @Query('criticity') criticity: string = '',
-    @Query('source') source: string = '',
+    @Query('section') section: string = '',
   ) {
      const pageNum = parseInt(page.toString()) || 1;
       const limitNum = parseInt(limit.toString()) || 10;
-    return await this.anomalyService.getAnomaly(pageNum, limitNum, orderby);
+    return await this.anomalyService.getAnomaly(pageNum, limitNum, orderby, status, criticity, section);
   }
 
   @Get('getAnomalyById/:id')
