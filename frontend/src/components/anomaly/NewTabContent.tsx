@@ -5,7 +5,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { CollapsibleCard } from "@/components/ui/collapsible-card";
@@ -15,8 +14,7 @@ import {
   Settings, 
   Shield, 
   Activity,
-  PlayCircle,
-  Send
+  PlayCircle
 } from "lucide-react";
 import { toast } from "sonner";
 import { AnomalyWithRelations, ActionPlan, calculateCriticalityFromStrings, getCriticalityLevel } from "@/types/anomaly";
@@ -31,7 +29,7 @@ interface NewTabContentProps {
 export function NewTabContent({ anomaly, onUpdate, onStatusChange }: NewTabContentProps) {
   const [isUpdating, setIsUpdating] = useState(false);
   const [criteriaTouched, setCriteriaTouched] = useState(false);
-  const [feedbackText, setFeedbackText] = useState("");
+
   const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const [formData, setFormData] = useState({
     process_safty: parseFloat(anomaly.process_safty || '1') || 1,
@@ -284,11 +282,6 @@ export function NewTabContent({ anomaly, onUpdate, onStatusChange }: NewTabConte
                   {isUpdating && (
                     <div className="ml-2 w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
                   )}
-                  {criteriaTouched && !isUpdating && (
-                    <div className="ml-2 text-xs text-green-600 font-medium animate-pulse">
-                      Auto-calculated
-                    </div>
-                  )}
                 </div>
               </div>
             </div>
@@ -330,38 +323,7 @@ export function NewTabContent({ anomaly, onUpdate, onStatusChange }: NewTabConte
             </div>
           </div>
 
-          {/* Feedback Input - Appears smoothly when criteria are touched */}
-          <div className={`transition-all duration-300 ease-in-out overflow-hidden ${
-            criteriaTouched 
-              ? 'max-h-[250px] opacity-100 translate-y-0' 
-              : 'max-h-0 opacity-0 -translate-y-2'
-          }`}>
-            <div className="space-y-3 pt-4 pb-2 border-t border-gray-100">
-              <Label className="text-xs font-medium text-gray-600 uppercase tracking-wide">
-                Feedback on Criticality Assessment
-              </Label>
-              <Textarea
-                value={feedbackText}
-                onChange={(e) => setFeedbackText(e.target.value)}
-                placeholder="Enter your feedback on the criticality assessment..."
-                className="min-h-[80px] border-gray-200 focus:border-blue-400 focus:ring-blue-400/20"
-                rows={2}
-              />
-              <div className="flex justify-between items-center pt-1">
-                <p className="text-xs text-gray-500">
-                  This feedback will help improve future criticality assessments.
-                </p>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="px-3 py-1 h-8 text-xs border-gray-300 hover:bg-gray-50 flex-shrink-0"
-                >
-                  <Send className="h-3 w-3 mr-1" />
-                  Send
-                </Button>
-              </div>
-            </div>
-          </div>
+
         </div>
       </CollapsibleCard>
 
