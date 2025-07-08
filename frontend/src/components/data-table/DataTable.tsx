@@ -74,7 +74,7 @@ export function DataTable<T extends Record<string, any>>({
   const loadingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Minimum loading display duration (in milliseconds)
-  const MIN_LOADING_DURATION = 7000;
+  const MIN_LOADING_DURATION = 1500;
 
   // Handle loading state transitions with delay
   useEffect(() => {
