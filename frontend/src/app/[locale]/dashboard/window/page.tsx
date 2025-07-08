@@ -44,11 +44,11 @@ const mockMaintenanceWindows: MaintenanceWindow[] = [
   { id: "MW-001", title: "Weekly Inspection", fromDate: "2025-07-14", toDate: "2025-07-16", equipment: "Pump Area", assignedAnomalies: ["ANO-001", "ANO-003"], color: "bg-slate-600" },
   { id: "MW-002", title: "Monthly Maintenance", fromDate: "2025-07-21", toDate: "2025-07-23", equipment: "Heat Exchangers", assignedAnomalies: ["ANO-002", "ANO-006"], color: "bg-slate-600" },
   { id: "MW-003", title: "Valve Maintenance", fromDate: "2025-07-28", toDate: "2025-07-30", equipment: "Valve Section", assignedAnomalies: ["ANO-005", "ANO-008"], color: "bg-slate-600" },
-  { id: "MW-004", title: "Motor Overhaul", fromDate: "2025-08-04", toDate: "2025-08-06", equipment: "Motor Bay", assignedAnomalies: ["ANO-004"], color: "bg-slate-600" },
-  { id: "MW-005", title: "System Upgrade", fromDate: "2025-08-11", toDate: "2025-08-13", equipment: "Control Room", assignedAnomalies: ["ANO-007"], color: "bg-slate-600" },
-  { id: "MW-006", title: "Emergency Maintenance", fromDate: "2025-08-18", toDate: "2025-08-20", equipment: "Compressor Area", assignedAnomalies: [], color: "bg-slate-600" },
-  { id: "MW-007", title: "Quarterly Inspection", fromDate: "2025-08-25", toDate: "2025-08-27", equipment: "Electrical Panel", assignedAnomalies: [], color: "bg-slate-600" },
-  { id: "MW-008", title: "Pipeline Maintenance", fromDate: "2025-09-01", toDate: "2025-09-03", equipment: "Main Pipeline", assignedAnomalies: [], color: "bg-slate-600" },
+  { id: "MW-004", title: "Motor Overhaul", fromDate: "2025-08-04", toDate: "2025-08-06", equipment: "Motor Bay", assignedAnomalies: ["ANO-004","ANO-007"], color: "bg-slate-600" },
+  // { id: "MW-005", title: "System Upgrade", fromDate: "2025-08-11", toDate: "2025-08-13", equipment: "Control Room", assignedAnomalies: ["ANO-007"], color: "bg-slate-600" },
+  // { id: "MW-006", title: "Emergency Maintenance", fromDate: "2025-08-18", toDate: "2025-08-20", equipment: "Compressor Area", assignedAnomalies: [], color: "bg-slate-600" },
+  // { id: "MW-007", title: "Quarterly Inspection", fromDate: "2025-08-25", toDate: "2025-08-27", equipment: "Electrical Panel", assignedAnomalies: [], color: "bg-slate-600" },
+  // { id: "MW-008", title: "Pipeline Maintenance", fromDate: "2025-09-01", toDate: "2025-09-03", equipment: "Main Pipeline", assignedAnomalies: [], color: "bg-slate-600" },
 ];
 
 function DraggableAnomaly({ anomaly, isInWindow = false }: { anomaly: Anomaly; isInWindow?: boolean }) {
@@ -79,14 +79,14 @@ function DraggableAnomaly({ anomaly, isInWindow = false }: { anomaly: Anomaly; i
         style={style}
         {...listeners}
         {...attributes}
-        className="bg-white border border-gray-200 rounded-lg p-3 cursor-grab active:cursor-grabbing transition-all hover:shadow-sm"
+        className="bg-white border border-gray-200 rounded-lg p-3 h-20 cursor-grab active:cursor-grabbing transition-all hover:shadow-sm"
       >
         <div className="flex items-center justify-between mb-1">
           <span className="font-medium text-sm">{anomaly.id}</span>
           <div className={`w-3 h-3 rounded-full ${getCriticalityColor(anomaly.criticality)}`} />
         </div>
         <p className="text-sm text-gray-700 leading-tight">{anomaly.title}</p>
-        <p className="text-xs text-gray-500 mt-1">{anomaly.equipment}</p>
+        {/* <p className="text-xs text-gray-500 mt-1">{anomaly.equipment}</p> */}
       </div>
     );
   }
@@ -140,72 +140,72 @@ function CalendarMaintenanceWindow({
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden  group hover:shadow-xl transition-all duration-300">
-  <div className={`${window.color} p-6 text-white relative`}>
-    <AlertDialog>
-      <AlertDialogTrigger asChild>
-        <button className="absolute top-4 right-4 w-8 h-8 bg-black bg-opacity-10 hover:bg-opacity-20 rounded-full flex items-center justify-center text-white text-lg font-light transition-all duration-200 hover:scale-110">
-          ×
-        </button>
-      </AlertDialogTrigger>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Delete Maintenance Window</AlertDialogTitle>
-          <AlertDialogDescription>
-            Are you sure you want to delete "{window.title}"? This action cannot be undone and will move all assigned issues back to unassigned.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction onClick={() => onRemove(window.id)} className="bg-red-600 hover:bg-red-700">
-            Delete
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
-    <div className="flex items-center gap-3 mb-3">
-      <CalendarIcon className="h-5 w-5 opacity-90" />
-      <h3 className="font-semibold text-lg tracking-tight">{window.title}</h3>
-    </div>
-    <div className="flex items-center gap-3 text-sm opacity-80 mb-2">
-      <Clock className="h-4 w-4" />
-      <span className="font-medium">{formatProfessionalDate(fromDate, toDate)}</span>
-    </div>
-    <p className="text-sm opacity-80 font-medium">{window.equipment}</p>
-  </div>
+    <div className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden group hover:shadow-xl transition-all duration-300 w-[380px]">
+      <div className={`${window.color} p-6 text-white relative`}>
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <button className="absolute top-4 right-4 w-8 h-8 bg-black bg-opacity-10 hover:bg-opacity-20 rounded-full flex items-center justify-center text-white text-lg font-light transition-all duration-200 hover:scale-110">
+              ×
+            </button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Delete Maintenance Window</AlertDialogTitle>
+              <AlertDialogDescription>
+                Are you sure you want to delete "{window.title}"? This action cannot be undone and will move all assigned issues back to unassigned.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction onClick={() => onRemove(window.id)} className="bg-red-600 hover:bg-red-700">
+                Delete
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+        <div className="flex items-center gap-3 mb-3">
+          <CalendarIcon className="h-5 w-5 opacity-90" />
+          <h3 className="font-semibold text-lg tracking-tight">{window.title}</h3>
+        </div>
+        <div className="flex items-center gap-3 text-sm opacity-80 mb-2">
+          <Clock className="h-4 w-4" />
+          <span className="font-medium">{formatProfessionalDate(fromDate, toDate)}</span>
+        </div>
+        <p className="text-sm opacity-80 font-medium">{window.equipment}</p>
+      </div>
 
-  <div 
-    ref={setNodeRef}
-    className={`min-h-[200px] inherit transition-all duration-300 ${
-      isOver 
-        ? 'bg-gradient-to-br from-blue-50 to-indigo-50 border-t-2 border-blue-400' 
-        : 'bg-gradient-to-br from-gray-50 to-slate-50 border-t border-gray-200'
-    }`}
-  >
-    <div className="p-6">
-      <div className="flex items-center justify-between mb-4">
-        <h4 className="text-sm font-semibold text-gray-700 tracking-wide uppercase">
-          Issues
-        </h4>
-        <div className="bg-gray-200 text-gray-600 text-xs font-bold px-2 py-1 rounded-full">
-          {assignedAnomalies.length}
+      <div 
+        ref={setNodeRef}
+        className={`min-h-[200px] inherit transition-all duration-300 ${
+          isOver 
+            ? 'bg-gradient-to-br from-blue-50 to-indigo-50 border-t-2 border-blue-400' 
+            : 'bg-gradient-to-br from-gray-50 to-slate-50 border-t border-gray-200'
+        }`}
+      >
+        <div className="p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h4 className="text-sm font-semibold text-gray-700 tracking-wide uppercase">
+              Issues
+            </h4>
+            <div className="bg-gray-200 text-gray-600 text-xs font-bold px-2 py-1 rounded-full">
+              {assignedAnomalies.length}
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 min-h-[200px]">
+            {assignedAnomalies.map((anomaly) => (
+              <DraggableAnomaly key={anomaly.id} anomaly={anomaly} isInWindow={true} />
+            ))}
+            {assignedAnomalies.length === 0 && (
+              <div className="col-span-2 text-center py-12">
+                <div className="text-gray-400 text-sm font-medium">Drop issues here</div>
+                <div className="text-gray-300 text-xs mt-1">Drag and drop to organize</div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
-      
-      <div className="space-y-3">
-        {assignedAnomalies.map((anomaly) => (
-          <DraggableAnomaly key={anomaly.id} anomaly={anomaly} isInWindow={true} />
-        ))}
-        {assignedAnomalies.length === 0 && (
-          <div className="text-center py-12">
-            <div className="text-gray-400 text-sm font-medium">Drop issues here</div>
-            <div className="text-gray-300 text-xs mt-1">Drag and drop to organize</div>
-          </div>
-        )}
-      </div>
     </div>
-  </div>
-</div>
   );
 }
 
@@ -339,10 +339,12 @@ export default function MaintenanceWindows() {
 
   return (
     <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-      <div className="p-6 space-y-6 bg-gray-50 min-h-screen">
+      {/* <div className="p-6 space-y-6 bg-gray-50 min-h-screen"> */}
+      <div className="p-6 space-y-6 bg-gray-50 flex flex-col h-full">
+
         {/* Header */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <div className="flex items-center justify-between">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 ">
+        <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-bold text-gray-900">Maintenance Windows</h1>
               <p className="text-gray-600 mt-1">Assign anomalies to maintenance windows</p>
@@ -419,8 +421,8 @@ export default function MaintenanceWindows() {
         </div>
 
         {/* Maintenance Windows Timeline */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <div className="overflow-x-auto">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 flex-1 flex flex-col">
+        <div className="overflow-x-auto h-full">
             <div className="flex gap-6 pb-4" style={{ width: 'max-content', minWidth: '100%' }}>
               {sortedMaintenanceWindows.map((window) => (
                 <div key={window.id} className="min-w-[320px] flex-shrink-0">
