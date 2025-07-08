@@ -332,7 +332,7 @@ export function NewTabContent({ anomaly, onUpdate, onStatusChange }: NewTabConte
         anomalyId={anomaly.id}
         showHeader={true} 
         collapsible={true} 
-        defaultOpen={false} 
+        defaultOpen={true} 
       />
     </div>
   );
