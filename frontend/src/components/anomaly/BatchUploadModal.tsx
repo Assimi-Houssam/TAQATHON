@@ -79,10 +79,10 @@ export default function BatchUploadModal({ isOpen, onClose, onSuccess }: BatchUp
 
   const processFiles = (files: File[]) => {
     files.forEach(file => {
-      // Validate file type
-      const validTypes = ['text/csv', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.ms-excel'];
+      // Validate file type - only Excel files
+      const validTypes = ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.ms-excel'];
       if (!validTypes.includes(file.type)) {
-        toast.error(`Invalid file type: ${file.name}. Please upload CSV or Excel files.`);
+        toast.error(`Invalid file type: ${file.name}. Please upload Excel files (.xlsx, .xls) only.`);
         return;
       }
 
@@ -198,7 +198,8 @@ export default function BatchUploadModal({ isOpen, onClose, onSuccess }: BatchUp
   };
 
   const handleDownloadTemplate = () => {
-    // Create a sample CSV template
+    // Create a sample Excel template (we'll provide a link to download a pre-made template)
+    // For now, we'll create a CSV that user can save as Excel
     const csvContent = "num_equipments,descreption_anomalie,section_proprietaire,Criticite,unite,systeme,origine,fiablite_integrite,disponsibilite,process_safty\nEQ-001,Pressure sensor showing irregular readings,Production,HIGH,Production Unit A,Pressure Control System,Sensor Malfunction,3,4,2\nEQ-002,Temperature fluctuations outside normal range,Maintenance,MEDIUM,Production Unit B,Temperature Control,Calibration Drift,2,3,1";
     const blob = new Blob([csvContent], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
@@ -209,6 +210,8 @@ export default function BatchUploadModal({ isOpen, onClose, onSuccess }: BatchUp
     a.click();
     document.body.removeChild(a);
     window.URL.revokeObjectURL(url);
+    
+    toast.info("Template downloaded. Please save as Excel format (.xlsx) before uploading.");
   };
 
   const formatFileSize = (bytes: number) => {
@@ -304,7 +307,7 @@ export default function BatchUploadModal({ isOpen, onClose, onSuccess }: BatchUp
               </div>
               <div>
                 <h2 className="text-xl font-semibold text-gray-900">Batch Upload</h2>
-                <p className="text-sm text-gray-500">Upload multiple anomalies using CSV or Excel files</p>
+                <p className="text-sm text-gray-500">Upload multiple anomalies using Excel files</p>
               </div>
             </div>
             <Button
@@ -346,7 +349,7 @@ export default function BatchUploadModal({ isOpen, onClose, onSuccess }: BatchUp
                     <Input
                       ref={fileInputRef}
                       type="file"
-                      accept=".csv,.xlsx,.xls"
+                      accept=".xlsx,.xls"
                       multiple
                       onChange={handleFileSelect}
                       className="hidden"
@@ -405,9 +408,9 @@ export default function BatchUploadModal({ isOpen, onClose, onSuccess }: BatchUp
                         {isDragOver ? "Drop files here" : "Drag & drop files"}
                       </h4>
                       <p className="text-gray-500 text-sm mb-4">or click to browse your computer</p>
-                      <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-white rounded-lg border border-gray-200 shadow-sm">
+                                              <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-white rounded-lg border border-gray-200 shadow-sm">
                         <FileSpreadsheet className="w-4 h-4 text-gray-400" />
-                        <span className="text-xs text-gray-600">CSV, XLSX, XLS files</span>
+                        <span className="text-xs text-gray-600">XLSX, XLS files</span>
                       </div>
                     </div>
                   </div>

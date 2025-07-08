@@ -245,7 +245,7 @@ export function useAnomalyMutations() {
       formData.append('file', file);
       
       const response = await apiClient.post<{ success: number; errors: string[] }>(
-        '/anomaly/batchUpload', 
+        '/ml/uploadanomalies', 
         formData,
         {
           headers: {
