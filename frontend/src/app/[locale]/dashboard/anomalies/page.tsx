@@ -492,50 +492,6 @@ export default function AnomaliesPage() {
     setCurrentPage(page);
   };
 
-  // Loading state
-  if (isLoading) {
-    return (
-      <div className="container mx-auto px-6 py-6">
-        <div className="flex justify-between items-center mb-6">
-          <div>
-            <h1 className="text-2xl font-semibold text-zinc-900">Anomaly Management</h1>
-            <p className="text-zinc-600 mt-1">Monitor equipment anomalies with detailed criticality assessment</p>
-          </div>
-        </div>
-        <div className="flex items-center justify-center py-20">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-            <p className="text-zinc-600 mt-4">Loading anomalies...</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Error state
-  if (error) {
-    return (
-      <div className="container mx-auto px-6 py-6">
-        <div className="flex justify-between items-center mb-6">
-          <div>
-            <h1 className="text-2xl font-semibold text-zinc-900">Anomaly Management</h1>
-            <p className="text-zinc-600 mt-1">Monitor equipment anomalies with detailed criticality assessment</p>
-          </div>
-        </div>
-        <div className="flex items-center justify-center py-20">
-          <div className="text-center">
-            <AlertTriangle className="h-12 w-12 text-red-500 mx-auto mb-4" />
-            <h2 className="text-lg font-semibold text-zinc-900 mb-2">Error Loading Anomalies</h2>
-            <p className="text-zinc-600 mb-4">There was an error loading the anomaly data. Please try again.</p>
-            <Button onClick={() => window.location.reload()}>
-              Retry
-            </Button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="container mx-auto px-6 py-6">
       {/* Header */}
@@ -555,13 +511,15 @@ export default function AnomaliesPage() {
         </div>
       </div>
 
-      {/* Data Table */}
+            {/* Data Table with unified loading/error/empty states */}
       <div className="overflow-hidden">
         <DataTable
           data={processedAnomalies}
           columns={columns}
           config={config}
           filters={filters}
+          loading={isLoading}
+          error={error ? new Error(error?.message || 'Failed to load anomalies') : null}
           onRowClick={(anomaly) => router.push(`/dashboard/anomalies/detail?id=${anomaly.id}`)}
           className="w-full"
           pagination={{
