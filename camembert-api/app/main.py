@@ -243,25 +243,26 @@ def process_excel_file(file_bytes: bytes):
                 if description:
                     predictions = predict_text(description)
                     row_data = {
-                        'Num_equipement': row[column_indices["Num_equipement"]],
-                        'Systeme': row[column_indices["Systeme"]],
-                        'Description': row[column_indices["Description"]],
-                        'Date de détéction de l\'anomalie': row[column_indices["Date de détéction de l'anomalie"]],
-                        'Description de l\'équipement': row[column_indices["Description de l'équipement"]],
-                        'Section propriétaire': row[column_indices["Section propriétaire"]],
-                        'Fiabilité Intégrité': predictions['fiabilite_integrite'],
-                        'Disponibilité': predictions['disponibilite'],
-                        'Process Safety': predictions['process_safety'],
-                        'Criticité': predictions['criticite']
+                        'num_equipments': str(row[column_indices["Num_equipement"]]),
+                        'systeme': str(row[column_indices["Systeme"]]),
+                        'descreption_anomalie': str(row[column_indices["Description"]]),
+                        'date_detection': str(row[column_indices["Date de détéction de l'anomalie"]]),
+                        'descreption_equipment': str(row[column_indices["Description de l'équipement"]]),
+                        'section_proprietaire': str(row[column_indices["Section propriétaire"]]),
+                        'fiablite_integrite': str(predictions['fiabilite_integrite']),
+                        'disponsibilite': str(predictions['disponibilite']),
+                        'process_safty': str(predictions['process_safety']),
+                        'criticite': str(predictions['criticite'])
                     }
                     results.append(row_data)
 
             # Optional limit for testing
-            if row_idx % 1000 == 0:
+            if row_idx % 10 == 0:
                 break
 
         # TODO: save results to DB, file, email, etc.
         logger.info(f"Processed {len(results)} rows in background.")
+        logger.info(f"Processed {results[0]}")
 
     except Exception as e:
         logger.error(f"Error in background task: {e}")
