@@ -333,12 +333,15 @@ export class AnomalyService {
     const requiredHours = this.extractHours(anomaly.duree_intervention || '0');
     const maintenanceWindows = await this.Prisma.maintenance_window.findMany({
       where: {
-        date_debut_arret: {
-          gte: new Date(),
-        },
+      titlte: {
+        not: 'ORPHANS'
+      },
+      date_debut_arret: {
+        gte: new Date(),
+      },
       },
       orderBy: {
-        date_debut_arret: 'asc',
+      date_debut_arret: 'asc',
       },
     });
     const suitableWindow = maintenanceWindows.find((window) => {
@@ -346,9 +349,17 @@ export class AnomalyService {
       return windowHours >= requiredHours;
     });
     if (!suitableWindow) {
-      throw new Error(
-        `No maintenance window found with sufficient duration (${requiredHours}h required)`,
-      );
+      let orphans = await this.Prisma.maintenance_window.findFirst({
+        where: { titlte: 'ORPHANS' },
+      });
+      if (!orphans) {
+        const newOrphans = await this.Prisma.maintenance_window.create({
+          data: {
+            titlte: 'ORPHANS',
+          },
+        });
+      }
+      // await this.Pris
     }
     const updatedAnomaly = await this.Prisma.anomaly.update({
       where: { id: anomalyId },
