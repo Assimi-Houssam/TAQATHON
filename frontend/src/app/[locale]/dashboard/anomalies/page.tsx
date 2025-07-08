@@ -69,9 +69,11 @@ const columns: Column<Anomaly>[] = [
         );
       }
       
+      const value = row.original.num_equipments;
+      
       return (
         <div className="font-mono text-sm font-medium text-zinc-900">
-          {row.original.num_equipments}
+          {value || "-"}
         </div>
       );
     },
@@ -94,10 +96,12 @@ const columns: Column<Anomaly>[] = [
         );
       }
       
+      const value = row.original.systeme;
+      
       return (
         <div className="max-w-[200px]">
-          <div className="font-medium text-zinc-900 truncate" title={row.original.systeme || ""}>
-            {row.original.systeme || "N/A"}
+          <div className="font-medium text-zinc-900 truncate" title={value || ""}>
+            {value || "-"}
           </div>
         </div>
       );
@@ -121,10 +125,12 @@ const columns: Column<Anomaly>[] = [
         );
       }
       
+      const value = row.original.descreption_anomalie;
+      
       return (
         <div className="max-w-[300px]">
-          <div className="text-sm text-zinc-600 truncate" title={row.original.descreption_anomalie || ""}>
-            {row.original.descreption_anomalie || "No description"}
+          <div className="text-sm text-zinc-600 truncate" title={value || ""}>
+            {value || "-"}
           </div>
         </div>
       );
@@ -148,14 +154,16 @@ const columns: Column<Anomaly>[] = [
         );
       }
       
+      const value = row.original.process_safty;
+      
       return (
         <div className="flex items-center">
           <div 
             className="w-8 h-8 rounded-lg flex items-center justify-center"
-            style={{ backgroundColor: getRedOpacity(row.original.process_safty) }}
+            style={{ backgroundColor: value ? getRedOpacity(value) : 'transparent' }}
           >
             <span className="text-sm font-medium text-zinc-900">
-              {row.original.process_safty || "0"}
+              {value || "-"}
             </span>
           </div>
         </div>
@@ -180,14 +188,16 @@ const columns: Column<Anomaly>[] = [
         );
       }
       
+      const value = row.original.fiablite_integrite;
+      
       return (
         <div className="flex items-center">
           <div 
             className="w-8 h-8 rounded-lg flex items-center justify-center"
-            style={{ backgroundColor: getRedOpacity(row.original.fiablite_integrite) }}
+            style={{ backgroundColor: value ? getRedOpacity(value) : 'transparent' }}
           >
             <span className="text-sm font-medium text-zinc-900">
-              {row.original.fiablite_integrite || "0"}
+              {value || "-"}
             </span>
           </div>
         </div>
@@ -212,14 +222,16 @@ const columns: Column<Anomaly>[] = [
         );
       }
       
+      const value = row.original.disponsibilite;
+      
       return (
         <div className="flex items-center">
           <div 
             className="w-8 h-8 rounded-lg flex items-center justify-center"
-            style={{ backgroundColor: getRedOpacity(row.original.disponsibilite) }}
+            style={{ backgroundColor: value ? getRedOpacity(value) : 'transparent' }}
           >
             <span className="text-sm font-medium text-zinc-900">
-              {row.original.disponsibilite || "0"}
+              {value || "-"}
             </span>
           </div>
         </div>
@@ -245,10 +257,20 @@ const columns: Column<Anomaly>[] = [
         );
       }
       
+      const value = row.original.Criticite;
+      
+      if (!value) {
+        return (
+          <div className="flex items-center">
+            <span className="text-zinc-400">-</span>
+          </div>
+        );
+      }
+      
       return (
         <div className="flex items-center">
           <AnomalyCriticalityIndicator 
-            criticality={parseFloat(row.original.Criticite || '0') || 0}
+            criticality={parseFloat(value) || 0}
             variant="badge"
           />
         </div>
@@ -273,10 +295,20 @@ const columns: Column<Anomaly>[] = [
         );
       }
       
+      const value = row.original.status;
+      
+      if (!value) {
+        return (
+          <div className="text-zinc-400">
+            -
+          </div>
+        );
+      }
+      
       return (
         <div>
           <AnomalyStatusComponent 
-            status={row.original.status || 'NEW'}
+            status={value}
           />
         </div>
       );
@@ -300,13 +332,15 @@ const columns: Column<Anomaly>[] = [
         );
       }
       
+      const value = row.original.date_detection;
+      
       return (
         <div className="text-sm text-zinc-600">
-          {row.original.date_detection ? new Date(row.original.date_detection).toLocaleDateString('en-US', {
+          {value ? new Date(value).toLocaleDateString('en-US', {
             year: 'numeric',
             month: 'short',
             day: 'numeric'
-          }) : "No date"}
+          }) : "-"}
         </div>
       );
     },
@@ -329,9 +363,11 @@ const columns: Column<Anomaly>[] = [
         );
       }
       
+      const value = row.original.origine;
+      
       return (
         <div className="text-sm text-zinc-600">
-          {row.original.origine || "Unknown"}
+          {value || "-"}
         </div>
       );
     },
