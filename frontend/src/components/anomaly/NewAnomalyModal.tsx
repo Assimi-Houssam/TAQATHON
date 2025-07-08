@@ -157,10 +157,11 @@ export default function NewAnomalyModal({ isOpen, onClose, onSuccess }: NewAnoma
         date_detection: formData.date_detection,
         systeme: formData.system_number,
         section_proprietaire: formData.section,
-        origine: 'MAXIMO', // Default value since not captured in form
+        origine: 'ORACLE', // Default value since not captured in form
         process_safty: formData.process_safety.toString(),
         fiablite_integrite: formData.fiabilite_integrite.toString(),
         disponsibilite: formData.disponibilite.toString(),
+        Criticite: (formData.process_safety + formData.fiabilite_integrite + formData.disponibilite).toString(),
         comment: [
           formData.equipment_description ? `Equipment: ${formData.equipment_description}` : '',
           formData.comment || ''
@@ -512,43 +513,65 @@ export default function NewAnomalyModal({ isOpen, onClose, onSuccess }: NewAnoma
                 </div>
 
                 {/* Anomaly Summary Card */}
-                <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                  {/* <h4 className="font-medium text-gray-900 mb-3">Anomaly Summary</h4> */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
-                    <div>
-                      <span className="font-thin text-gray-600">Anomaly Description:</span>
-                      <p className="font-semibold text-gray-900 mt-1 line-clamp-1">{formData.anomaly_description || '-'}</p>
+                <div className="bg-gray-50 rounded-lg p-5 border border-gray-200">
+                  <div className="space-y-4">
+                    {/* Anomaly Description - Full Width */}
+                    <div className="space-y-2">
+                      <span className="text-xs font-medium text-gray-600 uppercase tracking-wide">Anomaly Description</span>
+                      <p className="text-sm font-semibold text-gray-900 leading-relaxed bg-white px-3 py-2 rounded-md border border-gray-100 line-clamp-1">
+                        {formData.anomaly_description || '-'}
+                      </p>
                     </div>
-                    <div>
-                      <span className="font-thin text-gray-600">Equipment Description:</span>
-                      <p className="font-semibold text-gray-900 mt-1 line-clamp-1">{formData.equipment_description || '-'}</p>
-                    </div>
-                    <div>
-                      <span className="font-thin text-gray-600">Equipment Number:</span>
-                      <p className="font-semibold text-gray-900 mt-1 line-clamp-1">{formData.equipment_number || '-'}</p>
-                    </div>
-                    <div>
-                      <span className="font-thin text-gray-600">System Number:</span>
-                      <p className="font-semibold text-gray-900 mt-1 line-clamp-1">{formData.system_number || '-'}</p>
-                    </div>
-                    <div>
-                      <span className="font-thin text-gray-600">Section:</span>
-                      <p className="font-semibold text-gray-900 mt-1 line-clamp-1">{formData.section || '-'}</p>
-                    </div>
-                    <div>
-                      <span className="font-thin text-gray-600">Date of Detection:</span>
-                      <p className="font-semibold text-gray-900 mt-1 line-clamp-1">{formData.date_detection || '-'}</p>
-                    </div>
-                    {formData.comment && (
-                      <div className="md:col-span-2">
-                        <span className="font-thin text-gray-600">Comment:</span>
-                        <p className="font-semibold text-gray-900 mt-1 line-clamp-1">{formData.comment}</p>
+                    
+                    {/* Equipment Info - Same Line */}
+                    <div className="space-y-2">
+                      <span className="text-xs font-medium text-gray-600 uppercase tracking-wide">Equipment Information</span>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="bg-white px-3 py-2 rounded-md border border-gray-100">
+                          <span className="text-xs text-gray-500">Number</span>
+                          <p className="text-sm font-semibold text-gray-900 line-clamp-1">{formData.equipment_number || '-'}</p>
+                        </div>
+                        <div className="bg-white px-3 py-2 rounded-md border border-gray-100">
+                          <span className="text-xs text-gray-500">Description</span>
+                          <p className="text-sm font-semibold text-gray-900 line-clamp-1">{formData.equipment_description || '-'}</p>
+                        </div>
                       </div>
-                    )}
-                    {formData.file && (
-                      <div className="md:col-span-2">
-                        <span className="font-thin text-gray-600">Attachment:</span>
-                        <p className="font-semibold text-gray-900 mt-1 line-clamp-1">{formData.file.name}</p>
+                    </div>
+                    
+                    {/* System Information */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="bg-white px-3 py-2 rounded-md border border-gray-100">
+                        <span className="text-xs text-gray-500">System Number</span>
+                        <p className="text-sm font-semibold text-gray-900 line-clamp-1">{formData.system_number || '-'}</p>
+                      </div>
+                      <div className="bg-white px-3 py-2 rounded-md border border-gray-100">
+                        <span className="text-xs text-gray-500">Section</span>
+                        <p className="text-sm font-semibold text-gray-900 line-clamp-1">{formData.section || '-'}</p>
+                      </div>
+                      <div className="bg-white px-3 py-2 rounded-md border border-gray-100">
+                        <span className="text-xs text-gray-500">Date Detected</span>
+                        <p className="text-sm font-semibold text-gray-900 line-clamp-1">{formData.date_detection || '-'}</p>
+                      </div>
+                    </div>
+                    
+                    {/* Additional Information */}
+                    {(formData.comment || formData.file) && (
+                      <div className="space-y-3 pt-2 border-t border-gray-200">
+                        {formData.comment && (
+                          <div className="bg-white px-3 py-2 rounded-md border border-gray-100">
+                            <span className="text-xs text-gray-500">Comment</span>
+                            <p className="text-sm font-semibold text-gray-900">{formData.comment}</p>
+                          </div>
+                        )}
+                        {formData.file && (
+                          <div className="bg-white px-3 py-2 rounded-md border border-gray-100">
+                            <span className="text-xs text-gray-500">Attachment</span>
+                            <p className="text-sm font-semibold text-gray-900 flex items-center gap-2">
+                              <Upload className="w-3 h-3 text-gray-400" />
+                              {formData.file.name}
+                            </p>
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
