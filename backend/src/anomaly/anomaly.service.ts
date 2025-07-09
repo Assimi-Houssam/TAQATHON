@@ -201,7 +201,13 @@ export class AnomalyService {
   }
 
   async getMaintenanceWindows() {
-    const maintenanceWindows = await this.Prisma.maintenance_window.findMany();
+    const maintenanceWindows = await this.Prisma.maintenance_window.findMany(
+      {
+        include:{
+          anomaly: true,
+        }
+      }
+    );
     if (!maintenanceWindows || maintenanceWindows.length === 0) {
       return { message: 'No maintenance windows found' };
     }
