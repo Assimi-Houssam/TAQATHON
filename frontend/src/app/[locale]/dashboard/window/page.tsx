@@ -8,7 +8,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { DndContext, DragEndEvent, DragOverlay, DragStartEvent, useDraggable, useDroppable } from "@dnd-kit/core";
-import { Plus, Calendar as CalendarIcon, Clock, ChevronLeft, ChevronRight, Upload, Loader2, FileUp, Trash2 } from "lucide-react";
+import { Plus, Calendar as CalendarIcon, Clock, ChevronLeft, ChevronRight, Upload, Loader2, FileUp, X } from "lucide-react";
 import { useMaintenanceWindows, useMaintenanceWindowMutations } from "@/hooks/useMaintenanceWindows";
 import { useAnomalies, useAnomalyMutations } from "@/hooks/useAnomalies";
 import { MaintenanceWindow, Anomaly } from "@/types/anomaly";
@@ -31,7 +31,7 @@ function DraggableAnomaly({ anomaly, isInWindow = false }: { anomaly: Anomaly; i
     if (numericCriticality >= 13) return "bg-red-500"; // Critical
     if (numericCriticality >= 10) return "bg-orange-500"; // High
     if (numericCriticality >= 7) return "bg-yellow-500"; // Medium
-    return "bg-green-500"; // Low
+    return "bg-blue-500"; // Low
   };
 
   if (isInWindow) {
@@ -123,14 +123,14 @@ function MaintenanceWindowCard({
   return (
     <div className="bg-white rounded-lg border border-gray-200 overflow-hidden transition-all duration-200 w-[360px] flex-shrink-0">
       {/* Header */}
-      <div className={`p-4 border-b border-gray-200 relative ${isOrphans ? 'bg-blue-50' : 'bg-white'}`}>
+      <div className={`p-4 border-b border-gray-200 relative ${isOrphans ? 'bg-blue-50' : 'bg-gray-50'}`}>
         <AlertDialog>
           <AlertDialogTrigger asChild>
             <button 
-              className="absolute top-3 right-3 w-6 h-6 bg-gray-200 hover:bg-red-100 rounded-full flex items-center justify-center text-gray-600 hover:text-red-600 text-sm font-medium transition-all duration-200"
+              className="absolute top-3 right-3 w-6 h-6 bg-gray-200 hover:bg-blue-500 rounded-full flex items-center justify-center text-gray-600 hover:text-blue-100 text-sm font-medium transition-all duration-200"
               disabled={isLoading}
             >
-              {isLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : <Trash2 className="h-3 w-3" />}
+              {isLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : <X className="h-3 w-3" />}
             </button>
           </AlertDialogTrigger>
           <AlertDialogContent>
@@ -161,7 +161,7 @@ function MaintenanceWindowCard({
           )}
         </div>
         
-        <div className="flex items-center gap-2 text-sm text-gray-700 mb-1">
+        <div className="flex items-center gap-2 text-sm text-gray-500 mb-1">
           <Clock className="h-3 w-3" />
           <span>{formatProfessionalDate(window.date_debut_arret, window.date_fin_arret)}</span>
         </div>
@@ -565,7 +565,7 @@ export default function MaintenanceWindows() {
                     <Button 
                       onClick={handleFileUpload}
                       disabled={!uploadFile || createMaintenanceWindowFromFile.isPending}
-                      className="bg-green-600 hover:bg-green-700"
+                      className="bg-blue-600 hover:bg-blue-700"
                     >
                       {createMaintenanceWindowFromFile.isPending ? (
                         <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -636,11 +636,11 @@ export default function MaintenanceWindows() {
                       </div>
                     )}
                   </div>
-                  <div className="flex gap-3 mt-6">
+                  <div className="flex flex-row-reverse gap-3 mt-6">
                     <Button 
                       onClick={handleAddWindow} 
                       disabled={!newWindow.title || !newWindow.start_date || !newWindow.end_date || createMaintenanceWindow.isPending}
-                      className="bg-green-600 hover:bg-green-700"
+                      className="bg-blue-600 hover:bg-blue-700"
                     >
                       {createMaintenanceWindow.isPending ? (
                         <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -754,7 +754,7 @@ export default function MaintenanceWindows() {
                     !activeAnomaly.criticite ? "bg-gray-400" :
                     parseFloat(activeAnomaly.criticite) >= 13 ? "bg-red-500" : 
                     parseFloat(activeAnomaly.criticite) >= 10 ? "bg-orange-500" : 
-                    parseFloat(activeAnomaly.criticite) >= 7 ? "bg-yellow-500" : "bg-green-500"
+                    parseFloat(activeAnomaly.criticite) >= 7 ? "bg-yellow-500" : "bg-blue-500"
                   }`} />
                 </div>
                 <div className="text-sm text-gray-900 font-medium truncate">
