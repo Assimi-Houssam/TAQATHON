@@ -63,6 +63,7 @@ model anomaly {
   process_safty String?
   process_safty_conf String?
   criticite String?
+  sorting  Int? @default(0)
   status Status? @default(NEW)
   section source? @default(MC)
   comment String?

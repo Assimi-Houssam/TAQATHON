@@ -23,11 +23,11 @@ export class AnomalyService {
     if (order == 'LOW' || order == 'HIGH') {
       if (order == 'LOW') {
         criticalityFilter = {
-          criticite: 'asc',
+          sorting: 'asc',
         };
       } else if (order == 'HIGH') {
         criticalityFilter = {
-          criticite: 'desc',
+          sorting: 'desc',
         };
       }
     }
@@ -115,10 +115,11 @@ export class AnomalyService {
         ([_, value]) => value !== undefined && value !== null && value !== '',
       ),
     );
-
+    const sorting = parseInt(filteredData.criticite)
     const anomaly = await this.Prisma.anomaly.create({
       data: {
         ...filteredData,
+        sorting: sorting || 0, 
         date_detection: date_detection,
       },
     });
