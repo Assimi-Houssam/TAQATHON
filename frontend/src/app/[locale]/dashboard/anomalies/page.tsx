@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -32,6 +32,17 @@ const mapFrontendCriticalityToBackend = (frontendCriticality: string): string =>
   return criticalityMap[frontendCriticality] || frontendCriticality;
 };
 
+// Map origine values to backend section values
+const mapOrigineToSection = (origine: string): string => {
+  const origineMap: Record<string, string> = {
+    'Oracle': 'MC',
+    'APM': 'MM',
+    'IBM Maximo': 'MD',
+    'EMC': 'CT'
+  };
+  return origineMap[origine] || '';
+};
+
 // Convert frontend filters to backend format
 const mapFiltersToBackend = (frontendFilters: Record<string, string>) => {
   const backendFilters: Record<string, string> = {};
@@ -47,8 +58,11 @@ const mapFiltersToBackend = (frontendFilters: Record<string, string>) => {
         backendFilters.criticity = mapFrontendCriticalityToBackend(value);
         break;
       case 'origine':
-        // For now, we'll skip origine mapping since backend expects different section values
-        // TODO: Add proper origine to section mapping if needed
+        // Map origine to section for backend
+        const sectionValue = mapOrigineToSection(value);
+        if (sectionValue) {
+          backendFilters.section = sectionValue;
+        }
         break;
       default:
         backendFilters[key] = value;
@@ -58,10 +72,11 @@ const mapFiltersToBackend = (frontendFilters: Record<string, string>) => {
   return backendFilters;
 };
 
-// Convert frontend sort to backend format  
-const mapSortToBackend = (sort: { field: string; direction: 'asc' | 'desc' } | null): 'LOW' | 'HIGH' | undefined => {
+// Convert frontend sort to backend format - backend only supports criticality sorting
+const mapSortToBackend = (sort: { field: string; direction: 'asc' | 'desc' } | null): 'LOW' | 'HIGH' => {
+  // Backend API parameter is called 'filter' and only supports LOW/HIGH for criticality
   if (!sort || sort.field !== 'criticite') {
-    return 'HIGH'; // Default to HIGH criticality first
+    return 'HIGH'; // Default to HIGH criticality first (descending order)
   }
   
   // Backend only supports sorting by criticality (LOW/HIGH)
@@ -134,7 +149,7 @@ const columns: Column<Anomaly>[] = [
       );
     },
     size: 120,
-    enableSorting: true,
+    enableSorting: false, // Backend doesn't support sorting by this field
     enableHiding: false, // Always visible
   },
   {
@@ -161,7 +176,7 @@ const columns: Column<Anomaly>[] = [
       );
     },
     size: 200,
-    enableSorting: true,
+    enableSorting: false, // Backend doesn't support sorting by this field
     enableHiding: false, // Always visible
   },
   {
@@ -222,7 +237,7 @@ const columns: Column<Anomaly>[] = [
       );
     },
     size: 120,
-    enableSorting: true,
+    enableSorting: false, // Backend doesn't support sorting by this field
     enableHiding: false, // Always visible
   },
   {
@@ -256,7 +271,7 @@ const columns: Column<Anomaly>[] = [
       );
     },
     size: 120,
-    enableSorting: true,
+    enableSorting: false, // Backend doesn't support sorting by this field
     enableHiding: false, // Always visible
   },
   {
@@ -290,13 +305,13 @@ const columns: Column<Anomaly>[] = [
       );
     },
     size: 120,
-    enableSorting: true,
+    enableSorting: false, // Backend doesn't support sorting by this field
     enableHiding: false, // Always visible
   },
   {
-          id: "criticite",
-      header: "Criticality",
-      accessorKey: "criticite",
+    id: "criticite",
+    header: "Criticality",
+    accessorKey: "criticite",
     cell: ({ row }) => {
       // Check if this is a fake row (padding row)
       const isFakeRow = row.original && typeof row.original === 'object' && '__isFakeRow' in row.original;
@@ -309,7 +324,7 @@ const columns: Column<Anomaly>[] = [
         );
       }
       
-              const value = row.original.criticite;
+      const value = row.original.criticite;
       
       if (!value) {
         return (
@@ -329,7 +344,7 @@ const columns: Column<Anomaly>[] = [
       );
     },
     size: 140,
-    enableSorting: true,
+    enableSorting: true, // Only this field supports backend sorting
     enableHiding: false, // Always visible
   },
   {
@@ -366,7 +381,7 @@ const columns: Column<Anomaly>[] = [
       );
     },
     size: 150,
-    enableSorting: true,
+    enableSorting: false, // Backend doesn't support sorting by this field
     enableHiding: false, // Always visible
   },
   {
@@ -397,7 +412,7 @@ const columns: Column<Anomaly>[] = [
       );
     },
     size: 120,
-    enableSorting: true,
+    enableSorting: false, // Backend doesn't support sorting by this field
     enableHiding: true, // Can be hidden
   },
   {
@@ -424,7 +439,7 @@ const columns: Column<Anomaly>[] = [
       );
     },
     size: 150,
-    enableSorting: true,
+    enableSorting: false, // Backend doesn't support sorting by this field
     enableHiding: true, // Can be hidden
   },
 
@@ -448,8 +463,8 @@ const columns: Column<Anomaly>[] = [
       return (
         <div className="flex items-center justify-end whitespace-nowrap">
           <div 
-                      className={`w-1 h-8 rounded-full flex-shrink-0 ${getCriticalityIndicatorColor(row.original.criticite)}`}
-          title={getCriticalityLevel(row.original.criticite)}
+            className={`w-1 h-8 rounded-full flex-shrink-0 ${getCriticalityIndicatorColor(row.original.criticite)}`}
+            title={getCriticalityLevel(row.original.criticite)}
           />
         </div>
       );
@@ -547,7 +562,7 @@ export default function AnomaliesPage() {
     status: backendFilters.status,
     criticity: backendFilters.criticity,
     section: backendFilters.section,
-    orderBy: backendSort,
+    orderBy: backendSort, // This maps to the 'filter' parameter in backend API
   });
 
   const anomalies = data?.anomalies || [];
@@ -570,6 +585,11 @@ export default function AnomaliesPage() {
       setCurrentPage(1); // Reset to first page when filters change
     },
     onSortChange: (newSort: { field: string; direction: 'asc' | 'desc' } | null) => {
+      // Only allow sorting by criticality since backend doesn't support other fields
+      if (newSort && newSort.field !== 'criticite') {
+        // For other fields, show a message or ignore (for now, ignore)
+        return;
+      }
       setSort(newSort);
       setCurrentPage(1); // Reset to first page when sort changes
     },
@@ -581,8 +601,19 @@ export default function AnomaliesPage() {
   };
 
   const handlePageChange = (page: number) => {
-    setCurrentPage(page);
+    // Validate page number before setting
+    const maxPages = data?.totalPages || 1;
+    const validPage = Math.min(Math.max(1, page), Math.max(1, maxPages));
+    setCurrentPage(validPage);
   };
+
+  // Auto-correct current page when total pages change
+  useEffect(() => {
+    const totalPages = data?.totalPages || 1;
+    if (currentPage > totalPages && totalPages > 0) {
+      setCurrentPage(Math.max(1, totalPages));
+    }
+  }, [data?.totalPages, currentPage]);
 
   return (
     <div className="px-6 py-6">
@@ -595,7 +626,7 @@ export default function AnomaliesPage() {
         <div className="flex gap-3">
         <Button 
             onClick={() => router.push("/dashboard/anomalies/new")}
-            className="bg-blue-600 hover:bg-blue-700 text-white flex items-center gap-2"
+            className="bg-blue-600 hover:bg-blue-700 text-white flex items-center gap-2 border-0"
           >
             <Plus className="w-4 h-4" />
             Add Anomalies
@@ -615,7 +646,7 @@ export default function AnomaliesPage() {
           onRowClick={(anomaly) => router.push(`/dashboard/anomalies/detail?id=${anomaly.id}`)}
           className="w-full"
           pagination={{
-            currentPage: data?.currentPage || 1,
+            currentPage: currentPage, // Use local state instead of backend data
             totalPages: data?.totalPages || 1,
             total: data?.total || 0,
             onPageChange: handlePageChange,

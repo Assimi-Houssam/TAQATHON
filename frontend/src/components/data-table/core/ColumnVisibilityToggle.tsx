@@ -77,7 +77,7 @@ export function ColumnVisibilityToggle<T>({
       <DropdownMenuTrigger asChild>
         <Button variant="outline" size="sm">
           <Settings className="h-4 w-4 mr-2" />
-          Columns ({visibleCount}/{hideableColumns.length})
+          Additional Columns ({visibleCount}/{hideableColumns.length})
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">

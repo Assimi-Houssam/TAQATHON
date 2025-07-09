@@ -247,7 +247,38 @@ export function DataTable<T extends Record<string, any>>({ data, columns, config
 
   const totalPages = pagination?.totalPages || Math.ceil(processedData.length / pageSize);
   const totalCount = pagination?.total || processedData.length;
-  const actualCurrentPage = pagination?.currentPage || currentPage;
+  const actualCurrentPage = isServerSide ? (pagination?.currentPage || 1) : currentPage;
+
+  // Automatic page validation and correction
+  useEffect(() => {
+    if (totalPages > 0 && actualCurrentPage > totalPages) {
+      // Current page is invalid, redirect to last valid page
+      const correctedPage = Math.max(1, totalPages);
+      if (isServerSide && pagination?.onPageChange) {
+        pagination.onPageChange(correctedPage);
+      } else if (!isServerSide) {
+        setCurrentPage(correctedPage);
+      }
+    }
+  }, [totalPages, actualCurrentPage, isServerSide, pagination]);
+
+  // Reset to page 1 when filters change (for better UX)
+  useEffect(() => {
+    if (isServerSide) {
+      // For server-side, the parent component handles this via onFiltersChange
+      return;
+    } else {
+      // For client-side, reset to page 1 when filters change
+      if (Object.keys(effectiveFilters).length > 0) {
+        setCurrentPage(1);
+      }
+    }
+  }, [effectiveFilters, isServerSide]);
+
+  // Ensure we never show an invalid page
+  const safeCurrentPage = Math.min(Math.max(1, actualCurrentPage), Math.max(1, totalPages));
+  const hasValidData = totalCount > 0;
+  const showPagination = enablePagination && totalPages > 1 && hasValidData;
 
   // Event handlers
   const handleSearch = (value: string) => {
@@ -316,10 +347,13 @@ export function DataTable<T extends Record<string, any>>({ data, columns, config
   };
 
   const handlePageChange = (page: number) => {
+    // Validate the page number before changing
+    const validPage = Math.min(Math.max(1, page), Math.max(1, totalPages));
+    
     if (pagination?.onPageChange) {
-      pagination.onPageChange(page);
+      pagination.onPageChange(validPage);
     } else {
-      setCurrentPage(page);
+      setCurrentPage(validPage);
     }
   };
 
@@ -354,7 +388,7 @@ export function DataTable<T extends Record<string, any>>({ data, columns, config
             {enableSearch && (
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input placeholder={searchPlaceholder} value={searchTerm} onChange={(e) => handleSearch(e.target.value)} className="pl-10 w-[300px] bg-white" />
+                <Input placeholder={searchPlaceholder} value={searchTerm} onChange={(e) => handleSearch(e.target.value)} className="pl-10 w-[300px] bg-white border-zinc-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500" />
               </div>
             )}
           </div>
@@ -365,12 +399,12 @@ export function DataTable<T extends Record<string, any>>({ data, columns, config
             {enableFilters && filters.length > 0 && (
               <DropdownMenu open={openDropdown === "filter"} onOpenChange={(open) => setOpenDropdown(open ? "filter" : null)}>
                 <DropdownMenuTrigger asChild>
-                  <Button className="" variant="outline" size="sm">
+                  <Button className="border-zinc-300 hover:bg-blue-50 hover:border-blue-300" variant="outline" size="sm">
                     <Filter className="h-4 w-4 mr-2" />
                     Filter
-                    {Object.keys(effectiveFilters).length >= 0 && (
-                      <Badge variant="secondary" className="ml-2">
-                        {Object.keys(effectiveFilters).length}
+                    {Object.values(effectiveFilters).filter(value => value && value.trim() !== '').length > 0 && (
+                      <Badge variant="secondary" className="ml-2 bg-blue-100 text-blue-700 hover:bg-blue-200">
+                        {Object.values(effectiveFilters).filter(value => value && value.trim() !== '').length}
                       </Badge>
                     )}
                   </Button>
@@ -420,40 +454,18 @@ export function DataTable<T extends Record<string, any>>({ data, columns, config
             {enableColumnVisibility && <ColumnVisibilityToggle columns={columns} columnVisibility={columnVisibility} onColumnVisibilityChange={handleColumnVisibilityChange} open={openDropdown === "column"} onOpenChange={(open) => setOpenDropdown(open ? "column" : null)} />}
           </div>
         </div>
-
-        {/* Active Filters Display */}
-        <div className="flex items-center gap-2 flex-wrap min-h-8">
-          <span className="text-sm text-muted-foreground">Active filters:</span>
-          {Object.entries(effectiveFilters).map(([key, value]) => {
-            const filterGroup = filters.find((f) => f.key === key);
-            const option = filterGroup?.options.find((o) => o.value === value);
-            return (
-              <Badge key={`${key}-${value}`} variant="secondary" className="gap-1">
-                {filterGroup?.label}: {option?.label || value}
-                <X className="h-3 w-3 cursor-pointer hover:text-destructive" onClick={() => handleFilterChange(key, "")} />
-              </Badge>
-            );
-          })}
-          {Object.keys(effectiveFilters).length > 0 ? (
-            <Button variant="ghost" size="sm" onClick={handleClearFilters} className="h-6 px-2 text-xs">
-              Clear all
-            </Button>
-          ) : (
-            <span className="text-sm text-muted-foreground">None</span>
-          )}
-        </div>
       </div>
 
       {/* Data Table */}
-      <div className="bg-white rounded-lg border border-zinc-200 shadow-sm">
+      <div className="bg-white rounded-lg border border-zinc-200">
         <Table>
           <TableHeader>
-            <TableRow className="h-12">
+            <TableRow className="h-11">
               {visibleColumns.map((column, index) => (
-                <TableHead key={column.id} className={`${column.enableSorting ? "cursor-pointer hover:bg-muted/50" : ""} whitespace-nowrap`} onClick={() => column.enableSorting && handleSort(column.id)} style={{ width: column.size ? `${column.size}px` : undefined }}>
-                  <div className="flex items-center gap-2 justify-start whitespace-nowrap">
+                <TableHead key={column.id} className={`${column.enableSorting ? "cursor-pointer hover:bg-blue-50/50" : ""} whitespace-nowrap bg-blue-50/30 border-b border-blue-100`} onClick={() => column.enableSorting && handleSort(column.id)} style={{ width: column.size ? `${column.size}px` : undefined }}>
+                  <div className="flex items-center gap-2 justify-start whitespace-nowrap text-zinc-700 font-medium">
                     {column.header}
-                    {enableSorting && effectiveSortConfig?.key === column.id && <span className="text-xs">{effectiveSortConfig.direction === "asc" ? "↑" : "↓"}</span>}
+                    {enableSorting && effectiveSortConfig?.key === column.id && <span className="text-xs text-blue-600">{effectiveSortConfig.direction === "asc" ? "↑" : "↓"}</span>}
                   </div>
                 </TableHead>
               ))}
@@ -466,11 +478,11 @@ export function DataTable<T extends Record<string, any>>({ data, columns, config
                   const isFakeRow = row && typeof row === "object" && "__isFakeRow" in row;
 
                   return (
-                    <TableRow key={isFakeRow ? `fake-row-${index}` : `row-${index}`} className={`h-14 ${!isFakeRow && onRowClick ? "cursor-pointer hover:bg-muted/50" : ""} ${!isFakeRow && rowClassName ? rowClassName(row as T) : ""} ${isFakeRow ? "opacity-30 pointer-events-none" : ""}`} onClick={() => !isFakeRow && onRowClick?.(row as T)}>
+                    <TableRow key={isFakeRow ? `fake-row-${index}` : `row-${index}`} className={`h-12 ${!isFakeRow && onRowClick ? "cursor-pointer hover:bg-blue-50/30" : ""} ${!isFakeRow && rowClassName ? rowClassName(row as T) : ""} ${isFakeRow ? "opacity-30 pointer-events-none" : ""} border-b border-zinc-100`} onClick={() => !isFakeRow && onRowClick?.(row as T)}>
                       {visibleColumns.map((column) => (
                         <TableCell
                           key={`${index}-${column.id}`}
-                          className="whitespace-nowrap overflow-hidden"
+                          className="whitespace-nowrap overflow-hidden py-3"
                           style={{
                             maxWidth: column.size ? `${column.size}px` : "auto",
                           }}
@@ -485,9 +497,9 @@ export function DataTable<T extends Record<string, any>>({ data, columns, config
                 Array(pageSize)
                   .fill(null)
                   .map((_, index) => (
-                    <TableRow key={`empty-fake-row-${index}`} className="h-14 opacity-30 pointer-events-none">
+                    <TableRow key={`empty-fake-row-${index}`} className="h-12 opacity-30 pointer-events-none border-b border-zinc-100">
                       {visibleColumns.map((column) => (
-                        <TableCell key={`empty-${index}-${column.id}`} className="whitespace-nowrap overflow-hidden">
+                        <TableCell key={`empty-${index}-${column.id}`} className="whitespace-nowrap overflow-hidden py-3">
                           <div className="whitespace-nowrap truncate">-</div>
                         </TableCell>
                       ))}
@@ -498,13 +510,13 @@ export function DataTable<T extends Record<string, any>>({ data, columns, config
       </div>
 
       {/* Pagination */}
-      {enablePagination && totalPages > 1 && (
+      {showPagination && (
         <div className="flex items-center justify-between">
           <div className="text-sm text-muted-foreground">
-            Showing {(actualCurrentPage - 1) * pageSize + 1} to {Math.min(actualCurrentPage * pageSize, totalCount)} of {totalCount} results
+            Showing {(safeCurrentPage - 1) * pageSize + 1} to {Math.min(safeCurrentPage * pageSize, totalCount)} of {totalCount} results
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" onClick={() => handlePageChange(actualCurrentPage - 1)} disabled={actualCurrentPage === 1}>
+            <Button variant="outline" size="sm" onClick={() => handlePageChange(safeCurrentPage - 1)} disabled={safeCurrentPage === 1} className="border-zinc-300 hover:bg-blue-50 hover:border-blue-300 disabled:opacity-50">
               <ChevronLeft className="h-4 w-4 mr-2" />
               Previous
             </Button>
@@ -522,14 +534,14 @@ export function DataTable<T extends Record<string, any>>({ data, columns, config
                   // Always show first page
                   pages.push(1);
 
-                  if (actualCurrentPage <= 4) {
+                  if (safeCurrentPage <= 4) {
                     // Near the beginning
                     for (let i = 2; i <= 5; i++) {
                       pages.push(i);
                     }
                     pages.push("...");
                     pages.push(totalPages);
-                  } else if (actualCurrentPage >= totalPages - 3) {
+                  } else if (safeCurrentPage >= totalPages - 3) {
                     // Near the end
                     pages.push("...");
                     for (let i = totalPages - 4; i <= totalPages; i++) {
@@ -538,7 +550,7 @@ export function DataTable<T extends Record<string, any>>({ data, columns, config
                   } else {
                     // In the middle
                     pages.push("...");
-                    for (let i = actualCurrentPage - 1; i <= actualCurrentPage + 1; i++) {
+                    for (let i = safeCurrentPage - 1; i <= safeCurrentPage + 1; i++) {
                       pages.push(i);
                     }
                     pages.push("...");
@@ -556,7 +568,7 @@ export function DataTable<T extends Record<string, any>>({ data, columns, config
                   }
 
                   return (
-                    <Button key={page} variant={actualCurrentPage === page ? "default" : "outline"} size="sm" onClick={() => handlePageChange(page as number)} className="w-8 h-8 p-0">
+                    <Button key={page} variant={safeCurrentPage === page ? "default" : "outline"} size="sm" onClick={() => handlePageChange(page as number)} className={`w-8 h-8 p-0 ${safeCurrentPage === page ? "bg-blue-600 hover:bg-blue-700 border-blue-600" : "border-zinc-300 hover:bg-blue-50 hover:border-blue-300"}`}>
                       {page}
                     </Button>
                   );
@@ -564,11 +576,30 @@ export function DataTable<T extends Record<string, any>>({ data, columns, config
               })()}
             </div>
 
-            <Button variant="outline" size="sm" onClick={() => handlePageChange(actualCurrentPage + 1)} disabled={actualCurrentPage === totalPages}>
+            <Button variant="outline" size="sm" onClick={() => handlePageChange(safeCurrentPage + 1)} disabled={safeCurrentPage === totalPages} className="border-zinc-300 hover:bg-blue-50 hover:border-blue-300 disabled:opacity-50">
               Next
               <ChevronRight className="h-4 w-4 ml-2" />
             </Button>
           </div>
+        </div>
+      )}
+
+      {/* Show helpful message when no results but filters are active */}
+      {!hasValidData && Object.values(effectiveFilters).some(value => value && value.trim() !== '') && (
+        <div className="flex items-center justify-center py-8">
+          <div className="text-center">
+            <p className="text-sm text-muted-foreground mb-2">No results found with current filters</p>
+            <Button variant="outline" size="sm" onClick={handleClearFilters} className="text-blue-600 border-blue-300 hover:bg-blue-50">
+              Clear filters
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {/* Show basic message when no results and no filters */}
+      {!hasValidData && !Object.values(effectiveFilters).some(value => value && value.trim() !== '') && (
+        <div className="flex items-center justify-center py-8">
+          <p className="text-sm text-muted-foreground">No data available</p>
         </div>
       )}
     </div>
