@@ -196,6 +196,11 @@ export class KpiService {
         };
         }
        
+        async getAnomaliesChart()
+        {
+          
+
+        }
 
 
         

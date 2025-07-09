@@ -199,4 +199,16 @@ export class KpiController {
 
 
 
+  @Get('anomalieschart')
+  async getAnomaliesChart() {
+    try {
+      return this.kpiService.getAnomaliesChart();
+    } catch (err) {
+      console.error('Error in getAnomaliesChart:', err);
+      throw new BadRequestException('Failed to retrieve anomalies chart data');
+    }
+  }
+
+
+
 }
