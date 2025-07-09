@@ -1,36 +1,41 @@
-networks:
-  taqathon-network:
-    driver: bridge
-
-volumes:
-  postgres_data:
+version: "3.8"
 
 services:
-  # PostgreSQL Database
-  postgres:
-    image: postgres:15-alpine
-    container_name: taqathon-postgres
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB:-taqathon_db}
-      POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres123}
-    ports:
-      - "5433:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-#      - ./create-db-users.sh:/docker-entrypoint-initdb.d/create-db-users.sh
-    networks:
-      - taqathon-network
-
-  # Frontend Application
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: taqathon-frontend
-    environment:
-      NODE_ENV: ${NODE_ENV:-development}
+    container_name: frontend
     ports:
       - "3000:3000"
-    networks:
-      - taqathon-network
+    environment:
+      - NODE_ENV=development
+    command: npm run dev
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: backend
+    ports:
+      - "3001:3001"
+      - "5555:5555"
+    environment:
+      - NODE_ENV=development
+    # volumes:
+    #   - ./backend:/app
+    command: >
+      sh -c "npm run start:dev & npx prisma studio"
+
+  camembert-api:
+    build:
+      context: ./camembert-api
+      dockerfile: Dockerfile
+    container_name: camembert-api
+    ports:
+      - "7533:7533"
+    environment:
+      - HOST=0.0.0.0
+      - PORT=7533
+      - LOG_LEVEL=INFO
+      - MODEL_PATH=app/models/model.pth

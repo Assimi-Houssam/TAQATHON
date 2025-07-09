@@ -403,33 +403,15 @@ export class AnomalyController {
   //finma izide chi maintenacne window jdida i3awad idire dik twichia
 
   @ApiOperation({ summary: 'Mark anomaly as resolved' })
-  @ApiConsumes('multipart/form-data')
-  @ApiParam({ name: 'id', description: 'Anomaly ID', type: 'string' })
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        file: {
-          type: 'string',
-          format: 'binary',
-          description: 'Resolution file (optional)',
-        },
-        summary: {
-          type: 'string',
-          description: 'Resolution summary',
-        },
-      },
-    },
-  })
-  @ApiResponse({
-    status: 200,
-    description: 'Anomaly marked as resolved successfully',
-  })
-  @ApiResponse({
-    status: 400,
-    description: 'Invalid request data',
-  })
   @Post('mark_as_resolved/:id')
+  async markAsResolved(
+    @Param('id') id: string,
+  ) {
+    return await this.anomalyService.markAsResolved(id);
+  }
+
+  @ApiOperation({ summary: 'Attach REX entry to anomaly' })
+  @Post('rex/:id')
   @UseInterceptors(
     FileInterceptor('file', {
       storage: diskStorage({
@@ -447,12 +429,12 @@ export class AnomalyController {
       },
     }),
   )
-  async markAsResolved(
+  async attachRexEntry(
     @Param('id') id: string,
     file: any,
     @Body('summary') summary?: string,
   ) {
-    return await this.anomalyService.markAsResolved(id, file, summary);
+    // return await this.anomalyService.attachRexEntry(id, file, summary);
   }
 
   @ApiOperation({ summary: 'Update anomaly' })

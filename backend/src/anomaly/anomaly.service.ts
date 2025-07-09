@@ -205,28 +205,23 @@ export class AnomalyService {
     return maintenanceWindows;
   }
 
-  async markAsResolved(id: string, file: any, summary?: string) {
+  async markAsResolved(id: string) {
     const anomaly = await this.Prisma.anomaly.findUnique({
       where: { id: id },
     });
     if (!anomaly) {
       throw new Error('Anomaly not found');
     }
-
     const updatedAnomaly = await this.Prisma.anomaly.update({
       where: { id: id },
       data: {
         status: 'CLOSED',
         resolution_date: new Date(),
-        rex_entrie: {
-          create: {
-            docment_path: file.path, // we will crearte a button for dowkload the document or we will show it directly on our frontend,
-            summary: summary || null,
-          },
+        maintenance_window: {
+          disconnect: true,
         },
       },
     });
-
     return {
       success: true,
       message: 'Anomaly marked as resolved',

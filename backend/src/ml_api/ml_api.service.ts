@@ -14,7 +14,7 @@ export class MlApiService {
     
     try {
       const response = await axios.post(
-        'http://localhost:8000/predict',
+        'http://camembert-api:7533/predict',
         data, // pass the object directly
         { headers: { 'Content-Type': 'application/json' }, timeout: 10000 }
       );
@@ -46,7 +46,7 @@ export class MlApiService {
       formData.append('file_type', 'excel');
 
       const response = await axios.post(
-        'http://localhost:8000/predict_excel',
+        'http://camembert-api:7533/predict_excel',
         formData,
         {
           headers: {
