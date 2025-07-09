@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { BadRequestException, Controller, Get } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { KpiService } from './kpi.service';
 import { Public } from 'src/metadata';
@@ -196,4 +196,39 @@ export class KpiController {
       );
     }
   }
+
+
+
+  @ApiOperation({ summary: 'Get action plan statistics' })
+    @ApiResponse({
+      status: 200,
+      description: 'Action plan statistics retrieved successfully',
+      schema: {
+        type: 'object',
+        properties: {
+          action: {
+            type: 'object',
+            properties: {
+              total: { type: 'number', example: 150 },
+              completed: { type: 'number', example: 75 },
+              inProgress: { type: 'number', example: 50 },
+            },
+          },
+        },
+      },
+    })
+    @ApiResponse({
+      status: 500,
+      description: 'Internal server error',
+    })
+    @Get('getactionplanstatistics')
+    async getActionPlanStatistics() {
+      try {
+        return await this.kpiService.getactionOfAnomaly();
+      } catch (error) {
+        console.error('Error retrieving action plan statistics:', error);
+        throw new BadRequestException('Failed to retrieve action plan statistics');
+      }
+  
+    }
 }

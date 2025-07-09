@@ -201,7 +201,13 @@ export class AnomalyService {
   }
 
   async getMaintenanceWindows() {
-    const maintenanceWindows = await this.Prisma.maintenance_window.findMany();
+    const maintenanceWindows = await this.Prisma.maintenance_window.findMany(
+      {
+        include:{
+          anomaly: true,
+        }
+      }
+    );
     if (!maintenanceWindows || maintenanceWindows.length === 0) {
       return { message: 'No maintenance windows found' };
     }
@@ -689,28 +695,7 @@ export class AnomalyService {
 
 
 
-    async getactionOfAnomaly(anomalyId: string) {
-      const anomaly = await this.Prisma.anomaly.findUnique({
-        where: { id: anomalyId },
-      });
-      if (!anomaly) {
-        throw new Error('Anomaly not found');
-      }
-
-      const actionPlanscompleted = await this.Prisma.action_plan.count({
-        where : {
-          status: 'COMPLETED',
-        }
-      })
-      const actionPlansin = await this.Prisma.action_plan.count()
-
-      return {
-        action: {
-          total: actionPlanscompleted ,
-          completed: actionPlanscompleted,
-        },
-      };
-    }
+ 
 
      async  downloadattachment(id: string) {
       const attachment = await this.Prisma.attachments.findUnique({
