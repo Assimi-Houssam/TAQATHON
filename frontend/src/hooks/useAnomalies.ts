@@ -242,6 +242,39 @@ export function useAnomalyMutations() {
   });
 
   /**
+   * Download attachment file
+   */
+  const downloadAttachment = useMutation({
+    mutationFn: async (attachmentId: string): Promise<Blob> => {
+      const response = await apiClient.get(`/anomaly/download-attachment/${attachmentId}`, {
+        responseType: 'blob',
+      });
+      return response.data;
+    },
+    onError: (error, attachmentId) => {
+      console.error(`Failed to download attachment ${attachmentId}:`, error);
+    },
+  });
+
+  /**
+   * Delete attachment
+   */
+  const deleteAttachment = useMutation({
+    mutationFn: async ({ attachmentId, anomalyId }: { attachmentId: string; anomalyId: string }): Promise<void> => {
+      await apiClient.delete(`/anomaly/deleteattachment/${attachmentId}`);
+    },
+    onSuccess: (_, variables) => {
+      // Update the specific anomaly in cache
+      queryClient.invalidateQueries({ queryKey: ["anomaly", variables.anomalyId] });
+      // Invalidate anomalies list
+      queryClient.invalidateQueries({ queryKey: ["anomalies"] });
+    },
+    onError: (error, variables) => {
+      console.error(`Failed to delete attachment ${variables.attachmentId}:`, error);
+    },
+  });
+
+  /**
    * Create action plan for an anomaly
    */
   const createActionPlan = useMutation({
@@ -424,6 +457,8 @@ export function useAnomalyMutations() {
     
     // Attachments and documentation
     uploadAttachment,
+    downloadAttachment,
+    deleteAttachment,
     attachRex,
     
     // Action plans
