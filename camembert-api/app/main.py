@@ -276,9 +276,6 @@ def process_excel_file(file_bytes: bytes):
                     # break
                 except requests.RequestException as e:
                     logger.error(f"Failed to post results to external API: {e}")
-                    # break
-            if row_idx % 500 == 0:
-                break
 
 
         # TODO: save results to DB, file, email, etc.

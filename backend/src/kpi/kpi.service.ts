@@ -197,47 +197,64 @@ export class KpiService {
         }
        
         async getAnomaliesChart() {
-          // Get start and end of current month
-          const now = new Date();
-          const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-          const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
+          const result = [];
 
-          const thismonthclosed = await this.Prisma.anomaly.count({
-            where: {
-              created_at: {
-                gte: startOfMonth,  // Greater than or equal to start of month
-                lte: endOfMonth,    // Less than or equal to end of month
+          // Get today's date at 00:00:00
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+
+          for (let i = 29; i >= 0; i--) {
+            // Create start and end of that day
+            const dayStart = new Date(today);
+            dayStart.setDate(today.getDate() - i);
+
+            const dayEnd = new Date(dayStart);
+            dayEnd.setHours(23, 59, 59, 999);
+
+            // Get counts for this day
+            const closedCount = await this.Prisma.anomaly.count({
+              where: {
+                created_at: {
+                  gte: dayStart,
+                  lte: dayEnd,
+                },
+                status: 'CLOSED',
               },
-              status: 'CLOSED'
-            },
-          });
+            });
 
-          const thismonthinprogress = await this.Prisma.anomaly.count({
-            where: {
-              created_at: {
-                gte: startOfMonth,  // Greater than or equal to start of month
-                lte: endOfMonth,    // Less than or equal to end of month
+            const inProgressCount = await this.Prisma.anomaly.count({
+              where: {
+                created_at: {
+                  gte: dayStart,
+                  lte: dayEnd,
+                },
+                status: 'IN_PROGRESS',
               },
-              status: 'IN_PROGRESS'
-            },
-          });
-          const thismonthnew = await this.Prisma.anomaly.count({
-            where: {
-              created_at: {
-                gte: startOfMonth,  // Greater than or equal to start of month
-                lte: endOfMonth,    // Less than or equal to end of month
+            });
+
+            const newCount = await this.Prisma.anomaly.count({
+              where: {
+                created_at: {
+                  gte: dayStart,
+                  lte: dayEnd,
+                },
+                status: 'NEW',
               },
-              status: 'NEW'
-            },
-          });
+            });
 
+            const total = closedCount + inProgressCount + newCount;
 
-          return {
-            thismonthclosed,
-            thismonthinprogress,
-            thismonthnew,
-            total: thismonthclosed + thismonthinprogress + thismonthnew
-          };
+            // Push to result array
+            result.push({
+              date: dayStart.toISOString().split('T')[0], // e.g., '2025-07-09'
+              closed: closedCount,
+              inProgress: inProgressCount,
+              new: newCount,
+              total,
+            });
+          }
+
+          return result;
         }
 
       }
