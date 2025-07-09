@@ -290,7 +290,9 @@ export function NewTabContent({ anomaly, onUpdate, onStatusChange }: NewTabConte
             <div className="flex items-center gap-6">
               {/* Duration */}
               <div className="flex items-center gap-2">
-                <span className="text-xs font-medium text-gray-600 uppercase tracking-wide">Duration</span>
+                <span className="text-xs font-medium text-gray-600 uppercase tracking-wide">Duration 
+                  <span className="text-xs font-medium text-gray-600 uppercase tracking-wide px-1 lowercase">(Hours)</span>
+                </span>
                 <div className="flex items-center gap-1 px-2 py-1 bg-white rounded-md border border-gray-200 shadow-sm">
                   <Input
                     type="text"
