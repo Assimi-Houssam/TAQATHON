@@ -11,14 +11,12 @@ export class MlApiService {
   constructor(private readonly Prisma: PrismaService) {}
 
   async sendPriorityRequest(data: PrioritySuggestionDto) {
-    
     try {
       const response = await axios.post(
-        'http://camembert-api:7533/predict',
+        `${process.env.ML_API_BASE_URL}:${process.env.ML_API_PORT}/predict`,
         data, // pass the object directly
-        { headers: { 'Content-Type': 'application/json' }, timeout: 10000 }
+        { headers: { 'Content-Type': 'application/json' }, timeout: 10000 },
       );
-      
 
       return response.data;
     } catch (error) {
@@ -46,7 +44,7 @@ export class MlApiService {
       formData.append('file_type', 'excel');
 
       const response = await axios.post(
-        'http://camembert-api:7533/predict_excel',
+        `${process.env.ML_API_BASE_URL}:${process.env.ML_API_PORT}/predict_excel`,
         formData,
         {
           headers: {

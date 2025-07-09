@@ -410,6 +410,8 @@ export class AnomalyController {
     return await this.anomalyService.markAsResolved(id);
   }
 
+
+
   @ApiOperation({ summary: 'Attach REX entry to anomaly' })
   @Post('rex/:id')
   @UseInterceptors(
@@ -434,7 +436,7 @@ export class AnomalyController {
     file: any,
     @Body('summary') summary?: string,
   ) {
-    // return await this.anomalyService.attachRexEntry(id, file, summary);
+    return await this.anomalyService.attachRexEntry(id, file, summary);
   }
 
   @ApiOperation({ summary: 'Update anomaly' })
