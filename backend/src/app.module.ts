@@ -6,9 +6,17 @@ import { MlApiModule } from './ml_api/ml_api.module';
 import { AnomalyModule } from './anomaly/anomaly.module';
 import { KpiModule } from './kpi/kpi.module';
 import { CronModule } from './cron/cron.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
-  imports: [AuthModule, MlApiModule, AnomalyModule, KpiModule, CronModule],
+  imports: [
+    AuthModule,
+    MlApiModule,
+    AnomalyModule,
+    KpiModule,
+    CronModule,
+    ScheduleModule.forRoot(),
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
