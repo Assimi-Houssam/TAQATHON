@@ -793,7 +793,7 @@ export class AnomalyController {
     @Res() res: Response,
   ) {
     try {
-      const fileInfo = await this.anomalyService.downloadattachment(id);
+      const fileInfo = await this.anomalyService.downloadrex(id);
       // Set headers for file download
       res.setHeader('Content-Type', fileInfo.mimeType);
       res.setHeader('Content-Disposition', `attachment; filename="${fileInfo.fileName}"`);
