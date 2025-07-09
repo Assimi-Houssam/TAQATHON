@@ -411,7 +411,8 @@ export class AnomalyController {
           console.error('Failed to create maintenance window:', error);
         }
       }
-
+      await this.anomalyService.autoAssigmentAnomalyToMaintenanceWindowForceStop();
+      
       return {
         success: true,
         message: 'Maintenance windows created successfully',
