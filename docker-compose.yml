@@ -10,6 +10,7 @@ services:
       - "3000:3000"
     environment:
       - NODE_ENV=development
+    
     command: npm run dev
 
   backend:
@@ -18,12 +19,10 @@ services:
       dockerfile: Dockerfile
     container_name: backend
     ports:
-      - "3001:3001"
+      - "7532:7532"
       - "5555:5555"
     environment:
       - NODE_ENV=development
-    # volumes:
-    #   - ./backend:/app
     command: >
       sh -c "npm run start:dev & npx prisma studio"
 

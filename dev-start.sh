@@ -37,7 +37,7 @@ PRISMA_PID=$!
 echo -e "${BLUE}✅ All services started!${NC}"
 echo -e "${YELLOW}📋 Services running:${NC}"
 echo -e "  • Frontend: http://localhost:3000"
-echo -e "  • Backend: http://localhost:3001 (or your configured port)"
+echo -e "  • Backend: http://localhost:7532 (or your configured port)"
 echo -e "  • Prisma Studio: http://localhost:5555"
 echo ""
 echo -e "${YELLOW}Press Ctrl+C to stop all services${NC}"

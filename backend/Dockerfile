@@ -10,5 +10,5 @@ COPY . .
 RUN npx prisma generate
 RUN npx prisma db push 
 
-EXPOSE 3001
+EXPOSE 7532
 CMD ["npm", "run", "start:dev"]

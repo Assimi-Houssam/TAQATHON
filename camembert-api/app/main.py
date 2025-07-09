@@ -268,7 +268,7 @@ def process_excel_file(file_bytes: bytes):
             # Send results to external API
             if row_idx % 5 == 0:
                 try:
-                    response = requests.post("http://backend:3001/ml/ml-response", json=results)
+                    response = requests.post("http://backend:7532/ml/ml-response", json=results)
                     print(results)
                     response.raise_for_status()
                     logger.info(f"Posted results to external API: {response.status_code}")
@@ -283,7 +283,8 @@ def process_excel_file(file_bytes: bytes):
 
         # TODO: save results to DB, file, email, etc.
         logger.info(f"Processed {len(results)} rows in background.")
-        logger.info(f"Processed {results[0]}")
+        if (len(results)):
+            logger.info(f"Processed {results[0]}")
 
     except Exception as e:
         logger.error(f"Error in background task: {e}")
