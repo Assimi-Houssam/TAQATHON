@@ -2,8 +2,8 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { ReportHeader } from "@/components/ui/ocp/reports/report-header";
-import { ReportReplies } from "@/components/ui/ocp/reports/report-replies";
+import { ReportHeader } from "@/components/ui/taqa/reports/report-header";
+import { ReportReplies } from "@/components/ui/taqa/reports/report-replies";
 import { useGetReport } from "@/endpoints/reports/get-report";
 import LoadingSpinner from "@/components/ui/loading-spinner";
 import { formatDistance } from "date-fns";

@@ -1,5 +1,5 @@
 import { Company } from "@/types/entities";
-import { Column } from "@/components/ui/ocp/layout/OCPDataTable-new/shared";
+import { Column } from "@/components/ui/taqa/layout/OCPDataTable-new/shared";
 import Link from "next/link";
 import { CompanyNameCell } from "./components/CompanyNameCell";
 import { BusinessScopesCell } from "./components/BusinessScopesCell";

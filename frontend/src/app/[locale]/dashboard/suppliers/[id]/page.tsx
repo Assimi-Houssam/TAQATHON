@@ -1,7 +1,7 @@
 "use client";
 
-import { HistoryComponent } from "@/components/ui/ocp/HistoryComponent";
-import { EntityComponent } from "@/components/ui/ocp/layout/ProfileCompanies/EntityComponent";
+import { HistoryComponent } from "@/components/ui/taqa/HistoryComponent";
+import { EntityComponent } from "@/components/ui/taqa/layout/ProfileCompanies/EntityComponent";
 import { useGetCompanyById } from "@/endpoints/company/get-company";
 import { Company } from "@/types/entities";
 import { useParams } from "next/navigation";

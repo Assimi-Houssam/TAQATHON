@@ -3,11 +3,11 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { AddFormDialog } from "@/components/ui/ocp/AddFormDialog";
-import { AddFormFieldDialog } from "@/components/ui/ocp/AddFormFieldDialog";
-import { FormLayoutConfig } from "@/components/ui/ocp/FormLayoutConfig";
-import { FormLayoutRenderer } from "@/components/ui/ocp/FormLayoutRenderer";
-import { FormsSelector } from "@/components/ui/ocp/FormsSelector";
+import { AddFormDialog } from "@/components/ui/taqa/AddFormDialog";
+import { AddFormFieldDialog } from "@/components/ui/taqa/AddFormFieldDialog";
+import { FormLayoutConfig } from "@/components/ui/taqa/FormLayoutConfig";
+import { FormLayoutRenderer } from "@/components/ui/taqa/FormLayoutRenderer";
+import { FormsSelector } from "@/components/ui/taqa/FormsSelector";
 import { useFormFields } from "@/endpoints/forms/useFormFields";
 import {
   useCreateForm,

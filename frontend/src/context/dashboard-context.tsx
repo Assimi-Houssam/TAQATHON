@@ -15,12 +15,12 @@ interface DashboardContextType {
 
 const dashboardConfigs: Record<EntityTypes, DashboardConfig> = {
   [EntityTypes.OCP_AGENT]: {
-    component: () => import("@/components/ui/ocp/Dashboard"),
+    component: () => import("@/components/ui/taqa/Dashboard"),
     metrics: ["companies", "suppliers", "bids", "agents", "purchaseRequests"],
     features: ["departments", "ongoingPurchases", "topCompanies", "tasks"],
   },
   [EntityTypes.SUPPLIER]: {
-    component: () => import("@/components/ui/ocp/SupplierDashboard"),
+    component: () => import("@/components/ui/taqa/SupplierDashboard"),
     metrics: ["activeBids", "wonContracts", "ongoingDeliveries", "successRate"],
     features: ["recentBids", "recentActivities", "companyOverview", "tasks"],
   },

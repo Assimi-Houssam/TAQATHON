@@ -1,15 +1,15 @@
 "use client";
 
-import { LogCard } from "@/components/ui/ocp/logs/log-card";
-import { EmptyLogs } from "@/components/ui/ocp/logs/empty-logs";
-import { LogsFilters } from "@/components/ui/ocp/logs/logs-filters";
+import { LogCard } from "@/components/ui/taqa/logs/log-card";
+import { EmptyLogs } from "@/components/ui/taqa/logs/empty-logs";
+import { LogsFilters } from "@/components/ui/taqa/logs/logs-filters";
 import { useGetLogs } from "@/endpoints/logs/get-all-logs";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { format } from "date-fns";
 import { LogsType } from "@/types/entities/Logs.interface";
 import { motion } from "framer-motion";
-import { LogsNoResults } from "@/components/ui/ocp/logs/no-results";
+import { LogsNoResults } from "@/components/ui/taqa/logs/no-results";
 
 export default function LogsPage() {
   const t = useTranslations("logs");

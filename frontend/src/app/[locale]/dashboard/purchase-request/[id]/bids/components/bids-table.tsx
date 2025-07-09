@@ -1,6 +1,6 @@
 "use client";
 
-import { BidsDataTable } from "@/components/ui/ocp/layout/OCPDataTable-new";
+import { BidsDataTable } from "@/components/ui/taqa/layout/OCPDataTable-new";
 
 const headers = [
   {

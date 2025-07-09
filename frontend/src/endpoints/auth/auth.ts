@@ -1,5 +1,5 @@
-import { LoginFormValues } from "@/components/ui/ocp/form/login-form";
-import { SignupFormValues } from "@/components/ui/ocp/form/signup-form";
+import { LoginFormValues } from "@/components/ui/taqa/form/login-form";
+import { SignupFormValues } from "@/components/ui/taqa/form/signup-form";
 import { useRouter } from "@/i18n/routing";
 import { apiClient } from "@/lib/axios";
 import { useMutation } from "@tanstack/react-query";

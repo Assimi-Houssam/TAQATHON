@@ -19,7 +19,7 @@ import {
   CardTitle,
 } from "../ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
-import FormFieldWrapper from "../ui/ocp/form/common/FormFieldWrapper";
+import FormFieldWrapper from "../ui/taqa/form/common/FormFieldWrapper";
 import { Switch } from "../ui/switch";
 import { useTranslations } from "next-intl";
 

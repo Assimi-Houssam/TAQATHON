@@ -31,7 +31,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { toast } from "sonner";
-import FormFieldWrapper from "../ui/ocp/form/common/FormFieldWrapper";
+import FormFieldWrapper from "../ui/taqa/form/common/FormFieldWrapper";
 
 const ProfileSettings = ({
   form,

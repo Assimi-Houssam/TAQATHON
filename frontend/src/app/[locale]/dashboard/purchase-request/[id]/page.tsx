@@ -1,7 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { CustomCard } from "@/components/ui/ocp/custom-card";
-import { ViewAttachmentsCard } from "@/components/ui/ocp/purchase-request/view-attachments-card";
+import { CustomCard } from "@/components/ui/taqa/custom-card";
+import { ViewAttachmentsCard } from "@/components/ui/taqa/purchase-request/view-attachments-card";
 import { useAttachments } from "@/endpoints/doc/get-attachements";
 import { useGetPurchaseRequestByRef } from "@/endpoints/purchase-requests/purchase-requests";
 import { useRouter } from "@/i18n/routing";

@@ -1,6 +1,6 @@
 "use client";
 
-import { UnifiedDataTable, FilterGroup } from "@/components/ui/ocp/layout/OCPDataTable-new/shared";
+import { UnifiedDataTable, FilterGroup } from "@/components/ui/taqa/layout/OCPDataTable-new/shared";
 import { useGetOcpAgents } from "@/endpoints/user/get-ocp-agents";
 import { Departement, User } from "@/types/entities";
 import { useTranslations } from "next-intl";

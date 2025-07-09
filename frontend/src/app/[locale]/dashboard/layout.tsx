@@ -1,8 +1,8 @@
 "use client";
 
 import { AppSidebar } from "@/components/app-sidebar";
-import { Navbar } from "@/components/ui/ocp/layout/navbar";
-import { SidebarProvider } from "@/components/ui/sidebar";
+import { Navbar } from "@/components/ui/taqa/layout/navbar";
+import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { UserProvider } from "@/context/user-context";
 import Providers from "./providers";
 import { NotificationProvider } from "@/context/NotificationContext";
@@ -18,12 +18,16 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       <UserProvider>
         <SidebarProvider defaultOpen={true}>
           <NotificationProvider>
-            <Navbar />
-            <div className="flex h-[calc(100vh-3.5rem)] w-full mt-14">
-              <AppSidebar />
-              <main className="flex-1 w-full overflow-x-hidden bg-gray-50">
-              {children}
-              </main>
+            <div className="min-h-screen w-full">
+              <Navbar />
+              <div className="flex pt-20">
+                <AppSidebar />
+                <SidebarInset className="flex-1 w-full bg-gray-50">
+                  <div className="p-6 max-w-full">
+                    {children}
+                  </div>
+                </SidebarInset>
+              </div>
             </div>
           </NotificationProvider>
         </SidebarProvider>

@@ -1,6 +1,6 @@
 "use client";
 
-import { UnifiedDataTable } from "@/components/ui/ocp/layout/OCPDataTable-new/shared";
+import { UnifiedDataTable } from "@/components/ui/taqa/layout/OCPDataTable-new/shared";
 import { useTranslations } from "next-intl";
 import { getCompanyOperatorsColumns } from "./columns";
 import { useGetAllSuppliers } from "@/endpoints/user/get-all-suppliers";

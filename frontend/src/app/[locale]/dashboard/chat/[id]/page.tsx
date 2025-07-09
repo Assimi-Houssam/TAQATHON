@@ -6,7 +6,7 @@ import { useParams } from "next/navigation";
 import { useChat } from "@/context/ChatContext";
 import { useGetChatMessages } from "@/endpoints/chat/get-chat-messages";
 import React, { useEffect } from "react";
-import ChatMessaging from "@/components/ui/ocp/layout/chatMessaging";
+import ChatMessaging from "@/components/ui/taqa/layout/chatMessaging";
 import { useUser } from "@/context/user-context";
 import { generateChatInfo } from "@/lib/utils";
 

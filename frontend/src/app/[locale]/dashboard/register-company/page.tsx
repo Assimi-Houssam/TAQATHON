@@ -1,8 +1,8 @@
 "use client";
-import CompanyRegistrationForm from "@/components/ui/ocp/form/company/company-register";
-import CompanyRegistrationPendingStatus from "@/components/ui/ocp/form/company/company-register-pending";
-import CompanyRegistrationRejectedStatus from "@/components/ui/ocp/form/company/company-register-rejected";
-import CompanyRegistrationSkeleton from "@/components/ui/ocp/form/company/company-register-skeleton";
+import CompanyRegistrationForm from "@/components/ui/taqa/form/company/company-register";
+import CompanyRegistrationPendingStatus from "@/components/ui/taqa/form/company/company-register-pending";
+import CompanyRegistrationRejectedStatus from "@/components/ui/taqa/form/company/company-register-rejected";
+import CompanyRegistrationSkeleton from "@/components/ui/taqa/form/company/company-register-skeleton";
 import { StepperProvider } from "@/context/stepper-context";
 import { useUser } from "@/context/user-context";
 import { useGetUserCompanies } from "@/endpoints/user/get-companies";

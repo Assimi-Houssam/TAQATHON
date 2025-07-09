@@ -1,6 +1,6 @@
 "use client";
 
-import { UnifiedDataTable } from "@/components/ui/ocp/layout/OCPDataTable-new/shared";
+import { UnifiedDataTable } from "@/components/ui/taqa/layout/OCPDataTable-new/shared";
 import { useTranslations } from "next-intl";
 import { getCompanyColumns } from "../columns";
 import { useGetAllCompanies } from "@/endpoints/company/get-all-companies";
@@ -8,7 +8,7 @@ import { useGetBusinessScopes } from "@/endpoints/company/get-business-scopes";
 import { Company } from "@/types/entities";
 import { useState, useCallback } from "react";
 import { CompanyApprovalStatus } from "@/types/entities/enums/index.enum";
-import { FilterGroup } from "@/components/ui/ocp/layout/OCPDataTable-new/shared";
+import { FilterGroup } from "@/components/ui/taqa/layout/OCPDataTable-new/shared";
 
 export default function PendingVerificationPage() {
   const t = useTranslations("companies");

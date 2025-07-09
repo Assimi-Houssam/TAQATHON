@@ -6,8 +6,8 @@ import * as z from "zod";
 import { useForm, UseFormReturn } from "react-hook-form";
 import { useParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { CustomCard } from "@/components/ui/ocp/custom-card";
-import FileUploadWrapper from "@/components/ui/ocp/form/common/FileUploadWrapper";
+import { CustomCard } from "@/components/ui/taqa/custom-card";
+import FileUploadWrapper from "@/components/ui/taqa/form/common/FileUploadWrapper";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {

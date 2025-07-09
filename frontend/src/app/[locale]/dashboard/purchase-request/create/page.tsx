@@ -2,13 +2,13 @@
 
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
-import { CustomCard } from "@/components/ui/ocp/custom-card";
-import FileUploadWrapper from "@/components/ui/ocp/form/common/FileUploadWrapper";
-import FormFieldWrapper from "@/components/ui/ocp/form/common/FormFieldWrapper";
-import FormSelectWrapper from "@/components/ui/ocp/form/common/FormSelectWrapper";
-import { ViewAttachmentsCard } from "@/components/ui/ocp/purchase-request/view-attachments-card";
-import { CompaniesTable } from "@/components/ui/ocp/tables/companies-table";
-import { OperatorsTable } from "@/components/ui/ocp/tables/operators-table";
+import { CustomCard } from "@/components/ui/taqa/custom-card";
+import FileUploadWrapper from "@/components/ui/taqa/form/common/FileUploadWrapper";
+import FormFieldWrapper from "@/components/ui/taqa/form/common/FormFieldWrapper";
+import FormSelectWrapper from "@/components/ui/taqa/form/common/FormSelectWrapper";
+import { ViewAttachmentsCard } from "@/components/ui/taqa/purchase-request/view-attachments-card";
+import { CompaniesTable } from "@/components/ui/taqa/tables/companies-table";
+import { OperatorsTable } from "@/components/ui/taqa/tables/operators-table";
 import {
   Sheet,
   SheetContent,

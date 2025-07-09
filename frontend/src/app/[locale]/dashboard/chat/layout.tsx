@@ -1,5 +1,5 @@
 "use client";
-import ChatHistory from "@/components/ui/ocp/layout/chatHistory";
+import ChatHistory from "@/components/ui/taqa/layout/chatHistory";
 import { ChatProvider, useChat } from "@/context/ChatContext";
 import { socketService } from "@/endpoints/chat/ChatSocket";
 import { useGetAllChats } from "@/endpoints/chat/get-user-chats";

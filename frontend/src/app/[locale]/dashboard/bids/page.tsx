@@ -1,6 +1,6 @@
 "use client";
 
-import { BidsAndInvoices } from "@/components/ui/ocp/bidsAndInvoices";
+import { BidsAndInvoices } from "@/components/ui/taqa/bidsAndInvoices";
 
 export default function suppliersPage() {
   return (

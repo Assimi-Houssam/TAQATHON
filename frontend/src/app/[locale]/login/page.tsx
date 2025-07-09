@@ -1,8 +1,8 @@
 "use client";
 
-import { TaqaLogo } from "@/components/ui/ocp/focp-logo";
-import LoginForm from "@/components/ui/ocp/form/login-form";
-import ImagesCarousel from "@/components/ui/ocp/images-carousel";
+import { TaqaLogo } from "@/components/ui/taqa/focp-logo";
+import LoginForm from "@/components/ui/taqa/form/login-form";
+import ImagesCarousel from "@/components/ui/taqa/images-carousel";
 import { motion } from "framer-motion";
 
 const LoginPage = () => {

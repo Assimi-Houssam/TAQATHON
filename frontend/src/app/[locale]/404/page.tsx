@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { TaqaLogo } from "@/components/ui/ocp/focp-logo";
+import { TaqaLogo } from "@/components/ui/taqa/focp-logo";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 

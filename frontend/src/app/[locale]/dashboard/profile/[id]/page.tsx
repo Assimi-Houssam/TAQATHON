@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { User } from "@/types/entities/index";
-import { EntityComponent } from "@/components/ui/ocp/layout/ProfileAgents/EntityComponent";
-import { HistoryComponent } from "@/components/ui/ocp/HistoryComponent";
+import { EntityComponent } from "@/components/ui/taqa/layout/ProfileAgents/EntityComponent";
+import { HistoryComponent } from "@/components/ui/taqa/HistoryComponent";
 import { useGetProfile } from "@/endpoints/user/get-profile";
 import LoadingSpinner from "@/components/ui/loading-spinner";
 

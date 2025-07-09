@@ -1,11 +1,11 @@
 "use client";
 
-import { CreateReportDialog } from "@/components/ui/ocp/reports/create-report-dialog";
-import { ReportCard } from "@/components/ui/ocp/reports/report-card";
-import { EmptyReports } from "@/components/ui/ocp/reports/empty-reports";
-import { ReportsFilters } from "@/components/ui/ocp/reports/reports-filters";
-import { ReportsPagination } from "@/components/ui/ocp/reports/reports-pagination";
-import { ReportsNoResults } from "@/components/ui/ocp/reports/no-results";
+import { CreateReportDialog } from "@/components/ui/taqa/reports/create-report-dialog";
+import { ReportCard } from "@/components/ui/taqa/reports/report-card";
+import { EmptyReports } from "@/components/ui/taqa/reports/empty-reports";
+import { ReportsFilters } from "@/components/ui/taqa/reports/reports-filters";
+import { ReportsPagination } from "@/components/ui/taqa/reports/reports-pagination";
+import { ReportsNoResults } from "@/components/ui/taqa/reports/no-results";
 import LoadingSpinner from "@/components/ui/loading-spinner";
 import { useGetReports } from "@/endpoints/reports/get-reports";
 import { Report } from "@/types/report";

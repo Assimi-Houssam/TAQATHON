@@ -1,6 +1,6 @@
 import { User } from "lucide-react";
 
-import { SessionsList } from "../ui/ocp/SessionsList";
+import { SessionsList } from "../ui/taqa/SessionsList";
 
 import { useTranslations } from "next-intl";
 import {

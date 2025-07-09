@@ -1,5 +1,5 @@
 import { User } from "@/types/entities";
-import { Column } from "@/components/ui/ocp/layout/OCPDataTable-new/shared";
+import { Column } from "@/components/ui/taqa/layout/OCPDataTable-new/shared";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
@@ -12,7 +12,7 @@ import {
   MessageSquare,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { BelongingCompanyComponent } from "@/components/ui/ocp/layout/OCPDataTable-new/users";
+import { BelongingCompanyComponent } from "@/components/ui/taqa/layout/OCPDataTable-new/users";
 import {
   DropdownMenu,
   DropdownMenuContent,
