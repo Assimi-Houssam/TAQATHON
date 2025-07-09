@@ -229,6 +229,32 @@ export class AnomalyService {
     };
   }
 
+  async attachRexEntry(id : string, file : any , summary?: string) {
+    if (!file) {
+      throw new Error('No file uploaded');
+    }
+    const anomaly = await this.Prisma.anomaly.findUnique({
+      where: { id: id },
+    });
+    if (!anomaly) {
+      throw new Error('Anomaly not found');
+    }
+    const rexEntry = await this.Prisma.rex_entrie.create({
+      data: {
+        summary : summary || 'No summary provided',
+        docment_path: file.path,
+        anomalies :{
+          connect: { id: id },
+        }
+      },
+    });
+    return {
+      success: true,
+      message: 'Rex entry attached successfully',
+      data: rexEntry,
+    };
+  }
+
   async updateAnomaly(id: string, body: UpdateAnomalieDto) {
     const anomaly = await this.Prisma.anomaly.findUnique({
       where: { id: id },
