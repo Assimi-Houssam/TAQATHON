@@ -821,5 +821,48 @@ export class AnomalyController {
       throw new BadRequestException('Failed to retrieve maintenance windows');
     }
   }
+
+
+  @ApiOperation({ summary: 'Check action status for action plan' })
+  @ApiParam({ name: 'id', description: 'Action Plan ID', type: 'string' })
+  @ApiResponse({
+    status: 200,
+    description: 'Action status checked successfully',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Action plan not found',
+  })
+  @Patch('checkaction/:id')
+  async checkaction(@Param('id') id: string) {
+    try {
+      return await this.anomalyService.checkaction(id);
+    } catch (error) {
+      console.error('Error checking action:', error);
+      throw new BadRequestException('Failed to check action');
+    }
+  }
+
+  @ApiOperation({ summary: 'Delete action' })
+  @ApiParam({ name: 'id', description: 'Action ID', type: 'string' })
+  @ApiResponse({
+    status: 200,
+    description: 'Action deleted successfully',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Action not found',
+  })
+  @Delete('deleteaction/:id')
+  async deleteAction(@Param('id') id: string) {
+    try {
+      return await this.anomalyService.deleteAction(id);
+    } catch (error) {
+      console.error('Error deleting action:', error);
+      throw new BadRequestException('Failed to delete action');
+    }
+  }
+
+
 }
 

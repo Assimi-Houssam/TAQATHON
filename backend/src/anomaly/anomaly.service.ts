@@ -761,4 +761,60 @@ export class AnomalyService {
       };
       return mimeTypes[ext] || 'application/octet-stream';
     }
+  
+    async checkaction(id :string)
+    {
+      const action = await this.Prisma.action_plan.findUnique({
+        where: { id: id },
+      });
+      if (!action) {
+        throw new Error('Action plan not found');
+      }
+      if (action.status === 'COMPLETED') {
+        const res =  await this.Prisma.action_plan.update({
+          where: { id: id },
+          data: {
+            status: 'NOT_COMPLETED',
+          },
+        });
+        return {
+          success: true,
+          message: 'Action plan marked as not completed',
+          data: res,
+        };
+      }
+      if (action.status === 'NOT_COMPLETED') {
+        const res =  await this.Prisma.action_plan.update({
+          where: { id: id },
+          data: {
+            status: 'COMPLETED',
+          },
+        });
+        return {
+          success: true,
+          message: 'Action plan marked as completed',
+          data: res,
+        };
+      }
+      throw new Error('Action plan status is not valid for update');
+    }
+
+
+    async deleteAction(id: string) {
+      const action = await this.Prisma.action_plan.findUnique({
+        where: { id: id },
+      });
+      if (!action) {
+        throw new Error('Action plan not found');
+      }
+      await this.Prisma.action_plan.delete({
+        where: { id: id },
+      });
+      return {
+        success: true,
+        message: 'Action plan deleted successfully',
+      };
+    }
+    
   }
+

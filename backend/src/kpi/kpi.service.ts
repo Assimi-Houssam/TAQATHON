@@ -198,23 +198,5 @@ export class KpiService {
        
 
 
-           async getactionOfAnomaly() {
         
-              const actionPlanscompleted = await this.Prisma.action_plan.count({
-                where : {
-                  status: 'COMPLETED',
-                }
-              })
-
-              const actionPlantotal = await this.Prisma.action_plan.count()
-        
-              return {
-                action: {
-                  total: actionPlantotal,
-                  completed: actionPlanscompleted,
-                  notComplete: actionPlantotal - actionPlanscompleted,
-                  percentageCompleted: actionPlantotal > 0 ? Math.round((actionPlanscompleted / actionPlantotal) * 100 * 100) / 100 : 0,
-                },
-              };
-            }
 }
