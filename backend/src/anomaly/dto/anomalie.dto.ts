@@ -17,6 +17,10 @@ export class CreateAnomalieDto {
   @IsOptional()
   num_equipments?: string;
 
+  @IsString()
+  @IsOptional()
+  descreption_equipment?: string;
+
   @ApiPropertyOptional({
     description: 'Intervention duration',
     example: '2 hours',
@@ -205,6 +209,14 @@ export class UpdateAnomalieDto {
   @IsString()
   @IsOptional()
   num_equipments?: string;
+
+  @ApiPropertyOptional({
+    description: 'Equipment description',
+    example: 'Industrial cooling pump model XYZ-2000',
+  })
+  @IsString()
+  @IsOptional()
+  descreption_equipment?: string;
 
   @ApiPropertyOptional({
     description: 'Unit/Location',

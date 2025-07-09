@@ -33,7 +33,7 @@ export class AnomalyService {
     }
     const whereClause: any = {};
     if (status && status.trim() !== '') {
-      const validStatuses = ['OPEN', 'IN_PROGRESS', 'CLOSED'];
+      const validStatuses = ['NEW', 'IN_PROGRESS', 'CLOSED'];
       if (!validStatuses.includes(status.toUpperCase())) {
         throw new Error(
           `Invalid status provided. Valid statuses are: ${validStatuses.join(', ')}`,
@@ -628,10 +628,47 @@ export class AnomalyService {
       data: updatedActionPlan,
     };
   }
+  async deleteActionPlan(id: string) {
+    const actionPlan = await this.Prisma.action_plan.findUnique({
+      where: { id: id },
+    });
+    if (!actionPlan) {
+      throw new Error('Action plan not found');
+    }
+    await this.Prisma.action_plan.delete({
+      where: { id: id },
+    });
+    return {
+      success: true,
+      message: 'Action plan deleted successfully',
+    };
+  }
 
-}
 
-//  when status is traite with  attach with -> the action plan  chanfe to traite and attach it to a maintenance window
-// does not become traiter auto until a evry feild is full and will beoome traiete manulemnet
-// save time between the date detection and the date traitement
-// confedence with data
+
+    async getactionOfAnomaly(anomalyId: string) {
+      const anomaly = await this.Prisma.anomaly.findUnique({
+        where: { id: anomalyId },
+      });
+      if (!anomaly) {
+        throw new Error('Anomaly not found');
+      }
+
+      const actionPlanscompleted = await this.Prisma.action_plan.count({
+        where : {
+          status: 'COMPLETED',
+        }
+      })
+      const actionPlansin = await this.Prisma.action_plan.count()
+
+      return {
+        action: {
+          total: actionPlanscompleted ,
+          completed: actionPlanscompleted,
+        },
+      };
+    }
+
+
+
+  }

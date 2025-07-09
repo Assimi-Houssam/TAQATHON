@@ -3,17 +3,22 @@ import { PrioritySuggestionDto } from './dto/prioritysuggestion.dto';
 import axios from 'axios';
 import * as FormData from 'form-data';
 import * as fs from 'fs';
+import { CAnomalieDto } from './dto/anomaly.dto';
+import { PrismaService } from 'src/prisma.service';
 
 @Injectable()
 export class MlApiService {
+  constructor(private readonly Prisma: PrismaService) {}
+
   async sendPriorityRequest(data: PrioritySuggestionDto) {
+    
     try {
-      const response = await axios.post('http://fastapi:4000', data, {
-        headers: {
-          'Content-Type': 'multipart/form-data/json',
-        },
-        timeout: 10000, // 10 seconds timeout
-      });
+      const response = await axios.post(
+        'http://localhost:8000/predict',
+        data, // pass the object directly
+        { headers: { 'Content-Type': 'application/json' }, timeout: 10000 }
+      );
+      
 
       return response.data;
     } catch (error) {
@@ -58,6 +63,22 @@ export class MlApiService {
     } catch (error) {
       console.error('ML API file upload failed:', error.message);
       throw new Error(`ML API file upload failed: ${error.message}`);
+    }
+  }
+
+  async processFastApiResponse(data: CAnomalieDto) {
+    try {
+      // Save the anomaly data to the database
+      const anomaly = await this.Prisma.anomaly.create({
+        data: {
+          ...data,
+          date_detection: new Date(data.date_detection),
+        },
+      });
+      return { message: 'Anomaly processed successfully', anomaly };
+    } catch (error) {
+      console.error('Error processing FastAPI response:', error.message);
+      throw new Error(`Error processing FastAPI response: ${error.message}`);
     }
   }
 }

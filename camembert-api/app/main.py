@@ -11,6 +11,7 @@ from typing import Dict
 import logging
 import os
 from .config import settings
+import requests
 
 # Configure logging
 logging.basicConfig(level=getattr(logging, settings.LOG_LEVEL))
@@ -60,7 +61,8 @@ tokenizer = None
 
 # Pydantic models for request/response
 class PredictionRequest(BaseModel):
-    text: str
+    description_anomaly: str
+    description_equipement: str
 
 class PredictionResponse(BaseModel):
     fiabilite_integrite: int
@@ -93,8 +95,14 @@ async def load_model():
         logger.error(f"Error loading model: {str(e)}")
         raise e
 
+def clean_text(text):
+    text = str(text).lower()
+    text = text.replace('\n', ' ').replace('\t', ' ')
+    return ' '.join(text.split())
+
 def predict_text(text: str) -> Dict[str, int]:
     """Make prediction on input text"""
+    text = clean_text(text)
     if model is None or tokenizer is None:
         raise HTTPException(status_code=500, detail="Model not loaded")
     
@@ -163,11 +171,13 @@ async def predict(request: PredictionRequest):
     - **process_safety**: Score from 0-5
     - **criticite**: Sum of all three scores
     """
-    if not request.text.strip():
+    if not request.description_equipement.strip() or not request.description_anomaly.strip():
         raise HTTPException(status_code=400, detail="Text cannot be empty")
     
     try:
-        predictions = predict_text(request.text)
+        # Combine 'Description de l\'équipement' and 'Description' into a single text
+        combined_text = f"{request.description_equipement} {request.description_anomaly}"
+        predictions = predict_text(combined_text)
         return PredictionResponse(**predictions)
         
     except HTTPException:
@@ -238,30 +248,41 @@ def process_excel_file(file_bytes: bytes):
 
         for row_idx, row in enumerate(sheet.iter_rows(min_row=2, values_only=True), start=2):
             description = row[column_indices["Description"]]
+            
             if description:
-                description = str(description).strip()
-                if description:
-                    predictions = predict_text(description)
-                    row_data = {
-                        'Num_equipement': row[column_indices["Num_equipement"]],
-                        'Systeme': row[column_indices["Systeme"]],
-                        'Description': row[column_indices["Description"]],
-                        'Date de détéction de l\'anomalie': row[column_indices["Date de détéction de l'anomalie"]],
-                        'Description de l\'équipement': row[column_indices["Description de l'équipement"]],
-                        'Section propriétaire': row[column_indices["Section propriétaire"]],
-                        'Fiabilité Intégrité': predictions['fiabilite_integrite'],
-                        'Disponibilité': predictions['disponibilite'],
-                        'Process Safety': predictions['process_safety'],
-                        'Criticité': predictions['criticite']
-                    }
-                    results.append(row_data)
+                predictions = predict_text(description)
+                row_data = {
+                'num_equipments': str(row[column_indices["Num_equipement"]]),
+                'systeme': str(row[column_indices["Systeme"]]),
+                'descreption_anomalie': str(row[column_indices["Description"]]),
+                'date_detection': str(row[column_indices["Date de détéction de l'anomalie"]]),
+                'descreption_equipment': str(row[column_indices["Description de l'équipement"]]),
+                'section_proprietaire': str(row[column_indices["Section propriétaire"]]),
+                'fiablite_integrite': str(predictions['fiabilite_integrite']),
+                'disponsibilite': str(predictions['disponibilite']),
+                'process_safty': str(predictions['process_safety']),
+                'criticite': str(predictions['criticite'])
+                }
+                results.append(row_data)
 
-            # Optional limit for testing
-            if row_idx % 1000 == 0:
+            # Send results to external API
+            if row_idx % 5 == 0:
+                try:
+                    response = requests.post("http://localhost:3000/ml/ml-response", json=results)
+                    response.raise_for_status()
+                    logger.info(f"Posted results to external API: {response.status_code}")
+                    results.clear()  # Clear results after posting
+                    # break
+                except requests.RequestException as e:
+                    logger.error(f"Failed to post results to external API: {e}")
+                    # break
+            if row_idx % 50 == 0:
                 break
+
 
         # TODO: save results to DB, file, email, etc.
         logger.info(f"Processed {len(results)} rows in background.")
+        logger.info(f"Processed {results[0]}")
 
     except Exception as e:
         logger.error(f"Error in background task: {e}")

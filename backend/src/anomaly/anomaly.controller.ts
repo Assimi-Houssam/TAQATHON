@@ -106,9 +106,14 @@ export class AnomalyController {
     @Query('criticity') criticity: string = '',
     @Query('section') section: string = '',
   ) {
-     const pageNum = parseInt(page.toString()) || 1;
-      const limitNum = parseInt(limit.toString()) || 10;
-    return await this.anomalyService.getAnomaly(pageNum, limitNum, orderby, status, criticity, section);
+    try {
+      const pageNum = parseInt(page.toString()) || 1;
+       const limitNum = parseInt(limit.toString()) || 10;
+     return await this.anomalyService.getAnomaly(pageNum, limitNum, orderby, status, criticity, section);
+    }catch (error) {
+      console.error('Error retrieving anomalies:', error);
+      throw new BadRequestException('Failed to retrieve anomalies');
+    }
   }
 
   @Get('getAnomalyById/:id')
@@ -123,7 +128,12 @@ export class AnomalyController {
     description: 'Anomaly not found',
   })
   async getAnomalyById(@Param('id') id: string) {
-    return await this.anomalyService.getAnomalyById(id);
+    try {
+      return await this.anomalyService.getAnomalyById(id);
+    }catch(error) {
+      console.error('Error retrieving anomaly by ID:', error);
+      throw new BadRequestException('Failed to retrieve anomaly');
+    }
   }
 
   @ApiOperation({ summary: 'Create a new anomaly' })
@@ -137,7 +147,12 @@ export class AnomalyController {
   })
   @Post('createAnomaly')
   async createAnomaly(@Body() data: CreateAnomalieDto) {
-    return await this.anomalyService.createAnomaly(data);
+    try{
+      return await this.anomalyService.createAnomaly(data);
+    }catch(error) {
+      console.error('Error creating anomaly:', error);
+      throw new BadRequestException('Failed to create anomaly');
+    }
   }
 
   @ApiOperation({ summary: 'Upload attachment for anomaly' })
@@ -572,7 +587,6 @@ export class AnomalyController {
     }
   }
 
-  @Patch('updateActionPlan/:id')
   @ApiOperation({ summary: 'Update action plan for anomaly' })
   @ApiParam({ name: 'id', description: 'Anomaly ID', type:
     'string' })
@@ -584,6 +598,7 @@ export class AnomalyController {
     status: 404,
     description: 'Anomaly not found',
   })
+  @Patch('updateActionPlan/:id')
   async updateActionPlan( @Param('id') id: string) {
     try {
       return await this.anomalyService.updateActionPlan(id);
@@ -591,8 +606,63 @@ export class AnomalyController {
       console.error('Error updating action plan:', error);
       throw new BadRequestException('Failed to update action plan');
     }
+  }
+
+  @ApiOperation({ summary: 'Delete action plan for anomaly' })
+  @ApiParam({ name: 'id', description: 'Action Plan ID', type:
+    'string' })
+  @ApiResponse({
+    status: 200,
+    description: 'Action plan deleted successfully',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Action plan not found',
+  })
+  @Delete('deleteActionPlan/:id')
+  async deleteActionPlan(@Param('id') id: string) {
+    try {
+      return await this.anomalyService.deleteActionPlan(id);
+    } catch (error) {
+      console.error('Error deleting action plan:', error);
+      throw new BadRequestException('Failed to delete action plan');
+    }
+  }
+
+
+  @ApiOperation({ summary: 'Get action plan statistics' })
+  @ApiResponse({
+    status: 200,
+    description: 'Action plan statistics retrieved successfully',
+    schema: {
+      type: 'object',
+      properties: {
+        action: {
+          type: 'object',
+          properties: {
+            total: { type: 'number', example: 150 },
+            completed: { type: 'number', example: 75 },
+            inProgress: { type: 'number', example: 50 },
+          },
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 500,
+    description: 'Internal server error',
+  })
+  @Get('getactionplanstatistics/:id')
+  async getActionPlanStatistics(@Param('id') id: string) {
+    try {
+      return await this.anomalyService.getactionOfAnomaly(id);
+    } catch (error) {
+      console.error('Error retrieving action plan statistics:', error);
+      throw new BadRequestException('Failed to retrieve action plan statistics');
+    }
 
   }
+
 
 
 }
