@@ -539,8 +539,12 @@ export class AnomalyController {
     @Param('id') id: string,
     @Body() body: UpdateAnomalieDto,
   ) {
-    console.log('Updating anomaly with ID:', id, 'and body:', body);
-    return await this.anomalyService.updateAnomaly(id, body);
+    try {
+      return await this.anomalyService.updateAnomaly(id, body);
+    } catch (error) {
+      console.error('Error updating anomaly:', error);
+      throw new BadRequestException(`Failed to update anomaly: ${error.message}`);
+    }
   }
 
   @ApiOperation({ summary: 'Attach maintenance window to anomaly' })
