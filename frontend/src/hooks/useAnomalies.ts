@@ -1,5 +1,5 @@
 import { apiClient } from "@/lib/axios";
-import { Anomaly, AnomalyFormData, AnomalyUpdateData, AnomalyStatus } from '@/types/anomaly';
+import { Anomaly, AnomalyFormData, AnomalyUpdateData, AnomalyStatus } from "@/types/anomaly";
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
 
 export interface UseAnomaliesOptions {
@@ -11,7 +11,7 @@ export interface UseAnomaliesOptions {
   criticity?: string;
   section?: string;
   // Server-side sorting
-  orderBy?: 'LOW' | 'HIGH';
+  orderBy?: "LOW" | "HIGH";
 }
 
 export interface AnomaliesQueryParams {
@@ -49,34 +49,26 @@ interface RexData {
  * Hook to fetch all anomalies with pagination and filtering
  */
 export function useAnomalies(options: UseAnomaliesOptions = {}) {
-  const { 
-    enabled = true,
-    page = 1,
-    limit = 10,
-    status,
-    criticity,
-    section,
-    orderBy = 'HIGH'
-  } = options;
+  const { enabled = true, page = 1, limit = 10, status, criticity, section, orderBy = "HIGH" } = options;
 
   return useQuery({
     queryKey: ["anomalies", { page, limit, status, criticity, section, orderBy }],
     queryFn: async () => {
       // Build query parameters
       const params = new URLSearchParams();
-      
-      if (page) params.append('page', page.toString());
-      if (limit) params.append('limit', limit.toString());
-      if (status && status.trim() !== '') params.append('status', status);
-      if (criticity && criticity.trim() !== '') params.append('criticity', criticity);
-      if (section && section.trim() !== '') params.append('section', section);
-      if (orderBy) params.append('filter', orderBy);
+
+      if (page) params.append("page", page.toString());
+      if (limit) params.append("limit", limit.toString());
+      if (status && status.trim() !== "") params.append("status", status);
+      if (criticity && criticity.trim() !== "") params.append("criticity", criticity);
+      if (section && section.trim() !== "") params.append("section", section);
+      if (orderBy) params.append("filter", orderBy);
 
       const queryString = params.toString();
-      const url = `/anomaly/getAnomaly${queryString ? `?${queryString}` : ''}`;
-      
+      const url = `/anomaly/getAnomaly${queryString ? `?${queryString}` : ""}`;
+
       const { data } = await apiClient.get<AnomaliesResponse>(url);
-      
+
       return {
         anomalies: data.data || [],
         total: data.totalAnomaly || 0,
@@ -111,6 +103,39 @@ export function useAnomaly(id: string, enabled: boolean = true) {
   });
 }
 
+type SuggestPriorityRequest = {
+  description_anomaly: string;
+  description_equipement: string;
+};
+
+type SuggestPriorityResponse = {
+  fiabilite_integrite: number;
+  disponibilite: number;
+  process_safety: number;
+  criticite: number;
+};
+
+export function useSuggestPriorityMutation() {
+  const queryClient = useQueryClient();
+
+  const suggestPriority = useMutation({
+    mutationFn: async (data: SuggestPriorityRequest): Promise<SuggestPriorityResponse> => {
+      const response = await apiClient.post<SuggestPriorityResponse>("/ml/suggestPriority", data);
+      return response.data;
+    },
+    onSuccess: (data) => {
+      console.log("Priority suggestion received:", data);
+      // Optionally invalidate or update related queries if any
+      // queryClient.invalidateQueries({ queryKey: ["anomalies"] });
+    },
+    onError: (error) => {
+      console.error("Failed to get priority suggestion:", error);
+    },
+  });
+
+  return { suggestPriority };
+}
+
 /**
  * Hook providing all anomaly mutation operations
  */
@@ -122,7 +147,7 @@ export function useAnomalyMutations() {
    */
   const createAnomaly = useMutation({
     mutationFn: async (data: AnomalyFormData): Promise<Anomaly> => {
-      const response = await apiClient.post<Anomaly>('/anomaly/createAnomaly', data);
+      const response = await apiClient.post<Anomaly>("/anomaly/createAnomaly", data);
       return response.data;
     },
     onSuccess: () => {
@@ -221,11 +246,11 @@ export function useAnomalyMutations() {
   const uploadAttachment = useMutation({
     mutationFn: async ({ id, file }: { id: string; file: File }): Promise<any> => {
       const formData = new FormData();
-      formData.append('file', file);
-      
+      formData.append("file", file);
+
       const response = await apiClient.post(`/anomaly/attachment/${id}`, formData, {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          "Content-Type": "multipart/form-data",
         },
       });
       return response.data;
@@ -301,22 +326,22 @@ export function useAnomalyMutations() {
     mutationFn: async ({ id, rexData }: { id: string; rexData: RexData }): Promise<any> => {
       // Validate that either summary or file is provided
       if (!rexData.summary?.trim() && !rexData.file) {
-        throw new Error('Either summary or file must be provided');
+        throw new Error("Either summary or file must be provided");
       }
 
       const formData = new FormData();
-      
+
       if (rexData.summary?.trim()) {
-        formData.append('summary', rexData.summary.trim());
+        formData.append("summary", rexData.summary.trim());
       }
-      
+
       if (rexData.file) {
-        formData.append('file', rexData.file);
+        formData.append("file", rexData.file);
       }
-      
+
       const response = await apiClient.post(`/anomaly/rex/${id}`, formData, {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          "Content-Type": "multipart/form-data",
         },
       });
       return response.data;
@@ -339,11 +364,11 @@ export function useAnomalyMutations() {
   const createMaintenanceWindow = useMutation({
     mutationFn: async (file: File): Promise<any> => {
       const formData = new FormData();
-      formData.append('file', file);
-      
-      const response = await apiClient.post('/anomaly/maintenance_window', formData, {
+      formData.append("file", file);
+
+      const response = await apiClient.post("/anomaly/maintenance_window", formData, {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          "Content-Type": "multipart/form-data",
         },
       });
       return response.data;
@@ -363,7 +388,7 @@ export function useAnomalyMutations() {
    */
   const addMaintenanceWindow = useMutation({
     mutationFn: async (maintenanceWindowData: any): Promise<any> => {
-      const response = await apiClient.post('/anomaly/adding_maintenance_window', maintenanceWindowData);
+      const response = await apiClient.post("/anomaly/adding_maintenance_window", maintenanceWindowData);
       return response.data;
     },
     onSuccess: () => {
@@ -421,17 +446,13 @@ export function useAnomalyMutations() {
   const batchUpload = useMutation({
     mutationFn: async (file: File): Promise<{ success: number; errors: string[] }> => {
       const formData = new FormData();
-      formData.append('file', file);
-      
-      const response = await apiClient.post<{ success: number; errors: string[] }>(
-        '/ml/uploadanomalies', 
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        }
-      );
+      formData.append("file", file);
+
+      const response = await apiClient.post<{ success: number; errors: string[] }>("/ml/uploadanomalies", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
       return response.data;
     },
     onSuccess: () => {
@@ -450,25 +471,25 @@ export function useAnomalyMutations() {
     updateAnomaly,
     updateAnomalyStatus,
     deleteAnomaly,
-    
+
     // Status transitions
     markAsTreated,
     markAsResolved,
-    
+
     // Attachments and documentation
     uploadAttachment,
     downloadAttachment,
     deleteAttachment,
     attachRex,
-    
+
     // Action plans
     createActionPlan,
-    
+
     // Maintenance windows
     createMaintenanceWindow,
     addMaintenanceWindow,
     attachMaintenanceWindow,
-    
+
     // Batch operations
     batchUpload,
   };
@@ -481,7 +502,7 @@ export function useAnomalyStats(enabled: boolean = true) {
   return useQuery({
     queryKey: ["anomaly-stats"],
     queryFn: async () => {
-      const { data } = await apiClient.get<AnomalyStatsResponse>('/anomaly/getAnomalyStats');
+      const { data } = await apiClient.get<AnomalyStatsResponse>("/anomaly/getAnomalyStats");
       return data;
     },
     enabled,
@@ -489,4 +510,4 @@ export function useAnomalyStats(enabled: boolean = true) {
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
   });
-} 
+}
