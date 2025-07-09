@@ -40,9 +40,8 @@ interface AnomalyStatsResponse {
 }
 
 interface RexData {
-  description?: string;
-  lessons_learned?: string;
-  recommendations?: string;
+  summary?: string;
+  file?: File;
   [key: string]: any;
 }
 
@@ -267,7 +266,21 @@ export function useAnomalyMutations() {
    */
   const attachRex = useMutation({
     mutationFn: async ({ id, rexData }: { id: string; rexData: RexData }): Promise<any> => {
-      const response = await apiClient.post(`/anomaly/rex/${id}`, rexData);
+      const formData = new FormData();
+      
+      if (rexData.summary) {
+        formData.append('summary', rexData.summary);
+      }
+      
+      if (rexData.file) {
+        formData.append('file', rexData.file);
+      }
+      
+      const response = await apiClient.post(`/anomaly/rex/${id}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
       return response.data;
     },
     onSuccess: (_, variables) => {

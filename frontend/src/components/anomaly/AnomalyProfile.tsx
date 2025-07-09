@@ -243,26 +243,8 @@ export function AnomalyProfile({ anomaly, onStatusChange, onUpdate, onValidate }
     }
     
     if (activeStep === "closed" && anomaly.status === "CLOSED") {
-      return (
-        <Button
-          onClick={handleMainAction}
-          disabled={isActionLoading || !rexSaveFunction}
-          className="w-full border px-6 py-4 rounded-lg font-medium transition-all duration-200 disabled:opacity-50"
-          size="lg"
-        >
-          {isActionLoading ? (
-            <>
-              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-3"></div>
-              Completing Documentation...
-            </>
-          ) : (
-            <>
-              <CheckCircle className="h-5 w-5 mr-3" />
-              Complete Documentation
-            </>
-          )}
-        </Button>
-      );
+      // Hide the button entirely when anomaly is closed
+      return null;
     }
     
     return null;
@@ -488,9 +470,11 @@ export function AnomalyProfile({ anomaly, onStatusChange, onUpdate, onValidate }
 
         {/* Anomaly Details - Right Side */}
         <div className="xl:col-span-1 order-1 xl:order-2">
-          <div className="flex justify-center w-full mb-4">
-            {getMainActionButton()}
-          </div>
+          {getMainActionButton() && (
+            <div className="flex justify-center w-full mb-4">
+              {getMainActionButton()}
+            </div>
+          )}
           <div className="xl:sticky xl:top-20">
             <AnomalySummary anomaly={anomaly} />
           </div>
