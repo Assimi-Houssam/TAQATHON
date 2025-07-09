@@ -3,132 +3,29 @@
     {
       "titleKey": "pages.overview",
       "icon": "LayoutDashboard",
-      "url": "/dashboard",
-      "allowedEntityTypes": ["OCP_AGENT", "SUPPLIER"]
+      "url": "/dashboard"
     },
     {
       "titleKey": "pages.anomaly_management",
       "icon": "ClipboardList",
       "url": "/dashboard/anomalies",
-      "allowedEntityTypes": ["OCP_AGENT", "SUPPLIER"],
       "subItems": [
         {
           "titleKey": "pages.anomaly_list",
           "url": "/dashboard/anomalies",
-          "parent": "/dashboard/anomalies",
-          "allowedEntityTypes": ["OCP_AGENT", "SUPPLIER"]
+          "parent": "/dashboard/anomalies"
         },
         {
           "titleKey": "pages.anomaly_create",
           "url": "/dashboard/anomalies/new",
-          "parent": "/dashboard/anomalies",
-          "allowedEntityTypes": ["OCP_AGENT"]
+          "parent": "/dashboard/anomalies"
         }
       ]
     },
     {
-      "titleKey": "pages.analytics",
-      "icon": "TrendingUp",
-      "url": "/dashboard/analytics",
-      "allowedEntityTypes": ["OCP_AGENT", "SUPPLIER"],
-      "subItems": [
-        {
-          "titleKey": "pages.performance_metrics",
-          "url": "/dashboard/analytics/performance",
-          "parent": "/dashboard/analytics",
-          "allowedEntityTypes": ["OCP_AGENT", "SUPPLIER"]
-        },
-        {
-          "titleKey": "pages.trend_analysis",
-          "url": "/dashboard/analytics/trends",
-          "parent": "/dashboard/analytics",
-          "allowedEntityTypes": ["OCP_AGENT", "SUPPLIER"]
-        },
-        {
-          "titleKey": "pages.predictive_insights",
-          "url": "/dashboard/analytics/predictions",
-          "parent": "/dashboard/analytics",
-          "allowedEntityTypes": ["OCP_AGENT"]
-        }
-      ]
-    },
-    {
-      "titleKey": "pages.reports",
-      "icon": "FileText",
-      "url": "/dashboard/reports",
-      "allowedEntityTypes": ["OCP_AGENT", "SUPPLIER"],
-      "subItems": [
-        {
-          "titleKey": "pages.system_reports",
-          "url": "/dashboard/reports/system",
-          "parent": "/dashboard/reports",
-          "allowedEntityTypes": ["OCP_AGENT", "SUPPLIER"]
-        },
-        {
-          "titleKey": "pages.compliance_reports",
-          "url": "/dashboard/reports/compliance",
-          "parent": "/dashboard/reports",
-          "allowedEntityTypes": ["OCP_AGENT"]
-        },
-        {
-          "titleKey": "pages.custom_reports",
-          "url": "/dashboard/reports/custom",
-          "parent": "/dashboard/reports",
-          "allowedEntityTypes": ["OCP_AGENT"]
-        }
-      ]
-    },
-    {
-      "titleKey": "pages.monitoring",
-      "icon": "Activity",
-      "url": "/dashboard/monitoring",
-      "allowedEntityTypes": ["OCP_AGENT", "SUPPLIER"],
-      "subItems": [
-        {
-          "titleKey": "pages.real_time_monitoring",
-          "url": "/dashboard/monitoring/realtime",
-          "parent": "/dashboard/monitoring",
-          "allowedEntityTypes": ["OCP_AGENT", "SUPPLIER"]
-        },
-        {
-          "titleKey": "pages.alert_management",
-          "url": "/dashboard/monitoring/alerts",
-          "parent": "/dashboard/monitoring",
-          "allowedEntityTypes": ["OCP_AGENT", "SUPPLIER"]
-        },
-        {
-          "titleKey": "pages.system_health",
-          "url": "/dashboard/monitoring/health",
-          "parent": "/dashboard/monitoring",
-          "allowedEntityTypes": ["OCP_AGENT"]
-        }
-      ]
-    },
-    {
-      "titleKey": "pages.integrations",
-      "icon": "Zap",
-      "url": "/dashboard/integrations",
-      "allowedEntityTypes": ["OCP_AGENT"],
-      "subItems": [
-        {
-          "titleKey": "pages.api_management",
-          "url": "/dashboard/integrations/api",
-          "parent": "/dashboard/integrations",
-          "allowedEntityTypes": ["OCP_AGENT"]
-        },
-        {
-          "titleKey": "pages.data_connectors",
-          "url": "/dashboard/integrations/connectors",
-          "parent": "/dashboard/integrations",
-          "allowedEntityTypes": ["OCP_AGENT"]
-        },
-        {
-          "titleKey": "pages.third_party_tools",
-          "url": "/dashboard/integrations/tools",
-          "parent": "/dashboard/integrations",
-          "allowedEntityTypes": ["OCP_AGENT"]
-        }
-      ]
+      "titleKey": "pages.maintenance_windows",
+      "icon": "Wrench",
+      "url": "/dashboard/window"
     }
   ]
 }

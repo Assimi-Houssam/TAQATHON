@@ -16,7 +16,6 @@ import {
   SidebarRail,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { useUser } from "@/context/user-context";
 
 import { SidebarItem, SidebarTranslationKey } from "@/types/sidebar";
 import {
@@ -28,9 +27,10 @@ import {
   TrendingUp,
   Activity,
   Zap,
+  Wrench,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useEffect, useMemo, useRef, useState, Component, useCallback, memo } from "react";
 import { MenuItem, SubMenu } from "./ui/taqa/sidebar/menu-item";
 
@@ -42,6 +42,7 @@ const iconMap: Record<string, LucideIcon> = {
   TrendingUp,
   Activity,
   Zap,
+  Wrench,
 };
 
 // Simple Error Boundary for sidebar components
@@ -79,180 +80,87 @@ class SidebarErrorBoundary extends Component<
 
 export function AppSidebar() {
   const [current, setCurrent] = useState<number | null>(null);
-  const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const contentRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const [heights, setHeights] = useState<string[]>([]);
   const { isMobile } = useSidebar();
   const router = useRouter();
-
-  const { user, isLoading: userLoading } = useUser();
+  const pathname = usePathname();
 
   const t = useTranslations("sidebar");
   const sidebarItems: SidebarItem[] = useMemo(
     () =>
       sidebarItemsData.items
-        .filter((item) =>
-          item.allowedEntityTypes?.includes(user?.entity_type as string)
-        )
         .map((item) => ({
           title: t(item.titleKey as SidebarTranslationKey),
           icon: iconMap[item.icon] || FileText,
           url: item.url,
           alertCount: 'alertCount' in item ? (item.alertCount as number) : undefined,
           subItems: item.subItems
-            ?.filter((subItem) =>
-              subItem.allowedEntityTypes?.includes(user?.entity_type as string)
-            )
-            .map((subItem) => ({
+            ?.map((subItem) => ({
               title: t(subItem.titleKey as SidebarTranslationKey),
               url: subItem.url,
               parent: subItem.parent,
             })),
         })),
-    [t, user?.entity_type]
+    [t]
   );
 
-  // Initialize the refs and heights arrays when sidebarItems changes
+  // Initialize the refs when sidebarItems changes
   useEffect(() => {
     if (sidebarItems && Array.isArray(sidebarItems)) {
       const length = Math.max(0, sidebarItems.length);
       contentRefs.current = Array(length).fill(null);
-      setHeights(Array(length).fill("0px"));
     } else {
       contentRefs.current = [];
-      setHeights([]);
     }
     setIsLoading(false);
   }, [sidebarItems]);
 
-  // Update isLoading to consider userLoading
-  useEffect(() => {
-    if (!userLoading) {
-      setIsLoading(false);
-    }
-  }, [userLoading]);
-
-
-
-  const handleOpen = useCallback((index: number) => {
-    // Validate index
-    if (typeof index !== 'number' || index < 0 || !isFinite(index)) {
-      console.warn('Invalid index provided to handleOpen:', index);
-      return;
-    }
-
-    // If clicking the current tab while it's already open, do nothing
-    if (index === current && open) {
-      return;
-    }
-
-    try {
-      if (index === current) {
-        setOpen(!open);
-        setHeights((prev) => {
-          if (!Array.isArray(prev)) return [];
-          return prev.map((h, i) =>
-            i === index
-              ? !open
-                ? `${contentRefs.current?.[index]?.scrollHeight || 0}px`
-                : "0px"
-              : "0px"
-          );
-        });
-      } else {
-        // Close previous menu before opening new one
-        setHeights((prev) => {
-          if (!Array.isArray(prev)) return [];
-          return prev.map((_, i) =>
-            i === index
-              ? `${contentRefs.current?.[index]?.scrollHeight || 0}px`
-              : "0px"
-          );
-        });
-        setCurrent(index);
-        setOpen(true);
-      }
-    } catch (error) {
-      console.warn('Error in handleOpen:', error);
-    }
-  }, [current, open]);
-
-  // Modify the useEffect for path matching
+  // Path matching logic to determine which tab is active
   useEffect(() => {
     try {
       if (!sidebarItems || !Array.isArray(sidebarItems) || sidebarItems.length === 0) {
         return;
       }
 
-      const path = window?.location?.pathname?.slice(3) || '';
-      const index = sidebarItems.findIndex((item) => {
+      const path = pathname?.slice(3) || '';
+      
+      // Find which main item should be active based on current path
+      const activeIndex = sidebarItems.findIndex((item) => {
         if (!item) return false;
         
-        const exactMatch = item.url === path;
-        const subItemMatch = item.subItems?.some((sub) => sub?.url === path) || false;
-        return exactMatch || subItemMatch;
+        // Check exact match with main item URL
+        if (item.url === path) return true;
+        
+        // Check if any sub-item matches the current path
+        if (item.subItems) {
+          return item.subItems.some((sub) => sub?.url === path);
+        }
+        
+        return false;
       });
 
-      if (index !== -1 && index < sidebarItems.length) {
-        setCurrent(index);
-        setOpen(true);
-        // Update height for matched item with a slight delay for smooth animation
-        requestAnimationFrame(() => {
-          setHeights((prev) => {
-            if (!Array.isArray(prev)) return [];
-            return prev.map((_, i) =>
-              i === index
-                ? `${contentRefs.current?.[index]?.scrollHeight || 0}px`
-                : "0px"
-            );
-          });
-        });
-      }
+      setCurrent(activeIndex !== -1 ? activeIndex : null);
     } catch (error) {
       console.warn('Error in path matching:', error);
     }
-  }, [sidebarItems]);
+  }, [sidebarItems, pathname]);
 
-  // Keyboard navigation for accessibility
+  // Update isLoading when component is ready
   useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      // Only handle if sidebar is focused or contains focused element
-      if (!document.activeElement?.closest('[role="navigation"]')) {
-        return;
-      }
+    setIsLoading(false);
+  }, []);
 
-      switch (event.key) {
-        case 'Escape':
-          // Close expanded menus on escape
-          if (open && current !== null) {
-            setOpen(false);
-            setHeights(prev => prev.map(() => "0px"));
-          }
-          break;
-        case 'Home':
-          event.preventDefault();
-          // Focus first menu item
-          const firstItem = document.querySelector('[role="menubar"] [role="menuitem"]') as HTMLElement;
-          firstItem?.focus();
-          break;
-        case 'End':
-          event.preventDefault();
-          // Focus last menu item
-          const menuItems = document.querySelectorAll('[role="menubar"] [role="menuitem"]');
-          const lastItem = menuItems[menuItems.length - 1] as HTMLElement;
-          lastItem?.focus();
-          break;
-      }
-    };
-
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [open, current]);
+  // Simple click handler - no toggling, just navigation
+  const handleItemClick = useCallback(() => {
+    if (isMobile) {
+      // toggleSidebar();
+    }
+  }, [isMobile]);
 
   // Safe render function for loading skeletons
   const renderLoadingSkeletons = useCallback(() => {
-    const skeletonCount = 6; // Show 6 skeleton items while loading
+    const skeletonCount = 6;
     return Array.from({ length: skeletonCount }, (_, index) => (
       <SidebarMenuItem key={`skeleton-${index}`}>
         <SidebarMenuSkeleton showIcon index={index} className="h-14 my-1" />
@@ -262,7 +170,7 @@ export function AppSidebar() {
 
   // Safe render function for menu items
   const renderMenuItems = useCallback(() => {
-    if (isLoading || userLoading) {
+    if (isLoading) {
       return renderLoadingSkeletons();
     }
 
@@ -284,17 +192,8 @@ export function AppSidebar() {
               {...item}
               hasSubItems={!!item.subItems}
               isCurrent={current === index}
-              isActive={current === index && open}
-              onClick={() => {
-                try {
-                  handleOpen(index);
-                  if (isMobile) {
-                    // toggleSidebar();
-                  }
-                } catch (error) {
-                  console.warn('Error handling menu item click:', error);
-                }
-              }}
+              isActive={current === index}
+              onClick={handleItemClick}
             />
           </SidebarMenuItem>
 
@@ -307,7 +206,7 @@ export function AppSidebar() {
                     contentRefs.current[index] = el;
                   }
                 }}
-                height={heights[index] || "0px"}
+                height="auto" // Always show sub-menus
                 external={item.external}
               />
             </SidebarErrorBoundary>
@@ -315,7 +214,7 @@ export function AppSidebar() {
         </div>
       </SidebarErrorBoundary>
     ));
-  }, [isLoading, userLoading, sidebarItems, current, open, heights, isMobile, handleOpen, renderLoadingSkeletons]);
+  }, [isLoading, sidebarItems, current, handleItemClick, renderLoadingSkeletons]);
 
   return (
     <Sidebar 

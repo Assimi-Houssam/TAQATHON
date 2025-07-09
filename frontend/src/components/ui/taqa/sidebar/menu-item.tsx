@@ -70,10 +70,7 @@ export function MenuItem({
           )}
           {hasSubItems && (
             <ChevronDown
-              className={clsx(
-                "size-5 transition-transform duration-200 flex-shrink-0",
-                isActive ? "rotate-180" : ""
-              )}
+              className="size-5 flex-shrink-0"
             />
           )}
         </div>
@@ -102,13 +99,16 @@ export const SubMenu: React.FC<SubMenuProps> = ({
     return null;
   }
 
+  // Determine if we should use auto height (always visible) or controlled height
+  const isAutoHeight = height === "auto";
+
   return (
     <div
       ref={contentRef}
       style={{
-        height: height,
-        transition: "height 0.3s ease-out",
-        overflow: "hidden",
+        height: isAutoHeight ? "auto" : height,
+        transition: isAutoHeight ? "none" : "height 0.3s ease-out",
+        overflow: isAutoHeight ? "visible" : "hidden",
       }}
       className="ml-8 relative"
     >

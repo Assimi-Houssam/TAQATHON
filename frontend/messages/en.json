@@ -246,6 +246,7 @@
       "anomaly_create": "New Anomaly",
       "anomaly_detail": "Detail View",
       "anomaly_batch_upload": "Batch Upload",
+      "maintenance_windows": "Maintenance Windows",
       "analytics": "Analytics",
       "performance_metrics": "Performance Metrics",
       "trend_analysis": "Trend Analysis",

@@ -235,6 +235,7 @@
       "anomaly_create": "Nouvelle Anomalie",
       "anomaly_detail": "Vue Détail",
       "anomaly_batch_upload": "Chargement en Lot",
+      "maintenance_windows": "Fenêtres de Maintenance",
       "analytics": "Analytique",
       "performance_metrics": "Métriques de Performance",
       "trend_analysis": "Analyse des Tendances",
