@@ -864,5 +864,36 @@ export class AnomalyController {
   }
 
 
+  @ApiOperation({ summary: 'Delete attachment' })
+  @ApiParam({ name: 'id', description: 'Attachment ID', type: 'string' })
+  @ApiResponse({
+    status: 200,
+    description: 'Attachment deleted successfully',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Attachment not found',
+  })
+  @Delete('deleteattachment/:id')
+  async deleteAttachment(@Param('id') id: string) {
+    try {
+      return await this.anomalyService.deleteAttachment(id);
+    } catch (error) {
+      console.error('Error deleting attachment:', error);
+      throw new BadRequestException('Failed to delete attachment');
+    }
+  }
+
+
+  @Delete('deleteanomaly/:id')
+  async deleteAnomaly(@Param('id') id: string) {
+    try {
+      return await this.anomalyService.deleteAnomaly(id);
+    } catch (error) {
+      console.error('Error deleting anomaly:', error);
+      throw new BadRequestException('Failed to delete anomaly');
+    }
+  }
+
 }
 

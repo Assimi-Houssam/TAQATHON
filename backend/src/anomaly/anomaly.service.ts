@@ -807,6 +807,16 @@ export class AnomalyService {
       if (!action) {
         throw new Error('Action plan not found');
       }
+
+      await this.Prisma.action_plan.update({
+        where: { id: id },
+        data: {
+          anomaly: {
+            disconnect: true,
+          },
+        },
+      });
+      // Optionally, delete the file from the server if it exists
       await this.Prisma.action_plan.delete({
         where: { id: id },
       });
@@ -815,6 +825,59 @@ export class AnomalyService {
         message: 'Action plan deleted successfully',
       };
     }
-    
+
+    async deleteAttachment(id : string) {
+      const attachment = await this.Prisma.attachments.findUnique({
+        where: { id: id },
+      });
+      if (!attachment) {
+        throw new Error('Attachment not found');
+      }
+      await this.Prisma.attachments.update({
+        where: { id: id },
+        data: {
+          anomaly: {
+            disconnect: true,
+          },
+        },
+      });
+      // Optionally, delete the file from the server
+      const filePath = path.resolve(attachment.file_path);
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+      }
+      await this.Prisma.attachments.delete({
+        where: { id: id },
+      });
+      return {
+        success: true,
+        message: 'Attachment deleted successfully',
+      };
+    }
+
+    async deleteAnomaly(id :string){
+      const anomaly = await this.Prisma.anomaly.findUnique({
+        where: { id: id },
+      });
+      if (!anomaly) {
+        throw new Error('Anomaly not found');
+      }
+      await this.Prisma.anomaly.update({
+        where: { id: id },
+        data: { 
+          maintenance_window: {
+            disconnect: true,
+          },
+        },
+      });
+      await this.Prisma.anomaly.delete({
+        where: { id: id },
+      });
+      return {
+        success: true,
+        message: 'Anomaly deleted successfully',
+      };
+    }
+
   }
 
