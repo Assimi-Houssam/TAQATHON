@@ -27,7 +27,7 @@ export interface RexEntrie {
   id: string;
   summary?: string;
   docment_path?: string;
-  anomalies?: Anomaly[];
+  anomalies_id?: string;
 }
 
 // Main Anomaly interface - aligned with AnomalieEntity specification
@@ -38,9 +38,11 @@ export interface Anomaly {
   unite?: string;
   systeme?: string;
   descreption_anomalie?: string;
+  descreption_equipment?: string;
   origine?: 'ORACLE' | 'MAXIMO' | 'EMC' | 'APM';
   date_detection?: string;
   section_proprietaire?: string;
+  section?: string;
   fiablite_integrite?: string;
   fiablite_conf?: string;
   disponsibilite?: string;
@@ -236,6 +238,18 @@ export interface ActionPlan {
   updated_at: string;
 }
 
+// Backend Action interface (from API response)
+export interface Action {
+  id: string;
+  Action: string;
+  responsable: string;
+  pdrs_disponible: boolean;
+  resource_intern: string;
+  resource_extern: string;
+  status: 'NOT_COMPLETED' | 'COMPLETED' | 'IN_PROGRESS';
+  anomaly_id: string;
+}
+
 // Maintenance Window interface
 export interface MaintenanceWindow {
   id: string;
@@ -264,8 +278,11 @@ export interface REX {
 // Extended Anomaly interface with related data
 export interface AnomalyWithRelations extends Anomaly {
   action_plans?: ActionPlan[];
+  actions?: Action[];
+  atachments?: Attachments[];
   maintenance_window?: MaintenanceWindow;
-  rex?: REX;
+  rex_entrie?: RexEntrie[];
+  rex?: REX; // Keep for backward compatibility
 }
 
 // Migration helpers for converting between old and new formats

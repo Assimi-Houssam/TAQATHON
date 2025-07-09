@@ -11,7 +11,8 @@ import {
   Upload,
   Save,
   Edit,
-  X
+  X,
+  Download
 } from "lucide-react";
 import { AnomalyWithRelations } from "@/types/anomaly";
 import { useAnomalyMutations } from "@/hooks/useAnomalies";
@@ -24,8 +25,12 @@ interface ClosedTabContentProps {
 export function ClosedTabContent({ anomaly }: ClosedTabContentProps) {
   const { attachRex } = useAnomalyMutations();
   
-  const [isEditing, setIsEditing] = useState(!anomaly.rex?.notes);
-  const [summary, setSummary] = useState(anomaly.rex?.notes || "");
+  // Get the first REX entry if it exists
+  const existingRex = anomaly.rex_entrie?.[0];
+  const hasExistingRex = !!existingRex;
+  
+  const [isEditing, setIsEditing] = useState(!hasExistingRex);
+  const [summary, setSummary] = useState(existingRex?.summary || "");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -42,6 +47,28 @@ export function ClosedTabContent({ anomaly }: ClosedTabContentProps) {
     const fileInput = document.getElementById('rex-file') as HTMLInputElement;
     if (fileInput) {
       fileInput.value = '';
+    }
+  };
+
+  const handleDownload = async () => {
+    if (!existingRex?.docment_path) return;
+    
+    try {
+      // Construct the download URL - adjust this based on your backend API
+      const downloadUrl = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/${existingRex.docment_path}`;
+      
+      // Create a temporary link and trigger download
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      link.download = existingRex.docment_path.split('/').pop() || 'rex-document';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      toast.success("Download started");
+    } catch (error) {
+      console.error("Error downloading file:", error);
+      toast.error("Failed to download file");
     }
   };
 
@@ -90,7 +117,7 @@ export function ClosedTabContent({ anomaly }: ClosedTabContentProps) {
   };
 
   const handleCancel = () => {
-    setSummary(anomaly.rex?.notes || "");
+    setSummary(existingRex?.summary || "");
     setSelectedFile(null);
     setIsEditing(false);
   };
@@ -111,12 +138,12 @@ export function ClosedTabContent({ anomaly }: ClosedTabContentProps) {
               </div>
             </div>
             <div className="flex items-center gap-2">
-              {anomaly.rex?.notes && !isEditing && (
+              {hasExistingRex && (
                 <div className="px-3 py-1 bg-green-50 border border-green-200 rounded-full">
                   <span className="text-xs font-medium text-green-700">Documented</span>
                 </div>
               )}
-              {!isEditing && (
+              {!hasExistingRex && !isEditing && (
                 <Button
                   variant="outline"
                   size="sm"
@@ -132,7 +159,7 @@ export function ClosedTabContent({ anomaly }: ClosedTabContentProps) {
         </CardHeader>
         
         <CardContent>
-          {isEditing ? (
+          {!hasExistingRex && isEditing ? (
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* REX Summary */}
               <div className="space-y-3">
@@ -229,34 +256,44 @@ export function ClosedTabContent({ anomaly }: ClosedTabContentProps) {
             </form>
           ) : (
             <div className="space-y-6">
-              {/* Display Mode */}
+              {/* Display Mode - Read Only */}
               <div className="space-y-3">
                 <Label className="text-sm font-semibold text-gray-900">
                   REX Summary
                 </Label>
                 <Textarea
-                  value={summary}
+                  value={summary || "No documentation provided"}
                   readOnly
-                  placeholder="No documentation provided"
                   rows={6}
-                  className="min-h-[150px] border-gray-200 bg-gray-50 text-gray-700 cursor-default"
+                  className="min-h-[150px] border-gray-200 bg-gray-50 text-gray-700 cursor-default resize-none"
                 />
               </div>
               
-              {anomaly.rex?.file_path && (
+              {existingRex?.docment_path && (
                 <div className="space-y-3">
                   <Label className="text-sm font-semibold text-gray-900">
                     Supporting Documentation
                   </Label>
                   <div className="p-4 border border-blue-200 rounded-lg bg-blue-50">
-                    <div className="flex items-start gap-3">
-                      <FileText className="h-5 w-5 text-blue-600 mt-0.5" />
-                      <div className="flex-1">
-                        <h4 className="text-sm font-semibold text-blue-900 mb-1">Documentation</h4>
-                        <span className="text-blue-700 text-sm font-medium">
-                          View documentation →
-                        </span>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-start gap-3">
+                        <FileText className="h-5 w-5 text-blue-600 mt-0.5" />
+                        <div className="flex-1">
+                          <h4 className="text-sm font-semibold text-blue-900 mb-1">REX Documentation</h4>
+                          <span className="text-blue-700 text-sm">
+                            {existingRex.docment_path.split('/').pop()}
+                          </span>
+                        </div>
                       </div>
+                      <Button
+                        onClick={handleDownload}
+                        variant="outline"
+                        size="sm"
+                        className="border-blue-200 text-blue-700 hover:bg-blue-100"
+                      >
+                        <Download className="h-4 w-4 mr-1" />
+                        Download
+                      </Button>
                     </div>
                   </div>
                 </div>
