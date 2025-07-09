@@ -585,7 +585,7 @@ export default function AnomaliesPage() {
   };
 
   return (
-    <div className="container mx-auto px-6 py-6">
+    <div className="px-6 py-6">
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <div>

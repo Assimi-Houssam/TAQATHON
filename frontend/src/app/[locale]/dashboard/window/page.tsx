@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -8,7 +8,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { DndContext, DragEndEvent, DragOverlay, DragStartEvent, useDraggable, useDroppable } from "@dnd-kit/core";
-import { Plus, Calendar as CalendarIcon, Clock } from "lucide-react";
+import { Plus, Calendar as CalendarIcon, Clock, ChevronLeft, ChevronRight } from "lucide-react";
 
 interface Anomaly {
   id: string;
@@ -79,14 +79,13 @@ function DraggableAnomaly({ anomaly, isInWindow = false }: { anomaly: Anomaly; i
         style={style}
         {...listeners}
         {...attributes}
-        className="bg-white border border-gray-200 rounded-lg p-3 h-20 cursor-grab active:cursor-grabbing transition-all hover:shadow-sm"
+        className="bg-white border border-dashed border-gray-300 rounded p-3 h-20 cursor-grab active:cursor-grabbing transition-all hover:border-blue-400 hover:bg-blue-50"
       >
         <div className="flex items-center justify-between mb-1">
-          <span className="font-medium text-sm">{anomaly.id}</span>
+          <span className="font-medium text-sm text-black">{anomaly.id}</span>
           <div className={`w-3 h-3 rounded-full ${getCriticalityColor(anomaly.criticality)}`} />
         </div>
-        <p className="text-sm text-gray-700 leading-tight">{anomaly.title}</p>
-        {/* <p className="text-xs text-gray-500 mt-1">{anomaly.equipment}</p> */}
+        <p className="text-sm text-gray-700 leading-tight line-clamp-2">{anomaly.title}</p>
       </div>
     );
   }
@@ -140,11 +139,12 @@ function CalendarMaintenanceWindow({
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden group hover:shadow-xl transition-all duration-300 w-[380px]">
-      <div className={`${window.color} p-6 text-white relative`}>
+    <div className="bg-white rounded-lg border border-gray-300 overflow-hidden transition-all duration-200 w-[380px] flex-shrink-0 horizontal-scroll-item">
+      {/* Header */}
+      <div className="bg-gray-100 p-4 border-b border-dashed border-gray-300 relative">
         <AlertDialog>
           <AlertDialogTrigger asChild>
-            <button className="absolute top-4 right-4 w-8 h-8 bg-black bg-opacity-10 hover:bg-opacity-20 rounded-full flex items-center justify-center text-white text-lg font-light transition-all duration-200 hover:scale-110">
+            <button className="absolute top-3 right-3 w-6 h-6 bg-gray-200 hover:bg-red-100 rounded-full flex items-center justify-center text-gray-600 hover:text-red-600 text-sm font-medium transition-all duration-200">
               ×
             </button>
           </AlertDialogTrigger>
@@ -163,46 +163,48 @@ function CalendarMaintenanceWindow({
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
-        <div className="flex items-center gap-3 mb-3">
-          <CalendarIcon className="h-5 w-5 opacity-90" />
-          <h3 className="font-semibold text-lg tracking-tight">{window.title}</h3>
+        
+        <div className="flex items-center gap-2 mb-2">
+          <CalendarIcon className="h-4 w-4 text-gray-600" />
+          <h3 className="font-semibold text-black text-lg">{window.title}</h3>
         </div>
-        <div className="flex items-center gap-3 text-sm opacity-80 mb-2">
-          <Clock className="h-4 w-4" />
-          <span className="font-medium">{formatProfessionalDate(fromDate, toDate)}</span>
+        
+        <div className="flex items-center gap-2 text-sm text-gray-700 mb-1">
+          <Clock className="h-3 w-3" />
+          <span>{formatProfessionalDate(fromDate, toDate)}</span>
         </div>
-        <p className="text-sm opacity-80 font-medium">{window.equipment}</p>
+        
+        <p className="text-sm text-gray-600">{window.equipment}</p>
       </div>
 
+      {/* Content Area */}
       <div 
         ref={setNodeRef}
-        className={`min-h-[200px] inherit transition-all duration-300 ${
+        className={`min-h-[200px] p-4 transition-all duration-200 ${
           isOver 
-            ? 'bg-gradient-to-br from-blue-50 to-indigo-50 border-t-2 border-blue-400' 
-            : 'bg-gradient-to-br from-gray-50 to-slate-50 border-t border-gray-200'
+            ? 'bg-blue-50 border-t-2 border-blue-400' 
+            : 'bg-white'
         }`}
       >
-        <div className="p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h4 className="text-sm font-semibold text-gray-700 tracking-wide uppercase">
-              Issues
-            </h4>
-            <div className="bg-gray-200 text-gray-600 text-xs font-bold px-2 py-1 rounded-full">
-              {assignedAnomalies.length}
+        <div className="flex items-center justify-between mb-3">
+          <h4 className="text-sm font-medium text-gray-700">
+            Issues
+          </h4>
+          <div className="bg-gray-100 text-gray-700 text-xs font-medium px-2 py-1 rounded">
+            {assignedAnomalies.length}
+          </div>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 min-h-[160px]">
+          {assignedAnomalies.map((anomaly) => (
+            <DraggableAnomaly key={anomaly.id} anomaly={anomaly} isInWindow={true} />
+          ))}
+          {assignedAnomalies.length === 0 && (
+            <div className="col-span-2 text-center py-8">
+              <div className="text-gray-400 text-sm">Drop issues here</div>
+              <div className="text-gray-300 text-xs mt-1">Drag and drop to organize</div>
             </div>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 min-h-[200px]">
-            {assignedAnomalies.map((anomaly) => (
-              <DraggableAnomaly key={anomaly.id} anomaly={anomaly} isInWindow={true} />
-            ))}
-            {assignedAnomalies.length === 0 && (
-              <div className="col-span-2 text-center py-12">
-                <div className="text-gray-400 text-sm font-medium">Drop issues here</div>
-                <div className="text-gray-300 text-xs mt-1">Drag and drop to organize</div>
-              </div>
-            )}
-          </div>
+          )}
         </div>
       </div>
     </div>
@@ -222,10 +224,97 @@ export default function MaintenanceWindows() {
     equipment: '',
   });
 
+  // Horizontal scrolling state and refs
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
+
+  // Check scroll position and update arrow visibility
+  const checkScrollPosition = () => {
+    if (!scrollContainerRef.current) return;
+    
+    const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
+    setCanScrollLeft(scrollLeft > 0);
+    setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 1);
+  };
+
+  // Scroll functions
+  const scrollLeft = () => {
+    if (!scrollContainerRef.current) return;
+    const container = scrollContainerRef.current;
+    const cardWidth = 380; // Width of each maintenance window card
+    const gap = 24; // Gap between cards (gap-6 = 24px)
+    const scrollAmount = cardWidth + gap;
+    
+    container.scrollBy({
+      left: -scrollAmount,
+      behavior: 'smooth'
+    });
+    
+    // Update scroll position after animation
+    setTimeout(checkScrollPosition, 300);
+  };
+
+  const scrollRight = () => {
+    if (!scrollContainerRef.current) return;
+    const container = scrollContainerRef.current;
+    const cardWidth = 380;
+    const gap = 24;
+    const scrollAmount = cardWidth + gap;
+    
+    container.scrollBy({
+      left: scrollAmount,
+      behavior: 'smooth'
+    });
+    
+    // Update scroll position after animation
+    setTimeout(checkScrollPosition, 300);
+  };
+
   // Ensure component only renders after hydration
   useEffect(() => {
     setIsMounted(true);
   }, []);
+
+  // Check scroll position on mount and when windows change
+  useEffect(() => {
+    if (isMounted) {
+      checkScrollPosition();
+    }
+  }, [isMounted, maintenanceWindows]);
+
+  // Disable mouse wheel scrolling and add keyboard navigation
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    // Disable mouse wheel scrolling
+    const handleWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      // Only allow button-based navigation for better UX control
+    };
+
+    // Keyboard navigation support
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.target !== document.body) return; // Only handle when no input is focused
+      
+      if (event.key === 'ArrowLeft' && canScrollLeft) {
+        event.preventDefault();
+        scrollLeft();
+      } else if (event.key === 'ArrowRight' && canScrollRight) {
+        event.preventDefault();
+        scrollRight();
+      }
+    };
+
+    container.addEventListener('wheel', handleWheel, { passive: false });
+    window.addEventListener('keydown', handleKeyDown);
+    
+    return () => {
+      container.removeEventListener('wheel', handleWheel);
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [canScrollLeft, canScrollRight, isMounted]);
 
   const handleDragStart = (event: DragStartEvent) => {
     setActiveId(event.active.id as string);
@@ -340,7 +429,7 @@ export default function MaintenanceWindows() {
   return (
     <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
       {/* <div className="p-6 space-y-6 bg-gray-50 min-h-screen"> */}
-      <div className="p-6 space-y-6 bg-gray-50 flex flex-col h-full">
+      <div className="p-6 space-y-6 bg-gray-50 flex flex-col h-full dashboard-container">
 
         {/* Header */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 ">
@@ -421,17 +510,46 @@ export default function MaintenanceWindows() {
         </div>
 
         {/* Maintenance Windows Timeline */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 flex-1 flex flex-col select-none">
-        <div className="overflow-x-auto h-full">
-            <div className="flex gap-6 pb-4" style={{ width: 'max-content', minWidth: '100%' }}>
+        <div className="bg-white rounded-lg border border-gray-200 p-6 flex-1 flex flex-col select-none max-w-full overflow-hidden">
+          <div className="relative h-full w-full max-w-full">
+            {/* Navigation Arrows */}
+            {canScrollLeft && (
+              <Button
+                variant="outline"
+                size="icon"
+                className="absolute left-2 top-1/2 -translate-y-1/2 z-20 h-10 w-10 rounded-full bg-white border hover:bg-blue-50 hover:border-blue-300 transition-all duration-200"
+                onClick={scrollLeft}
+                aria-label="Scroll left to view previous maintenance windows"
+              >
+                <ChevronLeft className="h-5 w-5 text-gray-700" />
+              </Button>
+            )}
+            
+            {canScrollRight && (
+              <Button
+                variant="outline"
+                size="icon"
+                className="absolute right-2 top-1/2 -translate-y-1/2 z-20 h-10 w-10 rounded-full bg-white border hover:bg-blue-50 hover:border-blue-300 transition-all duration-200"
+                onClick={scrollRight}
+                aria-label="Scroll right to view more maintenance windows"
+              >
+                <ChevronRight className="h-5 w-5 text-gray-700" />
+              </Button>
+            )}
+
+            {/* Scrollable Container */}
+            <div
+              ref={scrollContainerRef}
+              className="flex gap-6 horizontal-scroll-container scroll-smooth h-full pb-4"
+              onScroll={checkScrollPosition}
+            >
               {sortedMaintenanceWindows.map((window) => (
-                <div key={window.id} className="min-w-[320px] flex-shrink-0">
-                  <CalendarMaintenanceWindow
-                    window={window}
-                    assignedAnomalies={getAssignedAnomalies(window.id)}
-                    onRemove={handleRemoveWindow}
-                  />
-                </div>
+                <CalendarMaintenanceWindow
+                  key={window.id}
+                  window={window}
+                  assignedAnomalies={getAssignedAnomalies(window.id)}
+                  onRemove={handleRemoveWindow}
+                />
               ))}
             </div>
           </div>

@@ -22,8 +22,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               <Navbar />
               <div className="flex pt-20">
                 <AppSidebar />
-                <SidebarInset className="flex-1 w-full bg-gray-50">
-                  <div className="p-6 max-w-full">
+                <SidebarInset className="flex-1 w-full bg-gray-50 min-w-0 overflow-hidden">
+                  <div className="p-6 max-w-full min-w-0 overflow-hidden">
                     {children}
                   </div>
                 </SidebarInset>

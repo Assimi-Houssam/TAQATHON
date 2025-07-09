@@ -40,7 +40,7 @@ export default function AnomalyDetailPage() {
   // Loading state
   if (isLoading) {
     return (
-      <div className="container mx-auto px-6 py-6">
+      <div className=" px-6 py-6">
         <div className="mb-8 pb-6 border-b border-gray-200">
           <div className="flex items-center gap-3 mb-4">
             <Button 
@@ -75,7 +75,7 @@ export default function AnomalyDetailPage() {
   // Error state
   if (error) {
     return (
-      <div className="container mx-auto px-6 py-6">
+      <div className=" px-6 py-6">
         <div className="mb-8 pb-6 border-b border-gray-200">
           <div className="flex items-center gap-3 mb-4">
             <Button 
@@ -114,7 +114,7 @@ export default function AnomalyDetailPage() {
   // No anomaly found
   if (!anomaly) {
     return (
-      <div className="container mx-auto px-6 py-6">
+      <div className=" px-6 py-6">
         <div className="mb-8 pb-6 border-b border-gray-200">
           <div className="flex items-center gap-3 mb-4">
             <Button 
@@ -154,7 +154,7 @@ export default function AnomalyDetailPage() {
   id_to_print = id_to_print.slice(-5).toUpperCase();
 
   return (
-    <div className="container mx-auto px-6 py-6">
+    <div className=" px-6 py-6">
       {/* Loading Overlay for Mutations */}
       {markAsTreated.isPending && (
         <div className="fixed inset-0 bg-black bg-opacity-20 flex items-center justify-center z-40">

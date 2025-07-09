@@ -325,6 +325,16 @@ body {
   background: linear-gradient(to bottom, var(--primary-400), var(--primary-500));
 }
 
+/* Hidden Scrollbar */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
 /* Modern Animation Utilities */
 .animate-shimmer {
   animation: shimmer 2s infinite;
@@ -441,6 +451,21 @@ html body[data-scroll-locked] {
 
 .content-container {
   @apply w-full min-w-0;
+}
+
+/* Dashboard Container Constraints */
+.dashboard-container {
+  @apply w-full max-w-full min-w-0 overflow-hidden;
+}
+
+.horizontal-scroll-container {
+  @apply w-full max-w-full overflow-x-scroll scrollbar-hide;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity;
+}
+
+.horizontal-scroll-item {
+  scroll-snap-align: start;
 }
 
 /* Print Styles */

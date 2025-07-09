@@ -74,7 +74,8 @@ export const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <div className="w-full p-6 space-y-6 max-w-[1600px] mx-auto">
+      {/* max-w-[1600px] mx-auto */}
+      <div className="w-full p-6 space-y-6">
         {/* Header Section */}
         <Card className="p-6 border border-slate-200 bg-white">
           <DashboardHeader
