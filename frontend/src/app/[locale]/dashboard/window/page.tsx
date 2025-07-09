@@ -421,7 +421,7 @@ export default function MaintenanceWindows() {
         </div>
 
         {/* Maintenance Windows Timeline */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 flex-1 flex flex-col">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 flex-1 flex flex-col select-none">
         <div className="overflow-x-auto h-full">
             <div className="flex gap-6 pb-4" style={{ width: 'max-content', minWidth: '100%' }}>
               {sortedMaintenanceWindows.map((window) => (

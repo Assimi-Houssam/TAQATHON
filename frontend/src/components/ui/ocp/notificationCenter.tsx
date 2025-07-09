@@ -91,7 +91,7 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({
           size="icon"
           className={cn("relative hover:bg-gray-100/50", className)}
         >
-          <Bell className="scale-150 text-gray-700" />
+          <Bell className="scale-125 text-gray-700" />
           {unreadCount > 0 && (
             <span
               className={cn(

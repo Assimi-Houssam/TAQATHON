@@ -39,7 +39,7 @@ const UserIcon = () => {
     <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>
         <div className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity px-2 py-1 rounded-lg hover:bg-gray-100">
-          <Avatar className="focus-visible:ring-0 focus-visible:ring-transparent size-10 border border-gray-200 aspect-square object-cover">
+          <Avatar className="focus-visible:ring-0 focus-visible:ring-transparent size-8 border border-gray-200 aspect-square object-cover">
             <AvatarImage
               className="object-cover"
               src={
@@ -53,12 +53,6 @@ const UserIcon = () => {
               {initials}
             </AvatarFallback>
           </Avatar>
-          <div className="flex flex-col">
-            <span className=" font-medium text-gray-700">{user.username}</span>
-            {user.email && (
-              <span className="text-xs text-gray-500">{user.email}</span>
-            )}
-          </div>
         </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56 bg-white border border-gray-200 rounded-md shadow-lg p-1 mr-2">
