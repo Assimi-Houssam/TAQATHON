@@ -51,6 +51,14 @@ export interface AnomaliesByStoppingRequirementKPI {
   percentageNotRequiringStop: number;
 }
 
+export interface AnomaliesChartKPI {
+  date: string;
+  closed: number;
+  inProgress: number;
+  new: number;
+  total: number;
+}
+
 // Individual KPI Hooks
 export function useActionPlanKPI(enabled: boolean = true) {
   return useQuery({
@@ -136,6 +144,20 @@ export function useAnomaliesByStoppingRequirementKPI(enabled: boolean = true) {
   });
 }
 
+export function useAnomaliesChartKPI(enabled: boolean = true) {
+  return useQuery({
+    queryKey: ["kpi", "anomalies-chart"],
+    queryFn: async () => {
+      const { data } = await apiClient.get<AnomaliesChartKPI[]>('/kpi/anomalieschart');
+      return data;
+    },
+    enabled,
+    staleTime: 2 * 60 * 1000, // 2 minutes
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+  });
+}
+
 // Combined KPI Hook for convenience
 export function useAllKPIs(enabled: boolean = true) {
   const actionPlan = useActionPlanKPI(enabled);
@@ -144,6 +166,7 @@ export function useAllKPIs(enabled: boolean = true) {
   const closed = useAnomaliesClosedKPI(enabled);
   const criticality = useAnomaliesByCriticalityKPI(enabled);
   const stoppingRequirement = useAnomaliesByStoppingRequirementKPI(enabled);
+  const chartData = useAnomaliesChartKPI(enabled);
 
   return {
     actionPlan,
@@ -152,7 +175,8 @@ export function useAllKPIs(enabled: boolean = true) {
     closed,
     criticality,
     stoppingRequirement,
-    isLoading: actionPlan.isLoading || processingTime.isLoading || inProgress.isLoading || closed.isLoading || criticality.isLoading || stoppingRequirement.isLoading,
-    isError: actionPlan.isError || processingTime.isError || inProgress.isError || closed.isError || criticality.isError || stoppingRequirement.isError,
+    chartData,
+    isLoading: actionPlan.isLoading || processingTime.isLoading || inProgress.isLoading || closed.isLoading || criticality.isLoading || stoppingRequirement.isLoading || chartData.isLoading,
+    isError: actionPlan.isError || processingTime.isError || inProgress.isError || closed.isError || criticality.isError || stoppingRequirement.isError || chartData.isError,
   };
 } 

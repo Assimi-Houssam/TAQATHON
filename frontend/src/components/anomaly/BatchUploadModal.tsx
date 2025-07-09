@@ -56,7 +56,7 @@ interface BatchUploadModalProps {
   onSuccess?: () => void;
 }
 
-export default function BatchUploadModal({ isOpen, onClose, onSuccess }: BatchUploadModalProps) {
+export function BatchUploadModal({ isOpen, onClose, onSuccess }: BatchUploadModalProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   // React Query mutations

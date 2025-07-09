@@ -9,7 +9,7 @@ import { DataTable, ServerSideConfig } from "@/components/data-table";
 import { Column, DataTableConfig } from "@/components/data-table/types";
 import { useRouter } from "next/navigation";
 import { Anomaly, AnomalyStatus, getCriticalityLevel } from "@/types/anomaly";
-import { AnomalyStatus as AnomalyStatusComponent, AnomalyCriticalityIndicator } from "@/components/anomaly";
+import { AnomalyStatusBadge as AnomalyStatusComponent, AnomalyCriticalityIndicator } from "@/components/anomaly";
 import { useAnomalies } from "@/hooks/useAnomalies";
 
 // Filter mapping functions

@@ -59,7 +59,7 @@ interface NewAnomalyModalProps {
   onSuccess?: () => void;
 }
 
-export default function NewAnomalyModal({ isOpen, onClose, onSuccess }: NewAnomalyModalProps) {
+export function NewAnomalyModal({ isOpen, onClose, onSuccess }: NewAnomalyModalProps) {
   const t = useTranslations("sidebar.pages");
   
   // React Query mutations
