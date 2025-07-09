@@ -20,19 +20,16 @@ export class AnomalyService {
   ) {
     const skip = (page - 1) * limit;
     let anomaly: any;
-    let criticalityFilter: any = {};
+    const orderBy: any[] = [];
 
-    if (order == 'LOW' || order == 'HIGH') {
-      if (order == 'LOW') {
-        criticalityFilter = {
-          sorting: 'asc',
-        };
-      } else if (order == 'HIGH') {
-        criticalityFilter = {
-          sorting: 'desc',
-        };
-      }
-    }
+ if (order === 'LOW' || order === 'HIGH') {
+    orderBy.push({
+      sorting: order === 'LOW' ? 'asc' : 'desc'
+    });
+  }
+  orderBy.push({ 
+    status: 'desc' 
+  });
     const whereClause: any = {};
     if (status && status.trim() !== '') {
       const validStatuses = ['NEW', 'IN_PROGRESS', 'CLOSED'];
@@ -77,7 +74,7 @@ export class AnomalyService {
       skip: skip,
       take: limit,
       where: whereClause,
-      orderBy: [{ criticite: criticalityFilter.criticite }, { status: 'desc' }],
+      orderBy: orderBy,
     });
     if (!anomaly || anomaly.length === 0) {
       return { message: 'No anomalies found' };
@@ -290,10 +287,12 @@ export class AnomalyService {
     if (!anomaly) {
       throw new Error('Anomaly not found');
     }
+
     const updatedAnomaly = await this.Prisma.anomaly.update({
       where: { id: id },
       data: {
         ...body,
+        sorting: body.criticite ? parseInt(body.criticite) : anomaly.sorting,
         date_detection: body.date_detection
           ? new Date(body.date_detection)
           : anomaly.date_detection,
