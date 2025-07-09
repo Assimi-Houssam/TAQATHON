@@ -74,8 +74,9 @@ export function useMaintenanceWindows(options: UseMaintenanceWindowsOptions = {}
       if (equipment && equipment.trim() !== '') params.append('equipment', equipment);
       if (orderBy) params.append('orderBy', orderBy);
 
+      // Note: Using backend endpoint as provided - GET /anomaly/getmaintenancewondow
       const queryString = params.toString();
-      const url = `/anomaly/getMaintenanceWindows${queryString ? `?${queryString}` : ''}`;
+      const url = `/anomaly/getmaintenancewondow${queryString ? `?${queryString}` : ''}`;
       
       const { data } = await apiClient.get<MaintenanceWindowsResponse>(url);
       
@@ -103,7 +104,8 @@ export function useMaintenanceWindow(id: string, enabled: boolean = true) {
   return useQuery({
     queryKey: ["maintenance-window", id],
     queryFn: async () => {
-      const { data } = await apiClient.get<MaintenanceWindow>(`/anomaly/getMaintenanceWindow/${id}`);
+      // Note: Using the backend endpoint as provided (getmaintenancewondow appears to be the actual endpoint name)
+      const { data } = await apiClient.get<MaintenanceWindow>(`/anomaly/getmaintenancewondow/${id}`);
       return data;
     },
     enabled: enabled && !!id,
@@ -246,7 +248,8 @@ export function useMaintenanceWindowMutations() {
    */
   const getMaintenanceWindowsForAnomaly = useMutation({
     mutationFn: async (anomalyId: string): Promise<MaintenanceWindow[]> => {
-      const response = await apiClient.get<MaintenanceWindow[]>(`/anomaly/getMaintenanceWindowsForAnomaly/${anomalyId}`);
+      // Note: Assuming consistent endpoint naming pattern
+      const response = await apiClient.get<MaintenanceWindow[]>(`/anomaly/getmaintenancewondowforanomaly/${anomalyId}`);
       return response.data;
     },
     onError: (error, anomalyId) => {
@@ -259,7 +262,8 @@ export function useMaintenanceWindowMutations() {
    */
   const getAnomaliesForMaintenanceWindow = useMutation({
     mutationFn: async (maintenanceWindowId: string): Promise<any[]> => {
-      const response = await apiClient.get(`/anomaly/getAnomaliesForMaintenanceWindow/${maintenanceWindowId}`);
+      // Note: Assuming consistent endpoint naming pattern
+      const response = await apiClient.get(`/anomaly/getanomaliesformaintenancewondow/${maintenanceWindowId}`);
       return response.data;
     },
     onError: (error, maintenanceWindowId) => {
@@ -291,7 +295,8 @@ export function useMaintenanceWindowStats(enabled: boolean = true) {
   return useQuery({
     queryKey: ["maintenance-window-stats"],
     queryFn: async () => {
-      const { data } = await apiClient.get('/anomaly/getMaintenanceWindowStats');
+      // Note: Assuming consistent endpoint naming pattern
+      const { data } = await apiClient.get('/anomaly/getmaintenancewondowstats');
       return data;
     },
     enabled,
@@ -308,7 +313,8 @@ export function useUpcomingMaintenanceWindows(enabled: boolean = true) {
   return useQuery({
     queryKey: ["upcoming-maintenance-windows"],
     queryFn: async () => {
-      const { data } = await apiClient.get('/anomaly/getUpcomingMaintenanceWindows');
+      // Note: Assuming consistent endpoint naming pattern
+      const { data } = await apiClient.get('/anomaly/getupcomingmaintenancewondow');
       return data;
     },
     enabled,
