@@ -196,12 +196,48 @@ export class KpiService {
         };
         }
        
-        async getAnomaliesChart()
-        {
-          
+        async getAnomaliesChart() {
+          // Get start and end of current month
+          const now = new Date();
+          const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+          const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
 
+          const thismonthclosed = await this.Prisma.anomaly.count({
+            where: {
+              created_at: {
+                gte: startOfMonth,  // Greater than or equal to start of month
+                lte: endOfMonth,    // Less than or equal to end of month
+              },
+              status: 'CLOSED'
+            },
+          });
+
+          const thismonthinprogress = await this.Prisma.anomaly.count({
+            where: {
+              created_at: {
+                gte: startOfMonth,  // Greater than or equal to start of month
+                lte: endOfMonth,    // Less than or equal to end of month
+              },
+              status: 'IN_PROGRESS'
+            },
+          });
+          const thismonthnew = await this.Prisma.anomaly.count({
+            where: {
+              created_at: {
+                gte: startOfMonth,  // Greater than or equal to start of month
+                lte: endOfMonth,    // Less than or equal to end of month
+              },
+              status: 'NEW'
+            },
+          });
+
+
+          return {
+            thismonthclosed,
+            thismonthinprogress,
+            thismonthnew,
+            total: thismonthclosed + thismonthinprogress + thismonthnew
+          };
         }
 
-
-        
-}
+      }
