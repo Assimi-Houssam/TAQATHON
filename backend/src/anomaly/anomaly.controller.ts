@@ -221,7 +221,7 @@ export class AnomalyController {
         },
       }),
       limits: {
-        fileSize: 10 * 1024 * 1024, // 10MB limit
+        fileSize: 64 * 1024 * 1024, // 64MB limit
       },
     }),
   )
@@ -352,7 +352,7 @@ export class AnomalyController {
         },
       }),
       limits: {
-        fileSize: 10 * 1024 * 1024,
+        fileSize: 50 * 1024 * 1024,
       },
     }),
   )
@@ -491,7 +491,7 @@ export class AnomalyController {
     @UploadedFile(
       new ParseFilePipe({
         validators: [
-          new MaxFileSizeValidator({ maxSize: 10 * 1024 * 1024 }), // 10MB
+          new MaxFileSizeValidator({ maxSize: 64 * 1024 * 1024 }), // 64MB
         ],
         fileIsRequired: false, // Make file optional
       }),
