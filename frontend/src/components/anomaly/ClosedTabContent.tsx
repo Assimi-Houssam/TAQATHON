@@ -69,9 +69,21 @@ export function ClosedTabContent({ anomaly }: ClosedTabContentProps) {
       toast.success("REX documentation saved successfully");
       setIsEditing(false);
       setSelectedFile(null);
-    } catch (error) {
+      
+      // Reset the file input
+      const fileInput = document.getElementById('rex-file') as HTMLInputElement;
+      if (fileInput) {
+        fileInput.value = '';
+      }
+    } catch (error: any) {
       console.error("Error saving REX:", error);
-      toast.error("Failed to save REX documentation");
+      
+      // More specific error handling
+      const errorMessage = error?.response?.data?.message || 
+                          error?.message || 
+                          "Failed to save REX documentation";
+      
+      toast.error(errorMessage);
     } finally {
       setIsSubmitting(false);
     }
@@ -149,7 +161,7 @@ export function ClosedTabContent({ anomaly }: ClosedTabContentProps) {
                       id="rex-file"
                       type="file"
                       onChange={handleFileChange}
-                      accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png"
+                      accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain,image/jpeg,image/png"
                       className="hidden"
                     />
                     <Label

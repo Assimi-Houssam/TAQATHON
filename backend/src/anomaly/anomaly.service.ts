@@ -229,28 +229,47 @@ export class AnomalyService {
     };
   }
 
-  async attachRexEntry(id : string, file : any , summary?: string) {
-    if (!file) {
-      throw new Error('No file uploaded');
+  async attachRexEntry(id: string, file: any, summary?: string) {
+    // Validate that either file or summary is provided
+    if (!file && !summary?.trim()) {
+      throw new Error('Either file or summary must be provided');
     }
+
     const anomaly = await this.Prisma.anomaly.findUnique({
       where: { id: id },
     });
     if (!anomaly) {
       throw new Error('Anomaly not found');
     }
-    const rexEntry = await this.Prisma.rex_entrie.create({
-      data: {
-        summary : summary || 'No summary provided',
-        docment_path: file.path,
-        anomalies :{
-          connect: { id: id },
-        }
-      },
+
+    // Check if REX entry already exists for this anomaly
+    const existingRex = await this.Prisma.rex_entrie.findFirst({
+      where: { anomalies_id: id },
     });
+
+    const rexData = {
+      summary: summary || 'No summary provided',
+      docment_path: file?.path || null,
+      anomalies_id: id,
+    };
+
+    let rexEntry;
+    if (existingRex) {
+      // Update existing REX entry
+      rexEntry = await this.Prisma.rex_entrie.update({
+        where: { id: existingRex.id },
+        data: rexData,
+      });
+    } else {
+      // Create new REX entry
+      rexEntry = await this.Prisma.rex_entrie.create({
+        data: rexData,
+      });
+    }
+
     return {
       success: true,
-      message: 'Rex entry attached successfully',
+      message: 'REX entry saved successfully',
       data: rexEntry,
     };
   }

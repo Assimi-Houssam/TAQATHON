@@ -11,9 +11,28 @@ import {
   BadRequestException,
   ParseFilePipe,
   MaxFileSizeValidator,
-  FileTypeValidator,
   Delete,
 } from '@nestjs/common';
+
+// Allowed MIME types for REX documents
+const ALLOWED_REX_MIME_TYPES = [
+  'application/pdf',
+  'application/msword', 
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  'text/plain',
+  'image/jpeg',
+  'image/jpg', 
+  'image/png'
+];
+
+// Allowed MIME types for attachments
+const ALLOWED_ATTACHMENT_MIME_TYPES = [
+  'application/pdf',
+  'application/msword', 
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  'application/vnd.ms-excel'
+];
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
@@ -212,9 +231,6 @@ export class AnomalyController {
       new ParseFilePipe({
         validators: [
           new MaxFileSizeValidator({ maxSize: 10 * 1024 * 1024 }), // 10MB
-          new FileTypeValidator({
-            fileType: /(xlsx|xls|pdf|doc|docx)$/,
-          }),
         ],
       }),
     )
@@ -225,10 +241,19 @@ export class AnomalyController {
       if (!file) {
         throw new BadRequestException('No file uploaded');
       }
+      
       // Validate file exists and has required properties
       if (!file.filename || !file.path || !file.originalname) {
         throw new BadRequestException('Invalid file upload');
       }
+      
+      // Custom file type validation for attachments
+      if (!ALLOWED_ATTACHMENT_MIME_TYPES.includes(file.mimetype)) {
+        throw new BadRequestException(
+          `Invalid file type: ${file.mimetype}. Allowed types: ${ALLOWED_ATTACHMENT_MIME_TYPES.join(', ')}`
+        );
+      }
+      
       // Save attachment to database
       const attachment = await this.anomalyService.uploadAttachment(anomalyId, {
         fileName: file.originalname,
@@ -463,10 +488,35 @@ export class AnomalyController {
   )
   async attachRexEntry(
     @Param('id') id: string,
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({ maxSize: 10 * 1024 * 1024 }), // 10MB
+        ],
+        fileIsRequired: false, // Make file optional
+      }),
+    )
     file: any,
     @Body('summary') summary?: string,
   ) {
-    return await this.anomalyService.attachRexEntry(id, file, summary);
+    try {
+      // Validate that either file or summary is provided
+      if (!file && (!summary || !summary.trim())) {
+        throw new BadRequestException('Either file or summary must be provided');
+      }
+
+      // Custom file type validation if file is provided
+      if (file && !ALLOWED_REX_MIME_TYPES.includes(file.mimetype)) {
+        throw new BadRequestException(
+          `Invalid file type: ${file.mimetype}. Allowed types: ${ALLOWED_REX_MIME_TYPES.join(', ')}`
+        );
+      }
+
+      return await this.anomalyService.attachRexEntry(id, file, summary);
+    } catch (error) {
+      console.error('Error attaching REX entry:', error);
+      throw new BadRequestException(`Failed to attach REX entry: ${error.message}`);
+    }
   }
 
   @ApiOperation({ summary: 'Update anomaly' })

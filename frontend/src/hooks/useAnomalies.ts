@@ -266,10 +266,15 @@ export function useAnomalyMutations() {
    */
   const attachRex = useMutation({
     mutationFn: async ({ id, rexData }: { id: string; rexData: RexData }): Promise<any> => {
+      // Validate that either summary or file is provided
+      if (!rexData.summary?.trim() && !rexData.file) {
+        throw new Error('Either summary or file must be provided');
+      }
+
       const formData = new FormData();
       
-      if (rexData.summary) {
-        formData.append('summary', rexData.summary);
+      if (rexData.summary?.trim()) {
+        formData.append('summary', rexData.summary.trim());
       }
       
       if (rexData.file) {
@@ -291,6 +296,7 @@ export function useAnomalyMutations() {
     },
     onError: (error, variables) => {
       console.error(`Failed to attach REX to anomaly ${variables.id}:`, error);
+      throw error; // Re-throw to allow component error handling
     },
   });
 
