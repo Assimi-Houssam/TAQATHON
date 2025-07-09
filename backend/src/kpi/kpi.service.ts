@@ -38,13 +38,13 @@ export class KpiService {
       const allAnomalies = await this.Prisma.anomaly.findMany({
         select: {
           date_detection: true,
-          date_traitement: true,
+          created_at: true,
         },
       });
 
       // Filter out anomalies that don't have both dates in the service
       const validAnomalies = allAnomalies.filter(
-        (anomaly) => anomaly.date_detection && anomaly.date_traitement
+        (anomaly) => anomaly.date_detection && anomaly.created_at
       );
 
       if (validAnomalies.length === 0) {
@@ -64,7 +64,7 @@ export class KpiService {
 
       validAnomalies.forEach((anomaly) => {
         const detectionTime = new Date(anomaly.date_detection).getTime();
-        const treatmentTime = new Date(anomaly.date_traitement).getTime();
+        const treatmentTime = new Date(anomaly.created_at).getTime();
         const diffInMs = treatmentTime - detectionTime;
         const diffInHours = diffInMs / (1000 * 60 * 60); 
         totalHours += diffInHours;
