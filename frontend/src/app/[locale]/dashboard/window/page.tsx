@@ -441,15 +441,18 @@ export default function MaintenanceWindows() {
   };
 
   const getAssignedAnomalies = (windowId: string): Anomaly[] => {
-    if (!anomaliesData?.anomalies) return [];
+    if (!anomaliesData?.anomalies || !Array.isArray(anomaliesData.anomalies)) return [];
     return anomaliesData.anomalies.filter(anomaly => anomaly.maintenance_window_id === windowId);
   };
 
   const getUnassignedAnomalies = (): Anomaly[] => {
-    if (!anomaliesData?.anomalies) return [];
+    if (!anomaliesData?.anomalies || !Array.isArray(anomaliesData.anomalies)) return [];
     
     // Get anomalies that are either truly unassigned OR assigned to ORPHANS window
-    const orphansWindow = maintenanceWindowsData?.maintenanceWindows?.find(w => w.titlte === "ORPHANS");
+    const maintenanceWindows = maintenanceWindowsData?.maintenanceWindows;
+    const orphansWindow = Array.isArray(maintenanceWindows) 
+      ? maintenanceWindows.find(w => w.titlte === "ORPHANS")
+      : undefined;
     const orphansAnomalies = orphansWindow ? getAssignedAnomalies(orphansWindow.id) : [];
     const trulyUnassigned = anomaliesData.anomalies.filter(anomaly => !anomaly.maintenance_window_id);
     
@@ -459,13 +462,16 @@ export default function MaintenanceWindows() {
   const activeAnomaly = anomaliesData?.anomalies?.find(anomaly => anomaly.id === activeId);
 
   // Sort maintenance windows by date, excluding ORPHANS (handled separately)
-  const sortedMaintenanceWindows = maintenanceWindowsData?.maintenanceWindows
-    ?.filter(window => window.titlte !== "ORPHANS") // Exclude ORPHANS from timeline
-    ?.sort((a, b) => {
-      // Sort by start date
-      if (!a.date_debut_arret || !b.date_debut_arret) return 0;
-      return new Date(a.date_debut_arret).getTime() - new Date(b.date_debut_arret).getTime();
-    }) || [];
+  const maintenanceWindows = maintenanceWindowsData?.maintenanceWindows;
+  const sortedMaintenanceWindows = Array.isArray(maintenanceWindows)
+    ? maintenanceWindows
+        .filter(window => window.titlte !== "ORPHANS") // Exclude ORPHANS from timeline
+        .sort((a, b) => {
+          // Sort by start date
+          if (!a.date_debut_arret || !b.date_debut_arret) return 0;
+          return new Date(a.date_debut_arret).getTime() - new Date(b.date_debut_arret).getTime();
+        })
+    : [];
 
   // Show loading state until hydration is complete
   if (!isMounted) {
@@ -515,7 +521,7 @@ export default function MaintenanceWindows() {
                 </div>
               ) : (
                 <p className="text-sm text-gray-600 mt-1">
-                  {sortedMaintenanceWindows.length} windows • {getUnassignedAnomalies().length} unassigned
+                  {sortedMaintenanceWindows?.length || 0} windows • {getUnassignedAnomalies().length} unassigned
                 </p>
               )}
             </div>
