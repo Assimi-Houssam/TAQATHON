@@ -1,6 +1,32 @@
 version: "3.8"
 
 services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+    command: npm run dev
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: backend
+    ports:
+      - "3001:3001"
+      - "5555:5555"
+    environment:
+      - NODE_ENV=development
+    # volumes:
+    #   - ./backend:/app
+    command: >
+      sh -c "npm run start:dev & npx prisma studio"
+
   camembert-api:
     build:
       context: ./camembert-api
@@ -10,6 +36,6 @@ services:
       - "7533:7533"
     environment:
       - HOST=0.0.0.0
-      - PORT=8000
+      - PORT=7533
       - LOG_LEVEL=INFO
       - MODEL_PATH=app/models/model.pth

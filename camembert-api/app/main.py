@@ -268,7 +268,8 @@ def process_excel_file(file_bytes: bytes):
             # Send results to external API
             if row_idx % 5 == 0:
                 try:
-                    response = requests.post("http://localhost:3000/ml/ml-response", json=results)
+                    response = requests.post("http://backend:3001/ml/ml-response", json=results)
+                    print(results)
                     response.raise_for_status()
                     logger.info(f"Posted results to external API: {response.status_code}")
                     results.clear()  # Clear results after posting

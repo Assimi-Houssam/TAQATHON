@@ -1,8 +1,4 @@
-import axios, {
-  AxiosError,
-  AxiosInstance,
-  InternalAxiosRequestConfig,
-} from "axios";
+import axios, { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from "axios";
 import { getCookie } from "cookies-next/client";
 import { toast } from "sonner";
 
@@ -15,7 +11,7 @@ interface ApiErrorResponse {
 
 // Create axios instance with default config
 export const apiClient: AxiosInstance = axios.create({
-  baseURL: "http://localhost:9000",
+  baseURL: "http://localhost:3001",
   headers: {
     "Content-Type": "application/json",
   },
