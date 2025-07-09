@@ -664,17 +664,16 @@ export default function MaintenanceWindows() {
 
         {/* Maintenance Windows Timeline */}
         <div className="bg-white p-6 flex-1 flex flex-col select-none max-w-full overflow-hidden">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Maintenance Windows</h2>
           <div className="relative h-full w-full max-w-full">
             {/* Navigation Arrows */}
             {canScrollLeft && (
               <Button
                 variant="outline"
                 size="icon"
-                className="absolute left-2 top-1/2 -translate-y-1/2 z-20 h-8 w-8 rounded-full bg-white border-gray-300 hover:bg-blue-50 hover:border-blue-400"
+                className="absolute left-4 bottom-0 z-30 h-12 w-12 rounded-full bg-white/95 backdrop-blur-sm border-2 border-blue-300 hover:bg-blue-50 hover:border-blue-500 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105"
                 onClick={scrollLeft}
               >
-                <ChevronLeft className="h-4 w-4 text-gray-600" />
+                <ChevronLeft className="h-6 w-6 text-blue-600" />
               </Button>
             )}
             
@@ -682,18 +681,22 @@ export default function MaintenanceWindows() {
               <Button
                 variant="outline"
                 size="icon"
-                className="absolute right-2 top-1/2 -translate-y-1/2 z-20 h-8 w-8 rounded-full bg-white border-gray-300 hover:bg-blue-50 hover:border-blue-400"
+                className="absolute right-4 bottom-0 z-30 h-12 w-12 rounded-full bg-white/95 backdrop-blur-sm border-2 border-blue-300 hover:bg-blue-50 hover:border-blue-500 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105"
                 onClick={scrollRight}
               >
-                <ChevronRight className="h-4 w-4 text-gray-600" />
+                <ChevronRight className="h-6 w-6 text-blue-600" />
               </Button>
             )}
 
             {/* Scrollable Container */}
             <div
               ref={scrollContainerRef}
-              className="flex gap-4 overflow-x-auto scroll-smooth h-full pb-4"
+              className="flex gap-4 overflow-x-auto scroll-smooth h-full pb-4 scrollbar-hide"
               onScroll={checkScrollPosition}
+              style={{
+                scrollbarWidth: 'none',
+                msOverflowStyle: 'none',
+              }}
             >
               {isLoadingWindows ? (
                 <div className="flex items-center justify-center w-full h-64">
