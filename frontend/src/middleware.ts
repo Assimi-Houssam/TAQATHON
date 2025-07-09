@@ -9,7 +9,11 @@ const i18nMiddleware = createI18nMiddleware(routing);
 // Constants
 const SUPPORTED_LOCALES = ["en", "fr"];
 const ALLOWED_PATHS = [
-  "/dashboard", // Only exact dashboard page, not sub-routes
+  "/dashboard",
+  "/dashboard/anomalies",
+  "/dashboard/anomalies/new",
+  "/dashboard/anomalies/detail",
+  "/dashboard/window",
   "/maintenance",
   "/login",
   "/login/2fa",
@@ -64,11 +68,7 @@ export async function middleware(request: NextRequest) {
   
   // Check if the path is allowed
   const isAllowedPath = ALLOWED_PATHS.some((allowedPath) => {
-    if (allowedPath === "/dashboard") {
-      // For dashboard, allow exact match and all sub-routes
-      return actualPath === allowedPath || actualPath.startsWith(allowedPath + "/");
-    }
-    // For other paths, allow sub-routes
+    // For all paths, allow exact match and sub-routes
     return actualPath === allowedPath || actualPath.startsWith(allowedPath + "/");
   });
 

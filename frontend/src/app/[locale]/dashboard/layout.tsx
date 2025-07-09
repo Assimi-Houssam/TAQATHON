@@ -1,7 +1,7 @@
 "use client";
 
 import { AppSidebar } from "@/components/app-sidebar";
-import { Navbar } from "@/components/ui/taqa/layout/navbar";
+import { Navbar } from "@/components/ui/taqa_x/layout/navbar";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { UserProvider } from "@/context/user-context";
 import Providers from "./providers";

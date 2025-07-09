@@ -1,4 +1,4 @@
-import { User, Bid, PurchaseRequest } from "./index";
+import { User } from "./index";
 import { NotificationType } from "./enums/index.enum";
 
 export interface Notification {
@@ -9,8 +9,6 @@ export interface Notification {
   notification_message: string;
   notification_status: string;
   creator?: User;
-  bid?: Bid;
-  purchase_request?: PurchaseRequest;
   created_at: Date;
   updated_at: Date;
 }

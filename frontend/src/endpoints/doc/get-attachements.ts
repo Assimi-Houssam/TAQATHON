@@ -1,4 +1,4 @@
-import { Attachment } from "@/components/ui/taqa/purchase-request/view-attachments-card";
+import { Attachment } from "@/components/ui/taqa_x/purchase-request/view-attachments-card";
 import { apiClient } from "@/lib/axios";
 import { useQuery } from "@tanstack/react-query";
 

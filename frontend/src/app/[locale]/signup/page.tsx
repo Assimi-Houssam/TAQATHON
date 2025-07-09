@@ -1,8 +1,8 @@
 "use client";
 
-import { TaqaLogo } from "@/components/ui/taqa/focp-logo";
-import SignupForm from "@/components/ui/taqa/form/signup-form";
-import ImagesCarousel from "@/components/ui/taqa/images-carousel";
+import { TaqaLogo } from "@/components/ui/taqa_x/taqa-logo";
+import SignupForm from "@/components/ui/taqa_x/form/signup-form";
+import ImagesCarousel from "@/components/ui/taqa_x/images-carousel";
 
 const RegisterPage = () => {
   return (

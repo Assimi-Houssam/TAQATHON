@@ -4,7 +4,7 @@ import { EntityTypes } from "@/types/entities/enums/index.enum";
 import { createContext, useContext, ReactNode } from "react";
 
 interface DashboardConfig {
-  component: () => Promise<{ Dashboard?: React.ComponentType; SupplierDashboard?: React.ComponentType }>;
+  component: () => Promise<{ Dashboard?: React.ComponentType }>;
   metrics: string[];
   features: string[];
 }
@@ -15,14 +15,14 @@ interface DashboardContextType {
 
 const dashboardConfigs: Record<EntityTypes, DashboardConfig> = {
   [EntityTypes.OCP_AGENT]: {
-    component: () => import("@/components/ui/taqa/Dashboard"),
-    metrics: ["companies", "suppliers", "bids", "agents", "purchaseRequests"],
-    features: ["departments", "ongoingPurchases", "topCompanies", "tasks"],
+    component: () => import("@/components/ui/taqa_x/Dashboard"),
+    metrics: ["anomalies", "maintenance", "critical", "resolved"],
+    features: ["anomalyTracking", "maintenanceWindows", "dashboard"],
   },
   [EntityTypes.SUPPLIER]: {
-    component: () => import("@/components/ui/taqa/SupplierDashboard"),
-    metrics: ["activeBids", "wonContracts", "ongoingDeliveries", "successRate"],
-    features: ["recentBids", "recentActivities", "companyOverview", "tasks"],
+    component: () => import("@/components/ui/taqa_x/Dashboard"), // Use same dashboard for now
+    metrics: ["anomalies", "maintenance", "critical", "resolved"],
+    features: ["anomalyTracking", "maintenanceWindows", "dashboard"],
   },
 };
 

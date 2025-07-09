@@ -1,26 +1,15 @@
 import { EntityTypes } from "./enums/index.enum";
-import {
-  Chat,
-  Company,
-  Feedback,
-  Notification,
-  PurchaseRequest,
-} from "./index";
+import { Notification } from "./index";
 import { Document } from "./Document.interface";
-import { Departement } from "@/types/entities/index";
 
 export interface User {
   id: number;
-  company_id?: number;
-  companyId?: number;
   full_name?: string;
   first_name: string;
   last_name: string;
   username: string;
   privilege_level?: string;
-  departements?: Departement[];
   rc?: string;
-  companyId_scopes?: number[];
   bio?: string;
   address?: string;
   email?: string;
@@ -33,11 +22,7 @@ export interface User {
   postal_city?: string;
   keycloak_id?: string;
   postal_country?: string;
-  purchase_requests?: PurchaseRequest[];
-  chats?: Chat[];
   notifications?: Notification[];
-  company?: Company;
-  feedbacks_given?: Feedback[];
   is_active?: boolean;
   verification_token?: string;
   is_verified?: boolean;

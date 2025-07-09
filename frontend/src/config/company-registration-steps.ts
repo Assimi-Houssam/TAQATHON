@@ -1,7 +1,7 @@
-import AdditionalDetails from "@/components/ui/taqa/form/company/steps/AdditionalDetails";
-import BasicInformation from "@/components/ui/taqa/form/company/steps/BasicInformation";
-import DocumentUpload from "@/components/ui/taqa/form/company/steps/DocumentUpload";
-import LegalInformation from "@/components/ui/taqa/form/company/steps/LegalInformation";
+import AdditionalDetails from "@/components/ui/taqa_x/form/company/steps/AdditionalDetails";
+import BasicInformation from "@/components/ui/taqa_x/form/company/steps/BasicInformation";
+import DocumentUpload from "@/components/ui/taqa_x/form/company/steps/DocumentUpload";
+import LegalInformation from "@/components/ui/taqa_x/form/company/steps/LegalInformation";
 import {
   CompanyFormComponentProps,
   CompanyFormData,

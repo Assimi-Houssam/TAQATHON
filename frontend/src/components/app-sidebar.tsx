@@ -1,7 +1,7 @@
 "use client";
 
 import sidebarItemsData from "@/components/static/sidebar_items.json" assert { type: "SidebarItemData" };
-import Logo from "@/components/ui/taqa/logo";
+import Logo from "@/components/ui/taqa_x/logo";
 import {
   Sidebar,
   SidebarContent,
@@ -32,7 +32,7 @@ import {
 import { useTranslations } from "next-intl";
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect, useMemo, useRef, useState, Component, useCallback, memo } from "react";
-import { MenuItem, SubMenu } from "./ui/taqa/sidebar/menu-item";
+import { MenuItem, SubMenu } from "./ui/taqa_x/sidebar/menu-item";
 
 // Add a map of icon names to icon components
 const iconMap: Record<string, LucideIcon> = {
