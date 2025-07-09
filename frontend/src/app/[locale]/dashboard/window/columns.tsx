@@ -1,5 +1,5 @@
 import { User } from "@/types/entities";
-import { Column } from "@/components/ui/taqa_x/layout/OCPDataTable-new/shared";
+import { Column } from "@/components/ui/taqa_x/layout/TAQADataTable-new/shared";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";

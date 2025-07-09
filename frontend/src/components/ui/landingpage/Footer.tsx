@@ -25,7 +25,7 @@ export const Footer = () => {
               <div className="flex items-start space-x-3">
                 <Mail className="w-5 h-5 mt-1 text-custom-green-100" />
                 <p className="text-custom-green-100 hover:text-white transition-colors">
-                  <a href="mailto:claim@ocpfoundation.org">
+                  <a href="mailto:claim@taqafoundation.org">
                     {t("contact.email")}
                   </a>
                 </p>

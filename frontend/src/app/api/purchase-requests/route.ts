@@ -7,7 +7,7 @@ export async function GET(request: Request) {
   try {
     process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = "0";
     const response = await fetch(
-      `https://supplier.ocpgroup.ma/api/opportunities/public-all?page=${page}`,
+              `https://supplier.taqagroup.ma/api/opportunities/public-all?page=${page}`,
       {
         headers: {
           "Content-Type": "application/json",
@@ -41,7 +41,7 @@ export type PurchaseRequestInfo = {
   tenderReference: string;
   tenderTitle: string;
   url: string;
-  ocpSite: string;
+  taqaSite: string;
   rfiFlag: string;
   multipleCategories: boolean;
   noOrMulipleRFIs: boolean;

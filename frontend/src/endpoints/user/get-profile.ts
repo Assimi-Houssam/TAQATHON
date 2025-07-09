@@ -7,7 +7,7 @@ export function useGetProfile(id: string) {
     queryKey: ["profile", id],
     queryFn: async () => {
       try {
-        const { data } = await apiClient.get(`/users/ocp/profile/${id}`);
+        const { data } = await apiClient.get(`/users/taqa/profile/${id}`);
         return data;
       } catch (error) {
         if (error instanceof AxiosError) {

@@ -22,11 +22,11 @@ export function UserProvider({ children }: { children: ReactNode }) {
     first_name: "Admin",
     last_name: "User", 
     username: "admin",
-    entity_type: EntityTypes.OCP_AGENT, // OCP_AGENT to access anomalies dashboard
+    entity_type: EntityTypes.TAQA_AGENT, // TAQA_AGENT to access anomalies dashboard
     phone_number: "+212123456789",
     language: "en",
     status: "active",
-    email: "admin@ocp.ma",
+    email: "admin@taqa.ma",
     roles: ["admin"],
     is_active: true,
     is_verified: true

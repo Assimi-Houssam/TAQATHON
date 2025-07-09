@@ -1,5 +1,5 @@
 export enum EntityTypes {
-  OCP_AGENT = "OCP_AGENT",
+  TAQA_AGENT = "TAQA_AGENT",
   SUPPLIER = "SUPPLIER",
 }
 

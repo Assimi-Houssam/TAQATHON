@@ -13,7 +13,7 @@ export function useGetAllSuppliers(params: SuppliersQueryParams) {
   return useQuery({
     queryKey: ["Suppliers", params],
     queryFn: async () => {
-      const { data } = await apiClient.get(`/users/ocp/suppliers`, {
+      const { data } = await apiClient.get(`/users/taqa/suppliers`, {
         params: { page, limit, search },
       });
       return {
