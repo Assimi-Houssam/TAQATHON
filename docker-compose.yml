@@ -10,7 +10,7 @@ services:
       - "3000:3000"
     environment:
       - NODE_ENV=development
-    
+
     command: npm run dev
 
   backend:
@@ -34,7 +34,7 @@ services:
     ports:
       - "7533:7533"
     environment:
-      - HOST=0.0.0.0
+      - HOST=localhost
       - PORT=7533
       - LOG_LEVEL=INFO
       - MODEL_PATH=app/models/model.pth

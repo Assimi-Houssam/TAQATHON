@@ -733,6 +733,31 @@ export class AnomalyService {
       };
     }
 
+    async downloadrex(id: string) {
+      const rex = await this.Prisma.rex_entrie.findUnique({
+        where: { id: id },
+      });
+      if (!rex) {
+        throw new Error('REX entry not found');
+      }
+      if (!rex.docment_path) {
+        throw new Error('Document path not found for this REX entry');
+      }
+      const filePath = path.resolve(rex.docment_path);
+      if (!fs.existsSync(filePath)) {
+        throw new Error('File not found on server');
+      }
+
+      // Extract actual filename from the file path
+      const actualFileName = path.basename(rex.docment_path);
+
+      return {
+        filePath: filePath,
+        fileName: actualFileName || 'rex-document', // Use actual filename from path
+        mimeType: this.getMimeType(actualFileName), // Get MIME type from actual filename
+      };
+    }
+
     // Helper method to get MIME type
     private getMimeType(fileName: string): string {
       const ext = path.extname(fileName).toLowerCase();
