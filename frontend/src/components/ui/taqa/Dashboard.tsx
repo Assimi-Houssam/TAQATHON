@@ -99,55 +99,110 @@ export const Dashboard = () => {
         </Card>
 
         {/* Primary KPI Cards */}
-        <div className="space-y-4">
-          <div className="border-l-4 border-blue-600 pl-4">
-            <h2 className="text-xl font-semibold text-slate-900">Key Performance Indicators</h2>
-            <p className="text-slate-600 text-sm mt-1">
-              Track critical metrics for anomaly management and system performance
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-            {/* Closing Rate */}
-            <PercentageKPICard
-              title="Closing Rate"
-              percentage={kpis.closed.data?.percentageWithDates || 0}
-              total={kpis.closed.data?.totalAnomalies || 0}
-              count={kpis.closed.data?.totalanomaliesclosed || 0}
-              icon={<CheckCircle2 />}
-              isLoading={kpis.isLoading}
-            />
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+          {/* Closing Rate */}
+          <Card className="p-6 border border-blue-200 bg-white hover:border-blue-300 transition-colors">
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-3 bg-blue-50 rounded-lg border border-blue-100">
+                <CheckCircle2 className="h-6 w-6 text-blue-600" />
+              </div>
+              <div className="text-right">
+                <p className="text-2xl font-bold text-slate-900">
+                  {kpis.isLoading ? "..." : `${Math.round(kpis.closed.data?.percentageWithDates || 0)}%`}
+                </p>
+                <p className="text-sm text-slate-500">
+                  {kpis.isLoading ? "..." : `${kpis.closed.data?.totalanomaliesclosed || 0} / ${kpis.closed.data?.totalAnomalies || 0}`}
+                </p>
+              </div>
+            </div>
+            <div>
+              <h3 className="font-semibold text-slate-900 mb-1">Closing Rate</h3>
+              <div className="w-full bg-slate-100 rounded-full h-2">
+                <div 
+                  className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                  style={{ width: `${kpis.closed.data?.percentageWithDates || 0}%` }}
+                />
+              </div>
+            </div>
+          </Card>
 
-            {/* Processing Rate */}
-            <PercentageKPICard
-              title="Processing Rate"
-              percentage={kpis.inProgress.data?.percentageWithDates || 0}
-              total={kpis.inProgress.data?.totalAnomalies || 0}
-              count={kpis.inProgress.data?.totalanomaliesinprogress || 0}
-              icon={<PlayCircle />}
-              isLoading={kpis.isLoading}
-            />
+          {/* Processing Rate */}
+          <Card className="p-6 border border-blue-200 bg-white hover:border-blue-300 transition-colors">
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-3 bg-blue-50 rounded-lg border border-blue-100">
+                <PlayCircle className="h-6 w-6 text-blue-600" />
+              </div>
+              <div className="text-right">
+                <p className="text-2xl font-bold text-slate-900">
+                  {kpis.isLoading ? "..." : `${Math.round(kpis.inProgress.data?.percentageWithDates || 0)}%`}
+                </p>
+                <p className="text-sm text-slate-500">
+                  {kpis.isLoading ? "..." : `${kpis.inProgress.data?.totalanomaliesinprogress || 0} / ${kpis.inProgress.data?.totalAnomalies || 0}`}
+                </p>
+              </div>
+            </div>
+            <div>
+              <h3 className="font-semibold text-slate-900 mb-1">Processing Rate</h3>
+              <div className="w-full bg-slate-100 rounded-full h-2">
+                <div 
+                  className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                  style={{ width: `${kpis.inProgress.data?.percentageWithDates || 0}%` }}
+                />
+              </div>
+            </div>
+          </Card>
 
-            {/* Average Processing Time */}
-            <TimeKPICard
-              title="Average Processing Time"
-              hours={kpis.processingTime.data?.averageHours || 0}
-              days={kpis.processingTime.data?.averageDays || 0}
-              total={kpis.processingTime.data?.totalAnomalies || 0}
-              icon={<Timer />}
-              isLoading={kpis.isLoading}
-            />
+          {/* Average Processing Time */}
+          <Card className="p-6 border border-blue-200 bg-white hover:border-blue-300 transition-colors">
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-3 bg-blue-50 rounded-lg border border-blue-100">
+                <Timer className="h-6 w-6 text-blue-600" />
+              </div>
+              <div className="text-right">
+                <p className="text-2xl font-bold text-slate-900">
+                  {kpis.isLoading ? "..." : 
+                    `${kpis.processingTime.data?.averageDays || 0}d ${kpis.processingTime.data?.averageHours || 0}h`
+                  }
+                </p>
+                <p className="text-sm text-slate-500">
+                  {kpis.isLoading ? "..." : `${kpis.processingTime.data?.totalAnomalies || 0} anomalies`}
+                </p>
+              </div>
+            </div>
+            <div>
+              <h3 className="font-semibold text-slate-900 mb-1">Avg. Processing Time</h3>
+              <div className="flex items-center gap-2 text-sm text-slate-600">
+                <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
+                <span>Active processing</span>
+              </div>
+            </div>
+          </Card>
 
-            {/* Action Plan Completion Rate */}
-            <PercentageKPICard
-              title="Action Plan Completion Rate"
-              percentage={actionPlanCompletionRate}
-              total={kpis.actionPlan.data?.action.total || 0}
-              count={kpis.actionPlan.data?.action.completed || 0}
-              icon={<Target />}
-              isLoading={kpis.isLoading}
-            />
-          </div>
+          {/* Action Plan Completion Rate */}
+          <Card className="p-6 border border-blue-200 bg-white hover:border-blue-300 transition-colors">
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-3 bg-blue-50 rounded-lg border border-blue-100">
+                <Target className="h-6 w-6 text-blue-600" />
+              </div>
+              <div className="text-right">
+                <p className="text-2xl font-bold text-slate-900">
+                  {kpis.isLoading ? "..." : `${Math.round(actionPlanCompletionRate)}%`}
+                </p>
+                <p className="text-sm text-slate-500">
+                  {kpis.isLoading ? "..." : `${kpis.actionPlan.data?.action.completed || 0} / ${kpis.actionPlan.data?.action.total || 0}`}
+                </p>
+              </div>
+            </div>
+            <div>
+              <h3 className="font-semibold text-slate-900 mb-1">Action Plan Completion</h3>
+              <div className="w-full bg-slate-100 rounded-full h-2">
+                <div 
+                  className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                  style={{ width: `${actionPlanCompletionRate}%` }}
+                />
+              </div>
+            </div>
+          </Card>
         </div>
 
         {/* Secondary Information Grid */}
