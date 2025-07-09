@@ -12,7 +12,12 @@ import {
   ParseFilePipe,
   MaxFileSizeValidator,
   Delete,
+  Res,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
+import { Response } from 'express';
+import * as fs from 'fs';
 
 // Allowed MIME types for REX documents
 const ALLOWED_REX_MIME_TYPES = [
@@ -729,5 +734,126 @@ export class AnomalyController {
 
 
 
+
+  @Get('download-attachment/:id')
+  @ApiOperation({ summary: 'Download attachment file' })
+  @ApiParam({ name: 'id', description: 'Attachment ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'File downloaded successfully',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Attachment not found',
+  })
+  async downloadAttachment(
+    @Param('id') id: string,
+    @Res() res: Response,
+  ) {
+    try {
+      const fileInfo = await this.anomalyService.downloadattachment(id);
+      
+      // Set headers for file download
+      res.setHeader('Content-Type', fileInfo.mimeType);
+      res.setHeader('Content-Disposition', `attachment; filename="${fileInfo.fileName}"`);
+      res.setHeader('Cache-Control', 'no-cache');
+      
+      // Create read stream and pipe to response
+      const fileStream = fs.createReadStream(fileInfo.filePath);
+      
+      fileStream.on('error', (error) => {
+        console.error('File stream error:', error);
+        throw new HttpException('Error reading file', HttpStatus.INTERNAL_SERVER_ERROR);
+      });
+      
+      fileStream.pipe(res);
+      
+    } catch (error) {
+      console.error('Download error:', error);
+      throw new HttpException(
+        error.message || 'Failed to download file',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  @Get('download-rex/:id')
+  @ApiOperation({ summary: 'Download rex file' })
+  @ApiParam({ name: 'id', description: 'rex ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'File downloaded successfully',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'rex not found',
+  })
+  async downloadRex(
+    @Param('id') id: string,
+    @Res() res: Response,
+  ) {
+    try {
+      const fileInfo = await this.anomalyService.downloadattachment(id);
+      // Set headers for file download
+      res.setHeader('Content-Type', fileInfo.mimeType);
+      res.setHeader('Content-Disposition', `attachment; filename="${fileInfo.fileName}"`);
+      res.setHeader('Cache-Control', 'no-cache');
+      // Create read stream and pipe to response
+      const fileStream = fs.createReadStream(fileInfo.filePath);
+      fileStream.on('error', (error) => {
+        console.error('File stream error:', error);
+        throw new HttpException('Error reading file', HttpStatus.INTERNAL_SERVER_ERROR);
+      });
+      fileStream.pipe(res);
+    } catch (error) {
+      console.error('Download error:', error);
+      throw new HttpException(
+        error.message || 'Failed to download file',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+
+  @Get('getmaintenancewondow')
+  @ApiOperation({ summary: 'Get all maintenance windows' })
+  @ApiResponse({
+    status: 200,
+    description: 'Maintenance windows retrieved successfully',
+    schema: {
+      type: 'object',
+      properties: {
+        data: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              id: { type: 'string' },
+              start_date: { type: 'string', format: 'date-time' },
+              end_date: { type: 'string', format: 'date-time' },
+              duration_days: { type: 'number' },
+              duration_hours: { type: 'number' },
+              created_at: { type: 'string', format: 'date-time' },
+              updated_at: { type: 'string', format: 'date-time' },
+            },
+          },
+        },
+        total: { type: 'number' },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Failed to retrieve maintenance windows',
+  })
+  async getMaintenanceWindow()
+  {
+    try {
+      return await this.anomalyService.getMaintenanceWindows();
+    } catch (error) {
+      console.error('Error retrieving maintenance windows:', error);
+      throw new BadRequestException('Failed to retrieve maintenance windows');
+    }
+  }
 }
 

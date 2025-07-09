@@ -3,6 +3,8 @@ import { PrismaService } from 'src/prisma.service';
 import { CreateAnomalieDto, UpdateAnomalieDto } from './dto/anomalie.dto';
 import { ForceStopDto } from './dto/forceStop.dto';
 import { UpdateActionPlanDto } from './dto/actionPlan.dto';
+import * as fs from 'fs';
+import * as path from 'path';
 
 @Injectable()
 export class AnomalyService {
@@ -710,6 +712,43 @@ export class AnomalyService {
       };
     }
 
+     async  downloadattachment(id: string) {
+      const attachment = await this.Prisma.attachments.findUnique({
+        where: { id: id },
+      });
+      if (!attachment) {
+        throw new Error('Attachment not found');
+      }
+      if (!attachment.file_path) {
+        throw new Error('File path not found for this attachment');
+      }
+      const filePath = path.resolve(attachment.file_path);
+      if (!fs.existsSync(filePath)) {
+        throw new Error('File not found on server');
+      }
+      return {
+        filePath: filePath,
+        fileName: attachment.file_name || 'download',
+        mimeType: this.getMimeType(attachment.file_name),
+      };
+    }
 
-
+    // Helper method to get MIME type
+    private getMimeType(fileName: string): string {
+      const ext = path.extname(fileName).toLowerCase();
+      const mimeTypes: { [key: string]: string } = {
+        '.pdf': 'application/pdf',
+        '.doc': 'application/msword',
+        '.docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        '.xls': 'application/vnd.ms-excel',
+        '.xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        '.png': 'image/png',
+        '.jpg': 'image/jpeg',
+        '.jpeg': 'image/jpeg',
+        '.gif': 'image/gif',
+        '.txt': 'text/plain',
+        '.zip': 'application/zip',
+      };
+      return mimeTypes[ext] || 'application/octet-stream';
+    }
   }
