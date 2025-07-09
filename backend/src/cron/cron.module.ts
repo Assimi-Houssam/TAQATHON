@@ -1,10 +1,11 @@
 import { Module } from '@nestjs/common';
 import { CronService } from './cron.service';
 import { CronController } from './cron.controller';
+import { PrismaService } from '../prisma.service'; // Import PrismaService
 
 @Module({
   controllers: [CronController],
-  providers: [CronService],
-  exports: [CronService], // Export if other modules need it
+  providers: [CronService, PrismaService], // Add PrismaService to providers
+  exports: [CronService],
 })
 export class CronModule {}
