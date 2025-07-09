@@ -67,10 +67,12 @@ export class MlApiService {
   async processFastApiResponse(data: CAnomalieDto) {
     try {
       // Save the anomaly data to the database
+      const sorting = parseInt(data.criticite) || 0;
       const anomaly = await this.Prisma.anomaly.create({
         data: {
           ...data,
           date_detection: new Date(data.date_detection),
+          sorting: sorting,
         },
       });
       return { message: 'Anomaly processed successfully', anomaly };
