@@ -14,7 +14,7 @@ export default function AnomalyDetailPage() {
   
   // Fetch anomaly data from backend
   const { data: anomaly, isLoading, error } = useAnomaly(anomalyId || '');
-  const { updateAnomaly, markAsTreated } = useAnomalyMutations();
+  const { updateAnomaly, markAsTreated, markAsResolved } = useAnomalyMutations();
 
   const handleValidateAnomaly = async () => {
     if (!anomalyId) return;
@@ -23,6 +23,28 @@ export default function AnomalyDetailPage() {
       await markAsTreated.mutateAsync(anomalyId);
     } catch (error) {
       console.error("Failed to validate anomaly:", error);
+      throw error; // Re-throw to let the component handle the error
+    }
+  };
+
+  const handleStatusChange = async (newStatus: AnomalyWithRelations['status']) => {
+    if (!anomalyId) return;
+    try {
+      if (newStatus === "CLOSED") {
+        // Use markAsResolved for IN_PROGRESS → CLOSED transition
+        await markAsResolved.mutateAsync(anomalyId);
+      } else if (newStatus === "IN_PROGRESS") {
+        // Use markAsTreated for NEW → IN_PROGRESS transition
+        await markAsTreated.mutateAsync(anomalyId);
+      } else {
+        // For other status changes, use the generic update
+        await updateAnomaly.mutateAsync({ 
+          id: anomalyId, 
+          data: { status: newStatus } 
+        });
+      }
+    } catch (error) {
+      console.error("Failed to update anomaly status:", error);
       throw error; // Re-throw to let the component handle the error
     }
   };
@@ -198,9 +220,7 @@ export default function AnomalyDetailPage() {
       {/* AnomalyProfile Component */}
       <AnomalyProfile 
         anomaly={anomaly!}
-        onStatusChange={async (newStatus) => {
-          // Handle status change logic here
-        }}
+        onStatusChange={handleStatusChange}
         onUpdate={handleUpdate}
         onValidate={handleValidateAnomaly}
       />

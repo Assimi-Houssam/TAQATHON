@@ -119,8 +119,8 @@ export function AnomalyProfile({ anomaly, onStatusChange, onUpdate, onValidate }
       complete: {
         condition: () => anomaly.status === "IN_PROGRESS",
         execute: async () => await handleStatusTransition("CLOSED"),
-        successMessage: "Anomaly resolution completed and closed successfully!",
-        errorMessage: "Failed to complete resolution. Please try again."
+        successMessage: "Anomaly marked as resolved and closed successfully!",
+        errorMessage: "Failed to mark anomaly as resolved. Please try again."
       },
       document: {
         condition: () => anomaly.status === "CLOSED" && rexSaveFunction,
@@ -179,8 +179,8 @@ export function AnomalyProfile({ anomaly, onStatusChange, onUpdate, onValidate }
         };
       case "complete":
         return {
-          title: "Complete Resolution", 
-          description: "This will mark the anomaly resolution as complete and close the anomaly."
+          title: "Mark as Resolved", 
+          description: "This will mark the anomaly as resolved and close it."
         };
       case "document":
         return {
@@ -230,12 +230,12 @@ export function AnomalyProfile({ anomaly, onStatusChange, onUpdate, onValidate }
           {isActionLoading ? (
             <>
               <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-3"></div>
-              Completing Resolution...
+              Marking as Resolved...
             </>
           ) : (
             <>
               <CheckCircle className="h-5 w-5 mr-3" />
-              Complete Resolution
+              Mark as Resolved
             </>
           )}
         </Button>
@@ -353,7 +353,7 @@ export function AnomalyProfile({ anomaly, onStatusChange, onUpdate, onValidate }
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-3"></div>
                   <p className="text-sm text-gray-600 font-medium">
                     {pendingAction === "validate" ? "Validating anomaly..." :
-                     pendingAction === "complete" ? "Completing resolution..." :
+                     pendingAction === "complete" ? "Marking as resolved..." :
                      pendingAction === "document" ? "Finalizing documentation..." :
                      "Processing..."}
                   </p>
@@ -389,7 +389,7 @@ export function AnomalyProfile({ anomaly, onStatusChange, onUpdate, onValidate }
               >
                 {isActionLoading ? 
                   (pendingAction === "validate" ? "Validating..." :
-                   pendingAction === "complete" ? "Completing..." :
+                   pendingAction === "complete" ? "Resolving..." :
                    pendingAction === "document" ? "Documenting..." :
                    "Processing...") 
                   : "Confirm"}
