@@ -1,9 +1,11 @@
 import { Controller, Get } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { KpiService } from './kpi.service';
+import { Public } from 'src/metadata';
 
 @ApiTags('KPI')
 @Controller('kpi')
+@Public()
 export class KpiController {
   constructor(private readonly kpiService: KpiService) {}
 

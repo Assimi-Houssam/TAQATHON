@@ -33,49 +33,70 @@ export class KpiService {
   }
 
   async getAverageProcessingTime() {
-    const anomalies = await this.Prisma.anomaly.findMany({
-      where: {
-        date_detection: { not: null },
-        date_traitement: { not: null },
-      },
-      select: {
-        date_detection: true,
-        date_traitement: true,
-      },
-    });
+    try {
+      // Get all anomalies with detection and treatment dates
+      const allAnomalies = await this.Prisma.anomaly.findMany({
+        select: {
+          date_detection: true,
+          date_traitement: true,
+        },
+      });
 
-    if (anomalies.length === 0) {
+      // Filter out anomalies that don't have both dates in the service
+      const validAnomalies = allAnomalies.filter(
+        (anomaly) => anomaly.date_detection && anomaly.date_traitement
+      );
+
+      if (validAnomalies.length === 0) {
+        return {
+          averageHours: 0,
+          averageDays: 0,
+          totalAnomalies: 0,
+          minHours: 0,
+          maxHours: 0,
+          details: [],
+          message: 'No anomalies found with both detection and treatment dates',
+        };
+      }
+
+      let totalHours = 0;
+      const timeDifferences = [];
+
+      validAnomalies.forEach((anomaly) => {
+        const detectionTime = new Date(anomaly.date_detection).getTime();
+        const treatmentTime = new Date(anomaly.date_traitement).getTime();
+        const diffInMs = treatmentTime - detectionTime;
+        const diffInHours = diffInMs / (1000 * 60 * 60); 
+        totalHours += diffInHours;
+        timeDifferences.push({
+          hours: diffInHours,
+          days: diffInHours / 24,
+        });
+      });
+
+      const averageHours = totalHours / validAnomalies.length;
+      const averageDays = averageHours / 24;
+
+      return {
+        averageHours: Math.round(averageHours * 100) / 100,
+        averageDays: Math.round(averageDays * 100) / 100,
+        totalAnomalies: validAnomalies.length,
+        minHours: timeDifferences.length > 0 ? Math.min(...timeDifferences.map((t) => t.hours)) : 0,
+        maxHours: timeDifferences.length > 0 ? Math.max(...timeDifferences.map((t) => t.hours)) : 0,
+        details: timeDifferences,
+      };
+    } catch (error) {
+      console.error('Error in getAverageProcessingTime:', error);
       return {
         averageHours: 0,
         averageDays: 0,
         totalAnomalies: 0,
-        message: 'No anomalies found with both detection and treatment dates',
+        minHours: 0,
+        maxHours: 0,
+        details: [],
+        message: 'Error calculating processing time',
       };
     }
-    let totalHours = 0;
-    const timeDifferences = [];
-
-    anomalies.forEach((anomaly) => {
-      const detectionTime = new Date(anomaly.date_detection).getTime();
-      const treatmentTime = new Date(anomaly.date_traitement).getTime();
-      const diffInMs = treatmentTime - detectionTime;
-      const diffInHours = diffInMs / (1000 * 60 * 60); 
-      totalHours += diffInHours;
-      timeDifferences.push({
-        hours: diffInHours,
-        days: diffInHours / 24,
-      });
-    });
-    const averageHours = totalHours / anomalies.length;
-    const averageDays = averageHours / 24;
-    return {
-      averageHours: Math.round(averageHours * 100) / 100,
-      averageDays: Math.round(averageDays * 100) / 100,
-      totalAnomalies: anomalies.length,
-      minHours: Math.min(...timeDifferences.map((t) => t.hours)),
-      maxHours: Math.max(...timeDifferences.map((t) => t.hours)),
-      details: timeDifferences,
-    };
   }
 
 
