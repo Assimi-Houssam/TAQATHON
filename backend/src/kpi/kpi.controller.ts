@@ -199,4 +199,43 @@ export class KpiController {
 
 
 
+  @Get('anomalieschart')
+  @ApiOperation({ summary: 'Get anomalies chart data' })
+  @ApiResponse({
+    status: 200,
+    description: 'Anomalies chart data retrieved successfully',
+    schema: {
+      type: 'object',
+      properties: {
+        // Add specific properties based on your chart data structure
+        chartData: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              label: { type: 'string', example: 'January' },
+              value: { type: 'number', example: 25 },
+            },
+          },
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad request',
+  })
+  @ApiResponse({
+    status: 500,
+    description: 'Internal server error',
+  })
+  async getAnomaliesChart() {
+    try {
+      return this.kpiService.getAnomaliesChart();
+    } catch (err) {
+      console.error('Error in getAnomaliesChart:', err);
+      throw new BadRequestException('Failed to retrieve anomalies chart data');
+    }
+  }
+
 }

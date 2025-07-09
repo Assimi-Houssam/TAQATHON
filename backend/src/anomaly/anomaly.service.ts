@@ -393,6 +393,8 @@ export class AnomalyService {
       );
     }
 
+      const today = new Date();
+      today.setHours(0, 0, 0, 0); 
     const requiredHours = this.extractHours(anomaly.duree_intervention || '0');
     const maintenanceWindows = await this.Prisma.maintenance_window.findMany({
       where: {
@@ -400,7 +402,7 @@ export class AnomalyService {
           not: 'ORPHANS',
         },
         date_debut_arret: {
-          gte: new Date(),
+          gte: today, 
         },
       },
       orderBy: {
@@ -513,7 +515,8 @@ export class AnomalyService {
         return { success: true, message: 'No anomalies requiring assignment' };
 
       const results = [];
-
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
       for (const anom of anomaly) {
         try {
           const requiredHours = this.extractHours(
@@ -524,7 +527,7 @@ export class AnomalyService {
             .filter((w) => {
               const windowHours = this.extractHours(w.duree_heure || '0');
               const startDate = new Date(w.date_debut_arret);
-              return windowHours >= requiredHours && startDate > new Date();
+              return windowHours >= requiredHours && startDate >= today;
             })
             .sort(
               (a, b) =>

@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useRef } from "react";
@@ -10,7 +11,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { DndContext, DragEndEvent, DragOverlay, DragStartEvent, useDraggable, useDroppable } from "@dnd-kit/core";
 import { Plus, Calendar as CalendarIcon, Clock, ChevronLeft, ChevronRight, Upload, Loader2, FileUp, X } from "lucide-react";
 import { useMaintenanceWindows, useMaintenanceWindowMutations } from "@/hooks/useMaintenanceWindows";
-import { useAnomalies, useAnomalyMutations } from "@/hooks/useAnomalies";
+import { useAnomalyMutations } from "@/hooks/useAnomalies";
 import { MaintenanceWindow, Anomaly } from "@/types/anomaly";
 import { toast } from "sonner";
 
@@ -221,15 +222,10 @@ export default function MaintenanceWindows() {
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
 
-  // Hook queries
+  // Hook queries - Only using useMaintenanceWindows now
   const { data: maintenanceWindowsData, isLoading: isLoadingWindows, error: windowsError } = useMaintenanceWindows({
     enabled: true,
-    limit: 50, // Get more windows for the timeline view
-  });
-
-  const { data: anomaliesData, isLoading: isLoadingAnomalies } = useAnomalies({
-    enabled: true,
-    limit: 100, // Get more anomalies for drag and drop
+    limit: 50,
   });
 
   // Hook mutations
@@ -241,6 +237,22 @@ export default function MaintenanceWindows() {
   } = useMaintenanceWindowMutations();
 
   const { attachMaintenanceWindow } = useAnomalyMutations();
+
+  // Extract all anomalies from maintenance windows data
+  const getAllAnomalies = (): Anomaly[] => {
+    if (!maintenanceWindowsData?.maintenanceWindows || !Array.isArray(maintenanceWindowsData.maintenanceWindows)) {
+      return [];
+    }
+    
+    const allAnomalies: Anomaly[] = [];
+    maintenanceWindowsData.maintenanceWindows.forEach(window => {
+      if (window.anomaly && Array.isArray(window.anomaly)) {
+        allAnomalies.push(...window.anomaly);
+      }
+    });
+    
+    return allAnomalies;
+  };
 
   // Check scroll position and update arrow visibility
   const checkScrollPosition = () => {
@@ -441,25 +453,25 @@ export default function MaintenanceWindows() {
   };
 
   const getAssignedAnomalies = (windowId: string): Anomaly[] => {
-    if (!anomaliesData?.anomalies || !Array.isArray(anomaliesData.anomalies)) return [];
-    return anomaliesData.anomalies.filter(anomaly => anomaly.maintenance_window_id === windowId);
+    if (!maintenanceWindowsData?.maintenanceWindows || !Array.isArray(maintenanceWindowsData.maintenanceWindows)) {
+      return [];
+    }
+    
+    const window = maintenanceWindowsData.maintenanceWindows.find(w => w.id === windowId);
+    return window?.anomaly || [];
   };
 
   const getUnassignedAnomalies = (): Anomaly[] => {
-    if (!anomaliesData?.anomalies || !Array.isArray(anomaliesData.anomalies)) return [];
+    if (!maintenanceWindowsData?.maintenanceWindows || !Array.isArray(maintenanceWindowsData.maintenanceWindows)) {
+      return [];
+    }
     
-    // Get anomalies that are either truly unassigned OR assigned to ORPHANS window
-    const maintenanceWindows = maintenanceWindowsData?.maintenanceWindows;
-    const orphansWindow = Array.isArray(maintenanceWindows) 
-      ? maintenanceWindows.find(w => w.titlte === "ORPHANS")
-      : undefined;
-    const orphansAnomalies = orphansWindow ? getAssignedAnomalies(orphansWindow.id) : [];
-    const trulyUnassigned = anomaliesData.anomalies.filter(anomaly => !anomaly.maintenance_window_id);
-    
-    return [...trulyUnassigned, ...orphansAnomalies];
+    // Find the ORPHANS window and return its anomalies
+    const orphansWindow = maintenanceWindowsData.maintenanceWindows.find(w => w.titlte === "ORPHANS");
+    return orphansWindow?.anomaly || [];
   };
 
-  const activeAnomaly = anomaliesData?.anomalies?.find(anomaly => anomaly.id === activeId);
+  const activeAnomaly = getAllAnomalies().find(anomaly => anomaly.id === activeId);
 
   // Sort maintenance windows by date, excluding ORPHANS (handled separately)
   const maintenanceWindows = maintenanceWindowsData?.maintenanceWindows;
@@ -514,7 +526,7 @@ export default function MaintenanceWindows() {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-semibold text-gray-900">Maintenance Windows</h1>
-              {isLoadingWindows || isLoadingAnomalies ? (
+              {isLoadingWindows ? (
                 <div className="flex items-center gap-2 mt-2">
                   <Loader2 className="h-4 w-4 animate-spin text-blue-600" />
                   <span className="text-sm text-gray-500">Loading...</span>
@@ -667,23 +679,13 @@ export default function MaintenanceWindows() {
           <div className="relative h-full w-full max-w-full">
             {/* Navigation Arrows */}
             {canScrollLeft && (
-              <Button
-                variant="outline"
-                size="icon"
-                className="absolute left-4 bottom-0 z-30 h-12 w-12 rounded-full bg-white/95 backdrop-blur-sm border-2 border-blue-300 hover:bg-blue-50 hover:border-blue-500 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105"
-                onClick={scrollLeft}
-              >
+              <Button variant="outline" size="icon" className="absolute left-4 bottom-0 z-30 h-12 w-12 rounded-full bg-white/95 backdrop-blur-sm border-2 border-blue-300 hover:bg-blue-50 hover:border-blue-500 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105" onClick={scrollLeft}>
                 <ChevronLeft className="h-6 w-6 text-blue-600" />
               </Button>
             )}
-            
+
             {canScrollRight && (
-              <Button
-                variant="outline"
-                size="icon"
-                className="absolute right-4 bottom-0 z-30 h-12 w-12 rounded-full bg-white/95 backdrop-blur-sm border-2 border-blue-300 hover:bg-blue-50 hover:border-blue-500 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105"
-                onClick={scrollRight}
-              >
+              <Button variant="outline" size="icon" className="absolute right-4 bottom-0 z-30 h-12 w-12 rounded-full bg-white/95 backdrop-blur-sm border-2 border-blue-300 hover:bg-blue-50 hover:border-blue-500 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105" onClick={scrollRight}>
                 <ChevronRight className="h-6 w-6 text-blue-600" />
               </Button>
             )}
@@ -694,8 +696,8 @@ export default function MaintenanceWindows() {
               className="flex gap-4 overflow-x-auto scroll-smooth h-full pb-4 scrollbar-hide"
               onScroll={checkScrollPosition}
               style={{
-                scrollbarWidth: 'none',
-                msOverflowStyle: 'none',
+                scrollbarWidth: "none",
+                msOverflowStyle: "none",
               }}
             >
               {isLoadingWindows ? (
@@ -703,15 +705,7 @@ export default function MaintenanceWindows() {
                   <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
                 </div>
               ) : sortedMaintenanceWindows.length > 0 ? (
-                sortedMaintenanceWindows.map((window) => (
-                  <MaintenanceWindowCard
-                    key={window.id}
-                    window={window}
-                    assignedAnomalies={getAssignedAnomalies(window.id)}
-                    onRemove={handleRemoveWindow}
-                    isLoading={deleteMaintenanceWindow.isPending}
-                  />
-                ))
+                sortedMaintenanceWindows.map((window) => <MaintenanceWindowCard key={window.id} window={window} assignedAnomalies={getAssignedAnomalies(window.id)} onRemove={handleRemoveWindow} isLoading={deleteMaintenanceWindow.isPending} />)
               ) : (
                 <div className="flex items-center justify-center w-full h-64">
                   <div className="text-center">
@@ -728,9 +722,7 @@ export default function MaintenanceWindows() {
         <div className="bg-white border-t border-gray-200 p-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-gray-900">Unassigned Anomalies</h2>
-            <span className="text-sm text-blue-600 bg-blue-50 px-3 py-1 rounded-full">
-              {getUnassignedAnomalies().length} pending
-            </span>
+            <span className="text-sm text-blue-600 bg-blue-50 px-3 py-1 rounded-full">{getUnassignedAnomalies().length} pending</span>
           </div>
           {getUnassignedAnomalies().length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3">
@@ -750,19 +742,10 @@ export default function MaintenanceWindows() {
             <div className="bg-white rounded-lg border-2 border-blue-500 shadow-lg p-4 min-w-[200px] max-w-[300px]">
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="font-medium text-xs text-blue-600 truncate">
-                    {activeAnomaly.num_equipments ? `#${activeAnomaly.num_equipments.slice(-8)}` : '#N/A'}
-                  </span>
-                  <div className={`w-2 h-2 rounded-full flex-shrink-0 ${
-                    !activeAnomaly.criticite ? "bg-gray-400" :
-                    parseFloat(activeAnomaly.criticite) >= 13 ? "bg-red-500" : 
-                    parseFloat(activeAnomaly.criticite) >= 10 ? "bg-orange-500" : 
-                    parseFloat(activeAnomaly.criticite) >= 7 ? "bg-yellow-500" : "bg-blue-500"
-                  }`} />
+                  <span className="font-medium text-xs text-blue-600 truncate">{activeAnomaly.num_equipments ? `#${activeAnomaly.num_equipments.slice(-8)}` : "#N/A"}</span>
+                  <div className={`w-2 h-2 rounded-full flex-shrink-0 ${!activeAnomaly.criticite ? "bg-gray-400" : parseFloat(activeAnomaly.criticite) >= 13 ? "bg-red-500" : parseFloat(activeAnomaly.criticite) >= 10 ? "bg-orange-500" : parseFloat(activeAnomaly.criticite) >= 7 ? "bg-yellow-500" : "bg-blue-500"}`} />
                 </div>
-                <div className="text-sm text-gray-900 font-medium truncate">
-                  {activeAnomaly.descreption_anomalie || 'No description'}
-                </div>
+                <div className="text-sm text-gray-900 font-medium truncate">{activeAnomaly.descreption_anomalie || "No description"}</div>
               </div>
             </div>
           ) : null}
