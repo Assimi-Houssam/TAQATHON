@@ -33,6 +33,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import Link from "next/link";
+import { useState, useEffect } from "react";
 
 export const Dashboard = () => {
   const t = useTranslations("dashboard");
@@ -41,6 +42,13 @@ export const Dashboard = () => {
     page: 1,
     limit: 5,
   });
+  
+  // Fix hydration mismatch by making timestamp client-side only
+  const [currentTime, setCurrentTime] = useState<string>("");
+  
+  useEffect(() => {
+    setCurrentTime(new Date().toLocaleTimeString());
+  }, []);
 
   // Mock export handlers for demo purposes
   const handleExportXLSX = () => {
@@ -207,7 +215,7 @@ export const Dashboard = () => {
                   <Progress value={96} className="h-2" />
                 </div>
                 <div className="text-xs text-slate-500 pt-2 border-t border-slate-100">
-                  Last updated: {new Date().toLocaleTimeString()}
+                  Last updated: {currentTime || "Loading..."}
                 </div>
               </div>
             </CardContent>
@@ -335,11 +343,6 @@ export const Dashboard = () => {
             )}
           </div>
         </Card>
-
-        {/* Footer */}
-        <div className="text-center py-4 text-xs text-slate-500 border-t border-slate-200">
-          <p>© 2024 TAQATHON Anomaly Management Platform • Enterprise Edition</p>
-        </div>
       </div>
     </div>
   );
