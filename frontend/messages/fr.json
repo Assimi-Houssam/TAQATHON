@@ -5,8 +5,8 @@
     "publicRequests": "Demandes publiques"
   },
   "hero": {
-    "title": "Connectez-vous aux opportunités de la Fondation OCP",
-    "description": "Votre portail vers les opportunités d'approvisionnement. Rejoignez notre plateforme pour découvrir de nouvelles possibilités commerciales avec la Fondation OCP.",
+    "title": "Connectez-vous aux opportunités de la Fondation TAQA",
+    "description": "Votre portail vers les opportunités d'approvisionnement. Rejoignez notre plateforme pour découvrir de nouvelles possibilités commerciales avec la Fondation TAQA.",
     "registerButton": "S'inscrire comme fournisseur",
     "browseButton": "Parcourir les opportunités"
   },
@@ -30,14 +30,14 @@
     },
     "contractAward": {
       "title": "Attribution du contrat",
-      "description": "Les fournisseurs retenus commencent leur collaboration avec la Fondation OCP."
+      "description": "Les fournisseurs retenus commencent leur collaboration avec la Fondation TAQA."
     }
   },
   "footer": {
     "contact": {
       "title": "Contactez-nous",
-      "email": "claim@ocpfoundation.org",
-      "address": "Fondation OCP 2-4, rue Al Abtal - Hay Erraha - 20200 Casablanca – Maroc"
+      "email": "claim@TAQAfoundation.org",
+      "address": "Fondation TAQA 2-4, rue Al Abtal - Hay Erraha - 20200 Casablanca – Maroc"
     },
     "quickLinks": {
       "title": "Liens rapides",
@@ -51,7 +51,7 @@
       "twitter": "Twitter",
       "facebook": "Facebook"
     },
-    "copyright": " Fondation OCP. Tous droits réservés."
+    "copyright": " Fondation TAQA. Tous droits réservés."
   },
   "error": {
     "404": {
@@ -197,7 +197,7 @@
     }
   },
   "agents": {
-    "title": "Agents OCP",
+    "title": "Agents TAQA",
     "description": "Voici une liste d'agents",
     "headers": {
       "full_name": "Nom complet",

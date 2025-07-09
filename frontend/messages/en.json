@@ -14,8 +14,8 @@
     "viewDetails": "View Details"
   },
   "hero": {
-    "title": "Connect with OCP Foundation Opportunities",
-    "description": "Your gateway to procurement opportunities. Join our platform to discover new business possibilities with OCP Foundation.",
+    "title": "Connect with TAQA Foundation Opportunities",
+    "description": "Your gateway to procurement opportunities. Join our platform to discover new business possibilities with TAQA Foundation.",
     "registerButton": "Register as Supplier",
     "browseButton": "Browse Opportunities"
   },
@@ -39,14 +39,14 @@
     },
     "contractAward": {
       "title": "Contract Award",
-      "description": "Successfully awarded suppliers begin collaboration with OCP Foundation."
+      "description": "Successfully awarded suppliers begin collaboration with TAQA Foundation."
     }
   },
   "footer": {
     "contact": {
       "title": "Contact Us",
-      "email": "claim@ocpfoundation.org",
-      "address": "Fondation OCP 2-4, rue Al Abtal - Hay Erraha - 20200 Casablanca – Maroc"
+      "email": "claim@TAQAfoundation.org",
+      "address": "Fondation TAQA 2-4, rue Al Abtal - Hay Erraha - 20200 Casablanca – Maroc"
     },
     "quickLinks": {
       "title": "Quick Links",
@@ -60,7 +60,7 @@
       "twitter": "Twitter",
       "facebook": "Facebook"
     },
-    "copyright": " OCP Foundation. All rights reserved."
+    "copyright": " TAQA Foundation. All rights reserved."
   },
   "error": {
     "404": {
@@ -208,8 +208,8 @@
     }
   },
   "agents": {
-    "title": "OCP Agents",
-    "description": "Here's a list of OCP Agents",
+    "title": "TAQA Agents",
+    "description": "Here's a list of TAQA Agents",
     "headers": {
       "full_name": "Full name",
       "title": "Title",
