@@ -74,8 +74,7 @@ export const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      {/* max-w-[1600px] mx-auto */}
-      <div className="w-full p-6 space-y-6">
+      <div className="w-full max-w-none p-6 space-y-6">
         {/* Header Section */}
         <Card className="p-6 border border-slate-200 bg-white">
           <DashboardHeader
@@ -99,27 +98,27 @@ export const Dashboard = () => {
         </Card>
 
         {/* Primary KPI Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {/* Closing Rate */}
-          <Card className="p-6 border border-blue-200 bg-white hover:border-blue-300 transition-colors">
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-3 bg-blue-50 rounded-lg border border-blue-100">
-                <CheckCircle2 className="h-6 w-6 text-blue-600" />
+          <Card className="p-6 border border-slate-200 bg-white hover:border-slate-300 transition-colors">
+            <div className="flex items-center justify-between mb-3">
+              <div className="p-2 bg-blue-50 rounded-lg border border-blue-100">
+                <CheckCircle2 className="h-5 w-5 text-blue-600" />
               </div>
               <div className="text-right">
-                <p className="text-2xl font-bold text-slate-900">
+                <p className="text-xl font-semibold text-slate-900">
                   {kpis.isLoading ? "..." : `${Math.round(kpis.closed.data?.percentageWithDates || 0)}%`}
                 </p>
-                <p className="text-sm text-slate-500">
+                <p className="text-xs text-slate-500">
                   {kpis.isLoading ? "..." : `${kpis.closed.data?.totalanomaliesclosed || 0} / ${kpis.closed.data?.totalAnomalies || 0}`}
                 </p>
               </div>
             </div>
             <div>
-              <h3 className="font-semibold text-slate-900 mb-1">Closing Rate</h3>
-              <div className="w-full bg-slate-100 rounded-full h-2">
+              <h3 className="font-medium text-slate-900 mb-2">Closing Rate</h3>
+              <div className="w-full bg-slate-200 rounded-full h-1.5">
                 <div 
-                  className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                  className="bg-blue-600 h-1.5 rounded-full transition-all duration-300"
                   style={{ width: `${kpis.closed.data?.percentageWithDates || 0}%` }}
                 />
               </div>
@@ -127,25 +126,25 @@ export const Dashboard = () => {
           </Card>
 
           {/* Processing Rate */}
-          <Card className="p-6 border border-blue-200 bg-white hover:border-blue-300 transition-colors">
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-3 bg-blue-50 rounded-lg border border-blue-100">
-                <PlayCircle className="h-6 w-6 text-blue-600" />
+          <Card className="p-6 border border-slate-200 bg-white hover:border-slate-300 transition-colors">
+            <div className="flex items-center justify-between mb-3">
+              <div className="p-2 bg-blue-50 rounded-lg border border-blue-100">
+                <PlayCircle className="h-5 w-5 text-blue-600" />
               </div>
               <div className="text-right">
-                <p className="text-2xl font-bold text-slate-900">
+                <p className="text-xl font-semibold text-slate-900">
                   {kpis.isLoading ? "..." : `${Math.round(kpis.inProgress.data?.percentageWithDates || 0)}%`}
                 </p>
-                <p className="text-sm text-slate-500">
+                <p className="text-xs text-slate-500">
                   {kpis.isLoading ? "..." : `${kpis.inProgress.data?.totalanomaliesinprogress || 0} / ${kpis.inProgress.data?.totalAnomalies || 0}`}
                 </p>
               </div>
             </div>
             <div>
-              <h3 className="font-semibold text-slate-900 mb-1">Processing Rate</h3>
-              <div className="w-full bg-slate-100 rounded-full h-2">
+              <h3 className="font-medium text-slate-900 mb-2">Processing Rate</h3>
+              <div className="w-full bg-slate-200 rounded-full h-1.5">
                 <div 
-                  className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                  className="bg-blue-600 h-1.5 rounded-full transition-all duration-300"
                   style={{ width: `${kpis.inProgress.data?.percentageWithDates || 0}%` }}
                 />
               </div>
@@ -153,51 +152,51 @@ export const Dashboard = () => {
           </Card>
 
           {/* Average Processing Time */}
-          <Card className="p-6 border border-blue-200 bg-white hover:border-blue-300 transition-colors">
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-3 bg-blue-50 rounded-lg border border-blue-100">
-                <Timer className="h-6 w-6 text-blue-600" />
+          <Card className="p-6 border border-slate-200 bg-white hover:border-slate-300 transition-colors">
+            <div className="flex items-center justify-between mb-3">
+              <div className="p-2 bg-blue-50 rounded-lg border border-blue-100">
+                <Timer className="h-5 w-5 text-blue-600" />
               </div>
               <div className="text-right">
-                <p className="text-2xl font-bold text-slate-900">
+                <p className="text-xl font-semibold text-slate-900">
                   {kpis.isLoading ? "..." : 
                     `${kpis.processingTime.data?.averageDays || 0}d ${kpis.processingTime.data?.averageHours || 0}h`
                   }
                 </p>
-                <p className="text-sm text-slate-500">
+                <p className="text-xs text-slate-500">
                   {kpis.isLoading ? "..." : `${kpis.processingTime.data?.totalAnomalies || 0} anomalies`}
                 </p>
               </div>
             </div>
             <div>
-              <h3 className="font-semibold text-slate-900 mb-1">Avg. Processing Time</h3>
-              <div className="flex items-center gap-2 text-sm text-slate-600">
-                <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
+              <h3 className="font-medium text-slate-900 mb-2">Avg. Processing Time</h3>
+              <div className="flex items-center gap-2 text-xs text-slate-600">
+                <div className="w-1.5 h-1.5 bg-blue-600 rounded-full"></div>
                 <span>Active processing</span>
               </div>
             </div>
           </Card>
 
           {/* Action Plan Completion Rate */}
-          <Card className="p-6 border border-blue-200 bg-white hover:border-blue-300 transition-colors">
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-3 bg-blue-50 rounded-lg border border-blue-100">
-                <Target className="h-6 w-6 text-blue-600" />
+          <Card className="p-6 border border-slate-200 bg-white hover:border-slate-300 transition-colors">
+            <div className="flex items-center justify-between mb-3">
+              <div className="p-2 bg-blue-50 rounded-lg border border-blue-100">
+                <Target className="h-5 w-5 text-blue-600" />
               </div>
               <div className="text-right">
-                <p className="text-2xl font-bold text-slate-900">
+                <p className="text-xl font-semibold text-slate-900">
                   {kpis.isLoading ? "..." : `${Math.round(actionPlanCompletionRate)}%`}
                 </p>
-                <p className="text-sm text-slate-500">
+                <p className="text-xs text-slate-500">
                   {kpis.isLoading ? "..." : `${kpis.actionPlan.data?.action.completed || 0} / ${kpis.actionPlan.data?.action.total || 0}`}
                 </p>
               </div>
             </div>
             <div>
-              <h3 className="font-semibold text-slate-900 mb-1">Action Plan Completion</h3>
-              <div className="w-full bg-slate-100 rounded-full h-2">
+              <h3 className="font-medium text-slate-900 mb-2">Action Plan Completion</h3>
+              <div className="w-full bg-slate-200 rounded-full h-1.5">
                 <div 
-                  className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                  className="bg-blue-600 h-1.5 rounded-full transition-all duration-300"
                   style={{ width: `${actionPlanCompletionRate}%` }}
                 />
               </div>
@@ -206,39 +205,39 @@ export const Dashboard = () => {
         </div>
 
         {/* Secondary Information Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-          {/* Anomaly Overview Card */}
-          <Card className="p-6 border border-slate-200 bg-white">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          {/* Anomaly Overview Card - 6 columns */}
+          <Card className="lg:col-span-6 p-6 border border-slate-200 bg-white min-h-[300px]">
             <CardHeader className="p-0 pb-4">
-              <CardTitle className="text-lg font-semibold text-slate-900 flex items-center gap-2">
+              <CardTitle className="text-lg font-medium text-slate-900 flex items-center gap-2">
                 <BarChart3 className="h-5 w-5 text-blue-600" />
                 Anomaly Overview
               </CardTitle>
             </CardHeader>
-            <CardContent className="p-0 space-y-3">
+            <CardContent className="p-0 space-y-4">
               {kpis.isLoading ? (
-                <div className="space-y-3">
+                <div className="space-y-4">
                   <div className="h-4 bg-slate-200 rounded animate-pulse" />
                   <div className="h-4 bg-slate-200 rounded animate-pulse" />
                   <div className="h-4 bg-slate-200 rounded animate-pulse" />
                 </div>
               ) : (
-                <div className="space-y-3">
-                  <div className="flex justify-between items-center py-2 border-b border-slate-100">
-                    <span className="text-sm font-medium text-slate-700">Total Anomalies</span>
-                    <Badge variant="outline" className="border-blue-200 text-blue-700 bg-blue-50">
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center py-3 border-b border-slate-100">
+                    <span className="text-base font-medium text-slate-700">Total Anomalies</span>
+                    <Badge variant="outline" className="border-blue-200 text-blue-700 bg-blue-50 text-sm px-3 py-1">
                       {(kpis.closed.data?.totalAnomalies || 0).toLocaleString()}
                     </Badge>
                   </div>
-                  <div className="flex justify-between items-center py-2 border-b border-slate-100">
-                    <span className="text-sm font-medium text-slate-700">Active</span>
-                    <Badge variant="outline" className="border-blue-200 text-blue-700 bg-blue-50">
+                  <div className="flex justify-between items-center py-3 border-b border-slate-100">
+                    <span className="text-base font-medium text-slate-700">Active</span>
+                    <Badge variant="outline" className="border-blue-200 text-blue-700 bg-blue-50 text-sm px-3 py-1">
                       {(kpis.inProgress.data?.totalanomaliesinprogress || 0).toLocaleString()}
                     </Badge>
                   </div>
-                  <div className="flex justify-between items-center py-2">
-                    <span className="text-sm font-medium text-slate-700">Resolved</span>
-                    <Badge variant="outline" className="border-blue-200 text-blue-700 bg-blue-50">
+                  <div className="flex justify-between items-center py-3">
+                    <span className="text-base font-medium text-slate-700">Resolved</span>
+                    <Badge variant="outline" className="border-blue-200 text-blue-700 bg-blue-50 text-sm px-3 py-1">
                       {(kpis.closed.data?.totalanomaliesclosed || 0).toLocaleString()}
                     </Badge>
                   </div>
@@ -247,158 +246,75 @@ export const Dashboard = () => {
             </CardContent>
           </Card>
 
-          {/* System Status Card */}
-          <Card className="p-6 border border-slate-200 bg-white">
+          {/* Maintenance Window KPI Card - 3 columns */}
+          <Card className="lg:col-span-3 p-6 border border-slate-200 bg-white min-h-[300px]">
             <CardHeader className="p-0 pb-4">
-              <CardTitle className="text-lg font-semibold text-slate-900 flex items-center gap-2">
-                <Monitor className="h-5 w-5 text-blue-600" />
-                System Status
+              <CardTitle className="text-lg font-medium text-slate-900 flex items-center gap-2">
+                <Clock className="h-5 w-5 text-blue-600" />
+                Maintenance Windows
               </CardTitle>
             </CardHeader>
-            <CardContent className="p-0 space-y-3">
-              <div className="space-y-3">
-                <div className="flex items-center justify-between py-2 border-b border-slate-100">
-                  <span className="text-sm font-medium text-slate-700">Operational Status</span>
-                  <Badge className="bg-blue-100 text-blue-800 border-blue-200">
-                    ● Online
-                  </Badge>
+            <CardContent className="p-0 space-y-6">
+              <div className="text-center">
+                <div className="text-3xl font-semibold text-slate-900 mb-2">
+                  {kpis.isLoading ? "..." : "12"}
                 </div>
-                <div className="space-y-2">
-                  <div className="flex justify-between text-sm text-slate-600">
-                    <span>System Performance</span>
-                    <span className="font-medium">96%</span>
-                  </div>
-                  <Progress value={96} className="h-2" />
+                <div className="text-sm text-slate-500">Active Windows</div>
+              </div>
+              <div className="space-y-4">
+                <div className="flex justify-between">
+                  <span className="text-sm text-slate-600">Scheduled</span>
+                  <span className="font-medium text-slate-700 text-sm">8</span>
                 </div>
-                <div className="text-xs text-slate-500 pt-2 border-t border-slate-100">
-                  Last updated: {currentTime || "Loading..."}
+                <div className="flex justify-between">
+                  <span className="text-sm text-slate-600">In Progress</span>
+                  <span className="font-medium text-slate-700 text-sm">4</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-sm text-slate-600">Completed</span>
+                  <span className="font-medium text-slate-700 text-sm">23</span>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          {/* Quick Actions Card */}
-          <Card className="p-6 border border-slate-200 bg-white">
-            <CardHeader className="p-0 pb-4">
-              <CardTitle className="text-lg font-semibold text-slate-900 flex items-center gap-2">
+          {/* Quick Actions Card - 3 columns */}
+          <Card className="lg:col-span-3 p-6 border border-slate-200 bg-white min-h-[300px]">
+            <div className="space-y-4 h-full flex flex-col">
+              <h3 className="text-lg font-medium text-slate-900 flex items-center gap-2">
                 <Settings className="h-5 w-5 text-blue-600" />
                 Quick Actions
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-0 space-y-3">
-              <Link href="/dashboard/anomalies" className="block">
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  className="w-full justify-between border-slate-300 hover:bg-blue-50 hover:border-blue-300"
-                >
-                  View Anomalies
-                  <ArrowRight className="h-4 w-4" />
-                </Button>
-              </Link>
-              <Link href="/dashboard/anomalies?action=create" className="block">
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  className="w-full justify-between border-slate-300 hover:bg-blue-50 hover:border-blue-300"
-                >
-                  Report Anomaly
-                  <Plus className="h-4 w-4" />
-                </Button>
-              </Link>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="w-full justify-between border-slate-300 hover:bg-blue-50 hover:border-blue-300"
-              >
-                System Reports
-                <BarChart3 className="h-4 w-4" />
-              </Button>
-            </CardContent>
+              </h3>
+              <div className="grid grid-cols-1 gap-3 flex-1">
+                <Link href="/dashboard/anomalies">
+                  <button className="w-full flex items-center justify-between px-4 py-3 text-left text-sm text-slate-700 bg-slate-50 hover:bg-blue-50 border border-slate-200 hover:border-blue-200 rounded-md transition-colors group">
+                    <div className="flex items-center gap-3">
+                      <BarChart3 className="h-5 w-5 text-blue-600" />
+                      <span>View Anomalies</span>
+                    </div>
+                    <ArrowRight className="h-4 w-4 text-slate-400 group-hover:text-blue-600" />
+                  </button>
+                </Link>
+                <Link href="/dashboard/anomalies?action=create">
+                  <button className="w-full flex items-center justify-between px-4 py-3 text-left text-sm text-slate-700 bg-slate-50 hover:bg-blue-50 border border-slate-200 hover:border-blue-200 rounded-md transition-colors group">
+                    <div className="flex items-center gap-3">
+                      <Plus className="h-5 w-5 text-blue-600" />
+                      <span>Report Anomaly</span>
+                    </div>
+                    <ArrowRight className="h-4 w-4 text-slate-400 group-hover:text-blue-600" />
+                  </button>
+                </Link>
+                <button className="w-full flex items-center justify-between px-4 py-3 text-left text-sm text-slate-700 bg-slate-50 hover:bg-blue-50 border border-slate-200 hover:border-blue-200 rounded-md transition-colors group">
+                  <div className="flex items-center gap-3">
+                    <AlertCircle className="h-5 w-5 text-blue-600" />
+                    <span>System Reports</span>
+                  </div>
+                  <ArrowRight className="h-4 w-4 text-slate-400 group-hover:text-blue-600" />
+                </button>
+              </div>
+            </div>
           </Card>
         </div>
-
-        {/* Recent Activity Section */}
-        <Card className="p-6 border border-slate-200 bg-white">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
-            <div className="border-l-4 border-blue-600 pl-4">
-              <h2 className="text-xl font-semibold text-slate-900">Recent Anomalies</h2>
-              <p className="text-slate-600 text-sm mt-1">
-                Latest anomaly detections and status updates
-              </p>
-            </div>
-            <Link href="/dashboard/anomalies">
-              <Button variant="outline" size="sm" className="gap-2 border-blue-300 text-blue-700 hover:bg-blue-50">
-                View All
-                <ArrowRight className="h-4 w-4" />
-              </Button>
-            </Link>
-          </div>
-
-          <div className="space-y-2">
-            {anomaliesLoading ? (
-              Array.from({ length: 3 }).map((_, i) => (
-                <div key={i} className="flex items-center space-x-4 p-4 border border-slate-200 rounded-lg">
-                  <div className="w-10 h-10 bg-slate-200 rounded-lg animate-pulse" />
-                  <div className="flex-1 space-y-2">
-                    <div className="h-4 bg-slate-200 rounded animate-pulse w-3/4" />
-                    <div className="h-3 bg-slate-200 rounded animate-pulse w-1/2" />
-                  </div>
-                  <div className="w-20 h-6 bg-slate-200 rounded animate-pulse" />
-                </div>
-              ))
-            ) : anomaliesData?.anomalies.length ? (
-              anomaliesData.anomalies.slice(0, 5).map((anomaly, index) => (
-                <div key={anomaly.id || index} className="flex items-center space-x-4 p-4 border border-slate-200 rounded-lg hover:bg-slate-50">
-                  <div className="p-2 bg-blue-50 rounded-lg border border-blue-100">
-                    <AlertTriangle className="h-5 w-5 text-blue-600" />
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <p className="font-medium text-slate-900 text-sm">
-                        {anomaly.descreption_anomalie || "Anomaly Detected"}
-                      </p>
-                      <Badge 
-                        variant="outline"
-                        className={
-                          anomaly.criticite === "HIGH" 
-                            ? "border-red-200 text-red-700 bg-red-50" :
-                          anomaly.criticite === "MEDIUM" 
-                            ? "border-yellow-200 text-yellow-700 bg-yellow-50" 
-                            : "border-slate-200 text-slate-700 bg-slate-50"
-                        }
-                      >
-                        {anomaly.criticite || "MEDIUM"}
-                      </Badge>
-                    </div>
-                    <p className="text-xs text-slate-500">
-                      {anomaly.num_equipments || "Equipment"} • {anomaly.systeme || "System"} • 
-                      {anomaly.date_detection ? new Date(anomaly.date_detection).toLocaleDateString() : "Recent"}
-                    </p>
-                  </div>
-                  <Badge 
-                    variant="outline"
-                    className={
-                      anomaly.status === "CLOSED" 
-                        ? "border-blue-200 text-blue-700 bg-blue-50" :
-                      anomaly.status === "IN_PROGRESS" 
-                        ? "border-yellow-200 text-yellow-700 bg-yellow-50" 
-                        : "border-slate-200 text-slate-700 bg-slate-50"
-                    }
-                  >
-                    {anomaly.status || "NEW"}
-                  </Badge>
-                </div>
-              ))
-            ) : (
-              <div className="text-center py-12 border border-slate-200 rounded-lg">
-                <AlertCircle className="h-12 w-12 text-slate-400 mx-auto mb-4" />
-                <p className="text-slate-500 font-medium">No recent anomalies found</p>
-                <p className="text-slate-400 text-sm mt-1">Anomalies will appear here when detected</p>
-              </div>
-            )}
-          </div>
-        </Card>
       </div>
     </div>
   );

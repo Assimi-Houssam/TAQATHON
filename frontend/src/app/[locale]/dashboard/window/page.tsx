@@ -41,13 +41,19 @@ function DraggableAnomaly({ anomaly, isInWindow = false }: { anomaly: Anomaly; i
         style={style}
         {...listeners}
         {...attributes}
-        className="bg-white border border-dashed border-gray-300 rounded p-3 h-20 cursor-grab active:cursor-grabbing transition-all hover:border-blue-400 hover:bg-blue-50"
+        className="bg-white border border-dashed border-gray-300 rounded-lg p-3 h-14 cursor-grab active:cursor-grabbing transition-all hover:border-blue-400 hover:bg-blue-50"
       >
-        <div className="flex items-center justify-between mb-1">
-          <span className="font-medium text-sm text-black">{anomaly.num_equipments || 'N/A'}</span>
-          <div className={`w-3 h-3 rounded-full ${getCriticalityColor(anomaly.criticite)}`} />
+        <div className="flex items-center justify-between h-full">
+          <div className="flex-1 min-w-0 pr-2">
+            <div className="font-medium text-xs text-blue-600 truncate mb-1">
+              {anomaly.num_equipments ? `#${anomaly.num_equipments.slice(-6)}` : '#N/A'}
+            </div>
+            <div className="text-sm text-gray-700 truncate">
+              {anomaly.descreption_anomalie || 'No description'}
+            </div>
+          </div>
+          <div className={`w-2 h-2 rounded-full flex-shrink-0 ${getCriticalityColor(anomaly.criticite)}`} />
         </div>
-        <p className="text-sm text-gray-700 leading-tight line-clamp-2">{anomaly.descreption_anomalie || 'No description'}</p>
       </div>
     );
   }
@@ -58,15 +64,23 @@ function DraggableAnomaly({ anomaly, isInWindow = false }: { anomaly: Anomaly; i
       style={style}
       {...listeners}
       {...attributes}
-      className="cursor-grab active:cursor-grabbing hover:shadow-md transition-shadow"
+      className="cursor-grab active:cursor-grabbing hover:shadow-md transition-all duration-200 border-gray-200 hover:border-blue-400"
     >
-      <CardContent className="p-3">
-        <div className="flex items-center justify-between mb-2">
-          <span className="font-semibold text-sm">{anomaly.num_equipments || 'N/A'}</span>
-          <div className={`w-3 h-3 rounded-full ${getCriticalityColor(anomaly.criticite)}`} />
+      <CardContent className="p-4">
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="font-medium text-xs text-blue-600 truncate">
+              {anomaly.num_equipments ? `#${anomaly.num_equipments.slice(-8)}` : '#N/A'}
+            </span>
+            <div className={`w-2 h-2 rounded-full flex-shrink-0 ${getCriticalityColor(anomaly.criticite)}`} />
+          </div>
+          <div className="text-sm text-gray-900 font-medium truncate">
+            {anomaly.descreption_anomalie || 'No description'}
+          </div>
+          <div className="text-xs text-gray-500 truncate">
+            {anomaly.systeme || 'Unknown system'}
+          </div>
         </div>
-        <p className="text-sm text-gray-700 mb-1">{anomaly.descreption_anomalie || 'No description'}</p>
-        <p className="text-xs text-gray-500">{anomaly.systeme || 'Unknown system'}</p>
       </CardContent>
     </Card>
   );
@@ -87,10 +101,14 @@ function MaintenanceWindowCard({
     id: window.id,
   });
 
-  const startDate = new Date(window.scheduled_start);
-  const endDate = new Date(window.scheduled_end);
+  // Handle ORPHANS special case
+  const isOrphans = window.titlte === "ORPHANS";
   
-  const formatProfessionalDate = (from: Date, to: Date) => {
+  const formatProfessionalDate = (dateStart: string | null, dateEnd: string | null) => {
+    if (!dateStart || !dateEnd) return "No dates assigned";
+    
+    const from = new Date(dateStart);
+    const to = new Date(dateEnd);
     const fromMonth = from.toLocaleDateString('en-US', { month: 'short' });
     const toMonth = to.toLocaleDateString('en-US', { month: 'short' });
     const year = from.getFullYear();
@@ -103,9 +121,9 @@ function MaintenanceWindowCard({
   };
 
   return (
-    <div className="bg-white rounded-lg border border-gray-300 overflow-hidden transition-all duration-200 w-[380px] flex-shrink-0 horizontal-scroll-item">
+    <div className="bg-white rounded-lg border border-gray-200 overflow-hidden transition-all duration-200 w-[360px] flex-shrink-0">
       {/* Header */}
-      <div className="bg-gray-100 p-4 border-b border-dashed border-gray-300 relative">
+      <div className={`p-4 border-b border-gray-200 relative ${isOrphans ? 'bg-blue-50' : 'bg-white'}`}>
         <AlertDialog>
           <AlertDialogTrigger asChild>
             <button 
@@ -133,57 +151,51 @@ function MaintenanceWindowCard({
         
         <div className="flex items-center gap-2 mb-2">
           <CalendarIcon className="h-4 w-4 text-gray-600" />
-          <h3 className="font-semibold text-black text-lg">Window #{window.id.slice(-4)}</h3>
-          {window.requires_stopping && (
-            <Badge variant="destructive" className="text-xs">Requires Stop</Badge>
+          <h3 className="font-semibold text-black text-lg">
+            {isOrphans ? "Unassigned Anomalies" : window.titlte}
+          </h3>
+          {!isOrphans && window.duree_jour && (
+            <Badge variant="outline" className="text-xs">
+              {window.duree_jour} day{window.duree_jour !== "1" ? 's' : ''}
+            </Badge>
           )}
         </div>
         
         <div className="flex items-center gap-2 text-sm text-gray-700 mb-1">
           <Clock className="h-3 w-3" />
-          <span>{formatProfessionalDate(startDate, endDate)}</span>
+          <span>{formatProfessionalDate(window.date_debut_arret, window.date_fin_arret)}</span>
         </div>
         
-        <p className="text-sm text-gray-600">
-          {window.assigned_team || 'No team assigned'}
-          {window.duration_of_intervention && (
-            <span className="ml-2 text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
-              {window.duration_of_intervention}h
-            </span>
-          )}
-        </p>
-        
-        {window.notes && (
-          <p className="text-xs text-gray-500 mt-2 italic">{window.notes}</p>
+        {!isOrphans && window.duree_heure && (
+          <p className="text-sm text-gray-600">
+            Duration: {window.duree_heure} hours total
+          </p>
         )}
       </div>
 
       {/* Content Area */}
       <div 
         ref={setNodeRef}
-        className={`min-h-[200px] p-4 transition-all duration-200 ${
+        className={`min-h-[160px] p-4 transition-all duration-200 ${
           isOver 
             ? 'bg-blue-50 border-t-2 border-blue-400' 
             : 'bg-white'
         }`}
       >
         <div className="flex items-center justify-between mb-3">
-          <h4 className="text-sm font-medium text-gray-700">
-            Anomalies
-          </h4>
-          <div className="bg-gray-100 text-gray-700 text-xs font-medium px-2 py-1 rounded">
+          <h4 className="text-sm font-medium text-gray-700">Anomalies</h4>
+          <span className="bg-blue-50 text-blue-700 text-xs font-medium px-2 py-1 rounded">
             {assignedAnomalies.length}
-          </div>
+          </span>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 min-h-[160px]">
+        <div className="space-y-1.5 min-h-[120px]">
           {assignedAnomalies.map((anomaly) => (
             <DraggableAnomaly key={anomaly.id} anomaly={anomaly} isInWindow={true} />
           ))}
           {assignedAnomalies.length === 0 && (
-            <div className="col-span-2 text-center py-8">
+            <div className="flex items-center justify-center h-20 text-center">
               <div className="text-gray-400 text-sm">Drop anomalies here</div>
-              <div className="text-gray-300 text-xs mt-1">Drag and drop to organize</div>
             </div>
           )}
         </div>
@@ -199,12 +211,9 @@ export default function MaintenanceWindows() {
   const [showUploadDialog, setShowUploadDialog] = useState(false);
   const [uploadFile, setUploadFile] = useState<File | null>(null);
   const [newWindow, setNewWindow] = useState({
-    scheduled_start: '',
-    scheduled_end: '',
-    assigned_team: '',
-    notes: '',
-    duration_of_intervention: '',
-    requires_stopping: false,
+    title: '',
+    start_date: '',
+    end_date: '',
   });
 
   // Horizontal scrolling state and refs
@@ -347,31 +356,49 @@ export default function MaintenanceWindows() {
     setActiveId(null);
   };
 
+  // Calculate duration between dates
+  const calculateDuration = (startDate: string, endDate: string) => {
+    if (!startDate || !endDate) return { days: 0, hours: 0 };
+    
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    
+    if (end <= start) return { days: 0, hours: 0 };
+    
+    const diffInMs = end.getTime() - start.getTime();
+    const diffInDays = Math.ceil(diffInMs / (1000 * 60 * 60 * 24));
+    const totalHours = diffInDays * 24; // Simple calculation: days * 24 hours
+    
+    return { days: diffInDays, hours: totalHours };
+  };
+
+  const duration = calculateDuration(newWindow.start_date, newWindow.end_date);
+
   const handleAddWindow = () => {
-    if (!newWindow.scheduled_start || !newWindow.scheduled_end) {
+    if (!newWindow.title || !newWindow.start_date || !newWindow.end_date) {
       toast.error("Please fill in all required fields");
       return;
     }
 
+    // Create ISO datetime strings with standard working hours (08:00 to 18:00)
+    const startDateTime = `${newWindow.start_date}T08:00:00Z`;
+    const endDateTime = `${newWindow.end_date}T18:00:00Z`;
+
     const windowData = {
-      scheduled_start: newWindow.scheduled_start,
-      scheduled_end: newWindow.scheduled_end,
-      assigned_team: newWindow.assigned_team || undefined,
-      notes: newWindow.notes || undefined,
-      duration_of_intervention: newWindow.duration_of_intervention ? parseInt(newWindow.duration_of_intervention) : undefined,
-      requires_stopping: newWindow.requires_stopping,
+      date_debut_arret: startDateTime,
+      date_fin_arret: endDateTime,
+      titlte: newWindow.title, // Note: typo maintained as per backend requirement
+      duree_jour: duration.days.toString(),
+      duree_heure: duration.hours.toString(),
     };
 
     createMaintenanceWindow.mutate(windowData, {
       onSuccess: () => {
         toast.success("Maintenance window created successfully");
         setNewWindow({
-          scheduled_start: '',
-          scheduled_end: '',
-          assigned_team: '',
-          notes: '',
-          duration_of_intervention: '',
-          requires_stopping: false,
+          title: '',
+          start_date: '',
+          end_date: '',
         });
         setShowAddWindow(false);
       },
@@ -414,21 +441,37 @@ export default function MaintenanceWindows() {
   };
 
   const getAssignedAnomalies = (windowId: string): Anomaly[] => {
-    if (!anomaliesData?.anomalies) return [];
+    if (!anomaliesData?.anomalies || !Array.isArray(anomaliesData.anomalies)) return [];
     return anomaliesData.anomalies.filter(anomaly => anomaly.maintenance_window_id === windowId);
   };
 
   const getUnassignedAnomalies = (): Anomaly[] => {
-    if (!anomaliesData?.anomalies) return [];
-    return anomaliesData.anomalies.filter(anomaly => !anomaly.maintenance_window_id);
+    if (!anomaliesData?.anomalies || !Array.isArray(anomaliesData.anomalies)) return [];
+    
+    // Get anomalies that are either truly unassigned OR assigned to ORPHANS window
+    const maintenanceWindows = maintenanceWindowsData?.maintenanceWindows;
+    const orphansWindow = Array.isArray(maintenanceWindows) 
+      ? maintenanceWindows.find(w => w.titlte === "ORPHANS")
+      : undefined;
+    const orphansAnomalies = orphansWindow ? getAssignedAnomalies(orphansWindow.id) : [];
+    const trulyUnassigned = anomaliesData.anomalies.filter(anomaly => !anomaly.maintenance_window_id);
+    
+    return [...trulyUnassigned, ...orphansAnomalies];
   };
 
   const activeAnomaly = anomaliesData?.anomalies?.find(anomaly => anomaly.id === activeId);
 
-  // Sort maintenance windows by date
-  const sortedMaintenanceWindows = maintenanceWindowsData?.maintenanceWindows?.sort((a, b) => {
-    return new Date(a.scheduled_start).getTime() - new Date(b.scheduled_start).getTime();
-  }) || [];
+  // Sort maintenance windows by date, excluding ORPHANS (handled separately)
+  const maintenanceWindows = maintenanceWindowsData?.maintenanceWindows;
+  const sortedMaintenanceWindows = Array.isArray(maintenanceWindows)
+    ? maintenanceWindows
+        .filter(window => window.titlte !== "ORPHANS") // Exclude ORPHANS from timeline
+        .sort((a, b) => {
+          // Sort by start date
+          if (!a.date_debut_arret || !b.date_debut_arret) return 0;
+          return new Date(a.date_debut_arret).getTime() - new Date(b.date_debut_arret).getTime();
+        })
+    : [];
 
   // Show loading state until hydration is complete
   if (!isMounted) {
@@ -464,43 +507,40 @@ export default function MaintenanceWindows() {
 
   return (
     <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-      <div className="p-6 space-y-6 bg-gray-50 flex flex-col h-full dashboard-container">
+      <div className="bg-white flex flex-col h-full">
 
         {/* Header */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <div className="bg-white border-b border-gray-200 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Maintenance Windows</h1>
-              <p className="text-gray-600 mt-1">Assign anomalies to maintenance windows</p>
+              <h1 className="text-2xl font-semibold text-gray-900">Maintenance Windows</h1>
               {isLoadingWindows || isLoadingAnomalies ? (
                 <div className="flex items-center gap-2 mt-2">
-                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <Loader2 className="h-4 w-4 animate-spin text-blue-600" />
                   <span className="text-sm text-gray-500">Loading...</span>
                 </div>
               ) : (
-                <div className="text-sm text-gray-500 mt-2">
-                  {sortedMaintenanceWindows.length} maintenance windows, {getUnassignedAnomalies().length} unassigned anomalies
-                </div>
+                <p className="text-sm text-gray-600 mt-1">
+                  {sortedMaintenanceWindows?.length || 0} windows • {getUnassignedAnomalies().length} unassigned
+                </p>
               )}
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-3">
               <Dialog open={showUploadDialog} onOpenChange={setShowUploadDialog}>
                 <DialogTrigger asChild>
-                  <Button variant="outline" className="border-blue-200 text-blue-700 hover:bg-blue-50">
+                  <Button variant="outline" className="text-blue-600 border-blue-200 hover:bg-blue-50">
                     <Upload className="h-4 w-4 mr-2" />
-                    Import from Excel
+                    Import
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-[400px]">
                   <DialogHeader>
                     <DialogTitle>Import Maintenance Windows</DialogTitle>
                   </DialogHeader>
-                  <div className="py-4">
-                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-                      <FileUp className="h-8 w-8 text-gray-400 mx-auto mb-4" />
-                      <div className="text-sm text-gray-600 mb-4">
-                        Upload an Excel file with maintenance windows
-                      </div>
+                  <div className="py-6">
+                    <div className="border-2 border-dashed border-blue-200 rounded-lg p-8 text-center">
+                      <FileUp className="h-12 w-12 text-blue-400 mx-auto mb-4" />
+                      <p className="text-gray-600 mb-4">Upload Excel file</p>
                       <input
                         type="file"
                         accept=".xlsx,.xls"
@@ -510,13 +550,13 @@ export default function MaintenanceWindows() {
                       />
                       <label
                         htmlFor="file-upload"
-                        className="cursor-pointer bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
+                        className="cursor-pointer bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors inline-block"
                       >
                         Choose File
                       </label>
                       {uploadFile && (
-                        <div className="mt-2 text-sm text-gray-700">
-                          Selected: {uploadFile.name}
+                        <div className="mt-3 text-sm text-gray-700 font-medium">
+                          {uploadFile.name}
                         </div>
                       )}
                     </div>
@@ -552,71 +592,54 @@ export default function MaintenanceWindows() {
                   <DialogHeader>
                     <DialogTitle>Add New Maintenance Window</DialogTitle>
                   </DialogHeader>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-4">
+                  <div className="space-y-6 py-6">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Start Date & Time *</label>
-                      <input
-                        type="datetime-local"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        value={newWindow.scheduled_start}
-                        onChange={(e) => setNewWindow(prev => ({ ...prev, scheduled_start: e.target.value }))}
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">End Date & Time *</label>
-                      <input
-                        type="datetime-local"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        value={newWindow.scheduled_end}
-                        onChange={(e) => setNewWindow(prev => ({ ...prev, scheduled_end: e.target.value }))}
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Assigned Team</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Title *</label>
                       <input
                         type="text"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        value={newWindow.assigned_team}
-                        onChange={(e) => setNewWindow(prev => ({ ...prev, assigned_team: e.target.value }))}
-                        placeholder="e.g., Maintenance Team A"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        value={newWindow.title}
+                        onChange={(e) => setNewWindow(prev => ({ ...prev, title: e.target.value }))}
+                        placeholder="Maintenance Window Title"
                       />
                     </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Duration (hours)</label>
-                      <input
-                        type="number"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        value={newWindow.duration_of_intervention}
-                        onChange={(e) => setNewWindow(prev => ({ ...prev, duration_of_intervention: e.target.value }))}
-                        placeholder="e.g., 8"
-                      />
-                    </div>
-                    <div className="md:col-span-2">
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Notes</label>
-                      <textarea
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        value={newWindow.notes}
-                        onChange={(e) => setNewWindow(prev => ({ ...prev, notes: e.target.value }))}
-                        placeholder="Additional notes about this maintenance window..."
-                        rows={3}
-                      />
-                    </div>
-                    <div className="md:col-span-2">
-                      <label className="flex items-center space-x-2">
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Start Date *</label>
                         <input
-                          type="checkbox"
-                          className="form-checkbox h-4 w-4 text-blue-600"
-                          checked={newWindow.requires_stopping}
-                          onChange={(e) => setNewWindow(prev => ({ ...prev, requires_stopping: e.target.checked }))}
+                          type="date"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                          value={newWindow.start_date}
+                          onChange={(e) => setNewWindow(prev => ({ ...prev, start_date: e.target.value }))}
                         />
-                        <span className="text-sm font-medium text-gray-700">Requires equipment stopping</span>
-                      </label>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">End Date *</label>
+                        <input
+                          type="date"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                          value={newWindow.end_date}
+                          onChange={(e) => setNewWindow(prev => ({ ...prev, end_date: e.target.value }))}
+                        />
+                      </div>
                     </div>
+
+                    {(newWindow.start_date && newWindow.end_date) && (
+                      <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-gray-700">Duration</span>
+                          <span className="text-sm font-medium text-blue-900">
+                            {duration.days} day{duration.days !== 1 ? 's' : ''} • {duration.hours} hours
+                          </span>
+                        </div>
+                      </div>
+                    )}
                   </div>
                   <div className="flex gap-3 mt-6">
                     <Button 
                       onClick={handleAddWindow} 
-                      disabled={!newWindow.scheduled_start || !newWindow.scheduled_end || createMaintenanceWindow.isPending}
+                      disabled={!newWindow.title || !newWindow.start_date || !newWindow.end_date || createMaintenanceWindow.isPending}
                       className="bg-green-600 hover:bg-green-700"
                     >
                       {createMaintenanceWindow.isPending ? (
@@ -639,31 +662,19 @@ export default function MaintenanceWindows() {
           </div>
         </div>
 
-        {/* Unassigned Anomalies */}
-        {getUnassignedAnomalies().length > 0 && (
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Unassigned Anomalies</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {getUnassignedAnomalies().map((anomaly) => (
-                <DraggableAnomaly key={anomaly.id} anomaly={anomaly} />
-              ))}
-            </div>
-          </div>
-        )}
-
         {/* Maintenance Windows Timeline */}
-        <div className="bg-white rounded-lg border border-gray-200 p-6 flex-1 flex flex-col select-none max-w-full overflow-hidden">
+        <div className="bg-white p-6 flex-1 flex flex-col select-none max-w-full overflow-hidden">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">Maintenance Windows</h2>
           <div className="relative h-full w-full max-w-full">
             {/* Navigation Arrows */}
             {canScrollLeft && (
               <Button
                 variant="outline"
                 size="icon"
-                className="absolute left-2 top-1/2 -translate-y-1/2 z-20 h-10 w-10 rounded-full bg-white border hover:bg-blue-50 hover:border-blue-300 transition-all duration-200"
+                className="absolute left-2 top-1/2 -translate-y-1/2 z-20 h-8 w-8 rounded-full bg-white border-gray-300 hover:bg-blue-50 hover:border-blue-400"
                 onClick={scrollLeft}
-                aria-label="Scroll left to view previous maintenance windows"
               >
-                <ChevronLeft className="h-5 w-5 text-gray-700" />
+                <ChevronLeft className="h-4 w-4 text-gray-600" />
               </Button>
             )}
             
@@ -671,18 +682,17 @@ export default function MaintenanceWindows() {
               <Button
                 variant="outline"
                 size="icon"
-                className="absolute right-2 top-1/2 -translate-y-1/2 z-20 h-10 w-10 rounded-full bg-white border hover:bg-blue-50 hover:border-blue-300 transition-all duration-200"
+                className="absolute right-2 top-1/2 -translate-y-1/2 z-20 h-8 w-8 rounded-full bg-white border-gray-300 hover:bg-blue-50 hover:border-blue-400"
                 onClick={scrollRight}
-                aria-label="Scroll right to view more maintenance windows"
               >
-                <ChevronRight className="h-5 w-5 text-gray-700" />
+                <ChevronRight className="h-4 w-4 text-gray-600" />
               </Button>
             )}
 
             {/* Scrollable Container */}
             <div
               ref={scrollContainerRef}
-              className="flex gap-6 horizontal-scroll-container scroll-smooth h-full pb-4"
+              className="flex gap-4 overflow-x-auto scroll-smooth h-full pb-4"
               onScroll={checkScrollPosition}
             >
               {isLoadingWindows ? (
@@ -700,11 +710,10 @@ export default function MaintenanceWindows() {
                   />
                 ))
               ) : (
-                <div className="flex items-center justify-center w-full h-64 text-gray-500">
+                <div className="flex items-center justify-center w-full h-64">
                   <div className="text-center">
-                    <CalendarIcon className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">No Maintenance Windows</h3>
-                    <p className="text-gray-500">Create your first maintenance window to get started.</p>
+                    <CalendarIcon className="h-10 w-10 text-blue-400 mx-auto mb-3" />
+                    <p className="text-gray-600">No maintenance windows scheduled</p>
                   </div>
                 </div>
               )}
@@ -712,20 +721,46 @@ export default function MaintenanceWindows() {
           </div>
         </div>
 
+        {/* Unassigned Anomalies - Always show this section */}
+        <div className="bg-white border-t border-gray-200 p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold text-gray-900">Unassigned Anomalies</h2>
+            <span className="text-sm text-blue-600 bg-blue-50 px-3 py-1 rounded-full">
+              {getUnassignedAnomalies().length} pending
+            </span>
+          </div>
+          {getUnassignedAnomalies().length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3">
+              {getUnassignedAnomalies().map((anomaly) => (
+                <DraggableAnomaly key={anomaly.id} anomaly={anomaly} />
+              ))}
+            </div>
+          ) : (
+            <div className="flex items-center justify-center h-32 text-center">
+              <div className="text-gray-400">No unassigned anomalies</div>
+            </div>
+          )}
+        </div>
+
         <DragOverlay>
           {activeAnomaly ? (
-            <div className="bg-white rounded-lg border-2 border-blue-400 shadow-lg p-3">
-              <div className="flex items-center justify-between mb-2">
-                <span className="font-semibold text-sm">{activeAnomaly.num_equipments || 'N/A'}</span>
-                <div className={`w-3 h-3 rounded-full ${
-                  !activeAnomaly.criticite ? "bg-gray-500" :
-                  parseFloat(activeAnomaly.criticite) >= 13 ? "bg-red-500" : 
-                  parseFloat(activeAnomaly.criticite) >= 10 ? "bg-orange-500" : 
-                  parseFloat(activeAnomaly.criticite) >= 7 ? "bg-yellow-500" : "bg-green-500"
-                }`} />
+            <div className="bg-white rounded-lg border-2 border-blue-500 shadow-lg p-4 min-w-[200px] max-w-[300px]">
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="font-medium text-xs text-blue-600 truncate">
+                    {activeAnomaly.num_equipments ? `#${activeAnomaly.num_equipments.slice(-8)}` : '#N/A'}
+                  </span>
+                  <div className={`w-2 h-2 rounded-full flex-shrink-0 ${
+                    !activeAnomaly.criticite ? "bg-gray-400" :
+                    parseFloat(activeAnomaly.criticite) >= 13 ? "bg-red-500" : 
+                    parseFloat(activeAnomaly.criticite) >= 10 ? "bg-orange-500" : 
+                    parseFloat(activeAnomaly.criticite) >= 7 ? "bg-yellow-500" : "bg-green-500"
+                  }`} />
+                </div>
+                <div className="text-sm text-gray-900 font-medium truncate">
+                  {activeAnomaly.descreption_anomalie || 'No description'}
+                </div>
               </div>
-              <p className="text-sm text-gray-700 mb-1">{activeAnomaly.descreption_anomalie || 'No description'}</p>
-              <p className="text-xs text-gray-500">{activeAnomaly.systeme || 'Unknown system'}</p>
             </div>
           ) : null}
         </DragOverlay>

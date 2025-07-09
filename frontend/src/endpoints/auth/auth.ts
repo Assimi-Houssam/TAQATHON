@@ -15,6 +15,18 @@ export const useLoginMutation = () => {
   const router = useRouter();
   return useMutation({
     mutationFn: async (credentials: LoginFormValues) => {
+      // Fake authentication for Admin:Admin
+      if (credentials.username === "Admin" && credentials.password === "Admin") {
+        // Simulate API delay for better UX
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        return {
+          access_token: "mock-jwt-token-admin-user",
+          requires_2fa: false
+        } as LoginResponse;
+      }
+      
+      // Regular API call for other credentials
       const response = await apiClient.post<LoginResponse>(
         "/auth/login",
         credentials

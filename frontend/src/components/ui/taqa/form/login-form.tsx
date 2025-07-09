@@ -14,7 +14,7 @@ import { Eye, EyeOff } from "lucide-react";
 // Define validation schema
 const loginSchema = z.object({
   username: z.string().min(1, "Please enter your username"),
-  password: z.string().min(1, "Password must be at least 6 characters"),
+  password: z.string().min(1, "Please enter your password"),
 });
 
 export type LoginFormValues = z.infer<typeof loginSchema>;

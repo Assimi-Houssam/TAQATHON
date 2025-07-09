@@ -31,13 +31,11 @@ interface MaintenanceWindowsResponse {
 }
 
 interface MaintenanceWindowFormData {
-  anomaly_id?: string;
-  scheduled_start: string;
-  scheduled_end: string;
-  assigned_team?: string;
-  notes?: string;
-  duration_of_intervention?: number;
-  requires_stopping?: boolean;
+  date_debut_arret: string;
+  date_fin_arret: string;
+  titlte: string; // Note: typo maintained as per backend requirement
+  duree_jour: string;
+  duree_heure: string;
 }
 
 interface MaintenanceWindowUpdateData {
@@ -78,15 +76,16 @@ export function useMaintenanceWindows(options: UseMaintenanceWindowsOptions = {}
       const queryString = params.toString();
       const url = `/anomaly/getmaintenancewondow${queryString ? `?${queryString}` : ''}`;
       
-      const { data } = await apiClient.get<MaintenanceWindowsResponse>(url);
+      // API returns direct array of maintenance windows
+      const { data } = await apiClient.get<MaintenanceWindow[]>(url);
       
       return {
-        maintenanceWindows: data.data || [],
-        total: data.totalWindows || 0,
-        totalPages: data.totalPages || 0,
-        currentPage: data.currentPage || 1,
-        hasNext: data.hasNext || false,
-        hasPrevious: data.hasPrevious || false,
+        maintenanceWindows: data || [],
+        total: data?.length || 0,
+        totalPages: 1, // Since we're getting all data at once
+        currentPage: 1,
+        hasNext: false,
+        hasPrevious: false,
       };
     },
     enabled,

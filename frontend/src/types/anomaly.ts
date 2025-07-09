@@ -250,18 +250,14 @@ export interface Action {
   anomaly_id: string;
 }
 
-// Maintenance Window interface
+// Maintenance Window interface - updated to match API response
 export interface MaintenanceWindow {
   id: string;
-  anomaly_id: string;
-  scheduled_start: string;
-  scheduled_end: string;
-  assigned_team?: string;
-  notes?: string;
-  duration_of_intervention?: number; // in hours
-  requires_stopping?: boolean;
-  created_at: string;
-  updated_at: string;
+  titlte: string; // Note: API has typo in field name
+  date_debut_arret: string | null;
+  date_fin_arret: string | null;
+  duree_jour: string | null;
+  duree_heure: string | null;
 }
 
 // REX (Return of Experience) interface
