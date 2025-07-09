@@ -413,6 +413,36 @@ export class AnomalyController {
 
 
   @ApiOperation({ summary: 'Attach REX entry to anomaly' })
+  @ApiParam({ name: 'id', description: 'Anomaly ID', type: 'string' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+          description: 'REX document file',
+        },
+        summary: {
+          type: 'string',
+          description: 'REX summary or description',
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'REX entry attached successfully',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid request data or file upload failed',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Anomaly not found',
+  })
   @Post('rex/:id')
   @UseInterceptors(
     FileInterceptor('file', {
