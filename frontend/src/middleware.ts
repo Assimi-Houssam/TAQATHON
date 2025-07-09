@@ -26,6 +26,7 @@ const verifyToken = async (token: string) => {
   try {
     // For mock authentication, accept any mock token
     if (token === 'mock-jwt-token-admin-user') {
+      console.log('[Middleware] Fake authentication detected - Admin user logged in');
       return true;
     }
     return false;
