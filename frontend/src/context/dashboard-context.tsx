@@ -14,7 +14,7 @@ interface DashboardContextType {
 }
 
 const dashboardConfigs: Record<EntityTypes, DashboardConfig> = {
-  [EntityTypes.OCP_AGENT]: {
+  [EntityTypes.TAQA_AGENT]: {
     component: () => import("@/components/ui/taqa_x/Dashboard"),
     metrics: ["anomalies", "maintenance", "critical", "resolved"],
     features: ["anomalyTracking", "maintenanceWindows", "dashboard"],

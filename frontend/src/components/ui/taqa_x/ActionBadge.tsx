@@ -15,7 +15,7 @@ const setActionColor = (type: string) => {
   let color = "white";
   let icon: React.ReactNode;
   switch (type) {
-    case "OCP_AGENT":
+    case "TAQA_AGENT":
       color = "green";
       icon = <UserRoundPen className="size-4" />;
       break;
@@ -48,7 +48,7 @@ const setActionColor = (type: string) => {
 
 const ActionBadge: React.FC<ActionBadgeProps> = ({ type }) => {
   let color = "white";
-  const text = type === "OCP_AGENT" ? "OCP Agent" : type;
+  const text = type === "TAQA_AGENT" ? "TAQA Agent" : type;
 
   color = setActionColor(type).color;
 

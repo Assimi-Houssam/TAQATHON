@@ -26,6 +26,7 @@ import {
   Monitor,
   Shield,
   AlertCircle,
+  LineChart,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
@@ -34,6 +35,133 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import Link from "next/link";
 import { useState, useEffect } from "react";
+
+// Simple Anomalies Trend Chart Component
+const AnomaliesTrendChart = ({ data, isLoading }: { data: any[]; isLoading: boolean }) => {
+  if (isLoading) {
+    return (
+      <div className="h-64 flex items-center justify-center">
+        <div className="animate-pulse text-sm text-slate-500">Loading chart...</div>
+      </div>
+    );
+  }
+
+  if (!data || data.length === 0) {
+    return (
+      <div className="h-64 flex items-center justify-center">
+        <div className="text-sm text-slate-500">No data available</div>
+      </div>
+    );
+  }
+
+  // Get the last 7 days of data for the chart
+  const chartData = data.slice(-7);
+  const maxValue = Math.max(...chartData.map(d => Math.max(d.total, d.closed, d.inProgress, d.new)));
+  const chartHeight = 180;
+  const chartWidth = 500;
+
+  const getYPosition = (value: number) => {
+    return chartHeight - (value / maxValue) * chartHeight;
+  };
+
+  const getXPosition = (index: number) => {
+    return (index / (chartData.length - 1)) * chartWidth;
+  };
+
+  const createPathData = (dataKey: string) => {
+    return chartData
+      .map((d, i) => `${i === 0 ? 'M' : 'L'} ${getXPosition(i)} ${getYPosition(d[dataKey])}`)
+      .join(' ');
+  };
+
+  return (
+    <div className="h-64">
+      <div className="flex justify-between items-center mb-6">
+        <div className="flex gap-6 text-sm">
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 bg-blue-600 rounded-full"></div>
+            <span className="text-slate-600 font-medium">Total</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 bg-blue-400 rounded-full"></div>
+            <span className="text-slate-600 font-medium">Closed</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 bg-blue-300 rounded-full"></div>
+            <span className="text-slate-600 font-medium">In Progress</span>
+          </div>
+        </div>
+      </div>
+      <div className="relative">
+        <svg width="100%" height={chartHeight} viewBox={`0 0 ${chartWidth} ${chartHeight}`} className="overflow-visible">
+          {/* Grid lines */}
+          {[0, 25, 50, 75, 100].map(percent => {
+            const y = (percent / 100) * chartHeight;
+            return (
+              <line
+                key={percent}
+                x1="0"
+                y1={y}
+                x2={chartWidth}
+                y2={y}
+                stroke="#f1f5f9"
+                strokeWidth="1"
+              />
+            );
+          })}
+          
+          {/* Total line */}
+          <path
+            d={createPathData('total')}
+            fill="none"
+            stroke="#2563eb"
+            strokeWidth="3"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          
+          {/* Closed line */}
+          <path
+            d={createPathData('closed')}
+            fill="none"
+            stroke="#60a5fa"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          
+          {/* In Progress line */}
+          <path
+            d={createPathData('inProgress')}
+            fill="none"
+            stroke="#93c5fd"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+
+          {/* Data points */}
+          {chartData.map((d, i) => (
+            <g key={i}>
+              <circle cx={getXPosition(i)} cy={getYPosition(d.total)} r="4" fill="#2563eb" />
+              <circle cx={getXPosition(i)} cy={getYPosition(d.closed)} r="3" fill="#60a5fa" />
+              <circle cx={getXPosition(i)} cy={getYPosition(d.inProgress)} r="3" fill="#93c5fd" />
+            </g>
+          ))}
+        </svg>
+        
+        {/* X-axis labels */}
+        <div className="flex justify-between mt-4 text-sm text-slate-500">
+          {chartData.map((d, i) => (
+            <span key={i} className="block">
+              {new Date(d.date).toLocaleDateString('en', { month: 'short', day: 'numeric' })}
+            </span>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export const Dashboard = () => {
   const t = useTranslations("dashboard");
@@ -206,8 +334,24 @@ export const Dashboard = () => {
 
         {/* Secondary Information Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* Anomaly Overview Card - 6 columns */}
+          {/* Anomalies Trend Chart - 6 columns */}
           <Card className="lg:col-span-6 p-6 border border-slate-200 bg-white min-h-[300px]">
+            <CardHeader className="p-0 pb-4">
+              <CardTitle className="text-lg font-medium text-slate-900 flex items-center gap-2">
+                <LineChart className="h-5 w-5 text-blue-600" />
+                Anomalies Trend
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-0">
+              <AnomaliesTrendChart 
+                data={kpis.chartData.data || []} 
+                isLoading={kpis.isLoading} 
+              />
+            </CardContent>
+          </Card>
+
+          {/* Anomaly Overview Card - 3 columns */}
+          <Card className="lg:col-span-3 p-6 border border-slate-200 bg-white min-h-[300px]">
             <CardHeader className="p-0 pb-4">
               <CardTitle className="text-lg font-medium text-slate-900 flex items-center gap-2">
                 <BarChart3 className="h-5 w-5 text-blue-600" />
@@ -243,38 +387,6 @@ export const Dashboard = () => {
                   </div>
                 </div>
               )}
-            </CardContent>
-          </Card>
-
-          {/* Maintenance Window KPI Card - 3 columns */}
-          <Card className="lg:col-span-3 p-6 border border-slate-200 bg-white min-h-[300px]">
-            <CardHeader className="p-0 pb-4">
-              <CardTitle className="text-lg font-medium text-slate-900 flex items-center gap-2">
-                <Clock className="h-5 w-5 text-blue-600" />
-                Maintenance Windows
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-0 space-y-6">
-              <div className="text-center">
-                <div className="text-3xl font-semibold text-slate-900 mb-2">
-                  {kpis.isLoading ? "..." : "12"}
-                </div>
-                <div className="text-sm text-slate-500">Active Windows</div>
-              </div>
-              <div className="space-y-4">
-                <div className="flex justify-between">
-                  <span className="text-sm text-slate-600">Scheduled</span>
-                  <span className="font-medium text-slate-700 text-sm">8</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm text-slate-600">In Progress</span>
-                  <span className="font-medium text-slate-700 text-sm">4</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm text-slate-600">Completed</span>
-                  <span className="font-medium text-slate-700 text-sm">23</span>
-                </div>
-              </div>
             </CardContent>
           </Card>
 

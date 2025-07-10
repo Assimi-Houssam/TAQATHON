@@ -6,7 +6,7 @@ interface AnomalyStatusProps {
   className?: string;
 }
 
-export function AnomalyStatus({ 
+export function AnomalyStatusBadge({ 
   status, 
   className 
 }: AnomalyStatusProps) {

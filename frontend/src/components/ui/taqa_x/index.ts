@@ -1,7 +1,7 @@
 // Layout components
-export * from './layout/OCPDataTable-new';
+export * from './layout/TAQADataTable-new';
 
-// OCP specific components
+// TAQA specific components
 export { ActionBadge } from './ActionBadge';
 export { AddFormDialog } from './AddFormDialog';
 export { AddFormFieldDialog } from './AddFormFieldDialog';

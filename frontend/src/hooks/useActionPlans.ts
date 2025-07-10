@@ -128,7 +128,7 @@ export function useActionPlanMutations() {
 
   const updateActionPlanStatus = useMutation({
     mutationFn: async ({ id, status }: { id: string; status: ActionPlanStatus }): Promise<ActionPlan> => {
-      const response = await apiClient.patch<ActionPlan>(`/action-plans/${id}/status`, { status });
+      const response = await apiClient.patch<ActionPlan>(`/anomaly/checkaction/${id}`, { status });
       return response.data;
     },
     onSuccess: (data, variables) => {
@@ -147,12 +147,8 @@ export function useActionPlanMutations() {
   });
 
   const toggleActionPlanStatus = useMutation({
-    mutationFn: async ({ id, currentStatus }: { id: string; currentStatus: ActionPlanStatus }): Promise<ActionPlan> => {
-      const newStatus = currentStatus === ActionPlanStatus.COMPLETED 
-        ? ActionPlanStatus.NOT_COMPLETED 
-        : ActionPlanStatus.COMPLETED;
-      
-      const response = await apiClient.patch<ActionPlan>(`/action-plans/${id}/status`, { status: newStatus });
+    mutationFn: async ({ id }: { id: string }): Promise<ActionPlan> => {
+      const response = await apiClient.patch<ActionPlan>(`/anomaly/checkaction/${id}`);
       return response.data;
     },
     onSuccess: (data, variables) => {
@@ -172,7 +168,7 @@ export function useActionPlanMutations() {
 
   const deleteActionPlan = useMutation({
     mutationFn: async (id: string): Promise<void> => {
-      await apiClient.delete(`/action-plans/${id}`);
+      await apiClient.delete(`/anomaly/deleteaction/${id}`);
     },
     onSuccess: (_, id) => {
       // Remove the specific action plan from cache

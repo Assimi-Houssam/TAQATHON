@@ -1,22 +1,23 @@
-# frontend/Dockerfile
-
-# Use an official Node base image
+# Use official Node.js image
 FROM node:20
 
 # Set working directory
 WORKDIR /app
 
-# Copy only package files first (for layer caching)
+# Copy package files
 COPY package*.json ./
 
 # Install dependencies
 RUN npm install
 
-# Copy the rest of your frontend source code
+# Copy app source code
 COPY . .
 
-# Expose the port used by Next.js
+# Build Next.js app
+RUN npm run build
+
+# Expose port 3000
 EXPOSE 3000
 
-# Start dev server (Turbopack enabled)
-CMD ["npm", "run", "dev"]
+# Start Next.js production server
+CMD ["npm", "start"]

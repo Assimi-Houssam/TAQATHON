@@ -12,8 +12,8 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
-import NewAnomalyModal from "@/components/anomaly/NewAnomalyModal";
-import BatchUploadModal from "@/components/anomaly/BatchUploadModal";
+import { NewAnomalyModal } from "@/components/anomaly/NewAnomalyModal";
+import { BatchUploadModal } from "@/components/anomaly/BatchUploadModal";
 
 
 

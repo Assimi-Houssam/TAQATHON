@@ -147,17 +147,9 @@ export function ActionPlanTable({
 
   const handleToggleComplete = async (id: string) => {
     if (anomalyId) {
-      // Server-side toggle
-      const item = actionPlanItems.find(item => item.id === id);
-      if (!item) return;
-
+      // Server-side toggle using the new endpoint
       try {
-        const updatedItem = { ...item, isDone: !item.isDone };
-        await updateActionPlanFromItem.mutateAsync({ 
-          id, 
-          item: updatedItem, 
-          anomalyId 
-        });
+        await toggleActionPlanStatus.mutateAsync({ id });
         toast.success('Action status updated successfully');
       } catch (error) {
         console.error('Failed to update action status:', error);
@@ -222,6 +214,7 @@ export function ActionPlanTable({
         };
 
         setLocalActionPlanItems(prev => [...prev, newItem]);
+        toast.success('Action plan created successfully');
       }
       
       // Auto-open the collapsible section when adding an action
@@ -231,8 +224,8 @@ export function ActionPlanTable({
       
       handleCloseModal();
     } catch (error) {
-      console.error('Failed to add action:', error);
-      toast.error('Failed to add action. Please try again.');
+      console.error('Failed to save action:', error);
+      toast.error('Failed to save action. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -348,14 +341,15 @@ export function ActionPlanTable({
                             checked={item.isDone}
                             onCheckedChange={() => handleToggleComplete(item.id)}
                             className="data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
-                            disabled={isDataLoading}
+                            disabled={isDataLoading || toggleActionPlanStatus.isPending}
                           />
                           <Button
                             size="sm"
                             variant="ghost"
                             className="h-8 w-8 p-0 hover:bg-red-50 hover:text-red-600"
                             onClick={() => handleDeleteAction(item.id)}
-                            disabled={isDataLoading}
+                            disabled={isDataLoading || deleteActionPlan.isPending}
+                            title="Delete action"
                           >
                             <Trash2 className="h-3 w-3" />
                           </Button>
@@ -410,7 +404,7 @@ export function ActionPlanTable({
             </div>
 
             {/* Toggles Grid */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4">
               {/* PDRs Available Toggle */}
               <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200">
                 <div>
@@ -424,22 +418,6 @@ export function ActionPlanTable({
                   checked={formData.pdrsAvailable}
                   onCheckedChange={(checked) => handleFieldChange('pdrsAvailable', checked)}
                   className="data-[state=checked]:bg-blue-600"
-                />
-              </div>
-
-              {/* Done Toggle */}
-              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200">
-                <div>
-                  <Label htmlFor="isDone" className="text-sm font-medium text-gray-700">
-                    Mark as Done
-                  </Label>
-                  <p className="text-xs text-gray-500">Already completed?</p>
-                </div>
-                <Switch
-                  id="isDone"
-                  checked={formData.isDone}
-                  onCheckedChange={(checked) => handleFieldChange('isDone', checked)}
-                  className="data-[state=checked]:bg-green-600"
                 />
               </div>
             </div>
@@ -498,12 +476,21 @@ export function ActionPlanTable({
                 className="bg-blue-600 hover:bg-blue-700 text-white"
                 disabled={isLoading || !formData.action.trim() || !formData.responsible.trim()}
               >
-                {isLoading ? "Adding..." : "Add Action"}
+                {isLoading ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Adding...
+                  </>
+                ) : (
+                  "Add Action"
+                )}
               </Button>
             </div>
           </form>
         </DialogContent>
       </Dialog>
+
+
     </>
   );
 } 

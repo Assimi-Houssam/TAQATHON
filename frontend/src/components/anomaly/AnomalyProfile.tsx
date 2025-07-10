@@ -11,6 +11,7 @@ import { AnomalySummary } from "./AnomalySummary";
 import { NewTabContent } from "./NewTabContent";
 import { InProgressTabContent } from "./InProgressTabContent";
 import { ClosedTabContent } from "./ClosedTabContent";
+import { AttachmentManager } from "./AttachmentManager";
 
 interface AnomalyProfileProps {
   anomaly: AnomalyWithRelations;
@@ -475,8 +476,15 @@ export function AnomalyProfile({ anomaly, onStatusChange, onUpdate, onValidate }
               {getMainActionButton()}
             </div>
           )}
-          <div className="xl:sticky xl:top-20">
+          <div className="xl:sticky xl:top-20 space-y-4">
             <AnomalySummary anomaly={anomaly} />
+            
+            {/* Attachments */}
+            <AttachmentManager
+              anomalyId={anomaly.id}
+              attachments={anomaly.atachments}
+              readonly={anomaly.status === "CLOSED"}
+            />
           </div>
         </div>
       </div>

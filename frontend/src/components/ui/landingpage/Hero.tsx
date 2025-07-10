@@ -41,8 +41,8 @@ export const Hero = () => {
         <div className="w-full md:w-1/2 relative animate-fade-in-delayed group mt-8 md:mt-0">
           <div className="relative w-full aspect-video rounded-2xl overflow-hidden shadow-2xl transition-all duration-500 group-hover:shadow-3xl">
             <Image
-              src="/focp_building.png"
-              alt="OCP Facility"
+                          src="/ftaqa_building.png"
+            alt="TAQA Facility"
               fill
               className="object-cover transition-transform duration-700 group-hover:scale-110"
               priority

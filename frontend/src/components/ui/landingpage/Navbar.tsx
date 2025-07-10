@@ -26,8 +26,8 @@ export const Navbar = () => {
           className="flex items-center space-x-2 hover:opacity-80 transition-opacity"
         >
           <Image
-            src="/focp_logo.png"
-            alt="OCP Logo"
+            src="/ftaqa_logo.png"
+            alt="TAQA Logo"
             width={160}
             height={40}
             className="w-32 sm:w-40 md:w-sm"
