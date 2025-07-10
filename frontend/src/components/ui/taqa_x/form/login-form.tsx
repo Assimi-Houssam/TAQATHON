@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
+import { useLoginMutation } from "@/endpoints/auth/auth";
 
 export interface LoginFormValues {
   email: string;
@@ -16,10 +17,11 @@ export default function LoginForm() {
     password: "",
   });
 
+  const loginMutation = useLoginMutation();
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Placeholder login logic
-    console.log("Login attempt:", formData);
+    loginMutation.mutate(formData);
   };
 
   return (

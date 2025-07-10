@@ -16,7 +16,7 @@ export const useLoginMutation = () => {
   return useMutation({
     mutationFn: async (credentials: LoginFormValues) => {
       // Fake authentication for Admin:Admin
-      if (credentials.username === "Admin" && credentials.password === "Admin") {
+      if (credentials.email === "Admin" && credentials.password === "Admin") {
         // Simulate API delay for better UX
         await new Promise(resolve => setTimeout(resolve, 1000));
         

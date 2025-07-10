@@ -1,6 +1,8 @@
+import Link from 'next/link';
+
 export default function MaintenancePage() {
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+    <div className="min-h-screen bg-white flex items-center justify-center">
       <div className="text-center">
         <div className="w-16 h-16 mx-auto mb-4 bg-blue-100 rounded-full flex items-center justify-center">
           <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -11,9 +13,16 @@ export default function MaintenancePage() {
         <h1 className="text-2xl font-semibold text-gray-900 mb-2">
           System Maintenance
         </h1>
-        <p className="text-gray-600 max-w-md mx-auto">
+        <p className="text-gray-600 max-w-md mx-auto mb-6">
           This section is currently under maintenance. Please access the main dashboard for available features.
         </p>
+        
+        <Link 
+          href="/dashboard"
+          className="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 hover:text-white transition-colors duration-200"
+        >
+          Go to Dashboard
+        </Link>
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const API_BASE_URL = 'http://localhost:7532';
+const API_BASE_URL = 'http://localhost:7532/api';
 
 // Simplified fake data - essential fields only
 const equipmentIds = [

@@ -178,25 +178,10 @@ export const Dashboard = () => {
     setCurrentTime(new Date().toLocaleTimeString());
   }, []);
 
-  // Mock export handlers for demo purposes
-  const handleExportXLSX = () => {
-    console.log("Export XLSX - Feature coming soon");
-  };
 
-  const handleExportJSON = () => {
-    console.log("Export JSON - Feature coming soon");
-  };
-
-  const handleExportCSV = () => {
-    console.log("Export CSV - Feature coming soon");
-  };
-
-  const handlePrint = () => {
-    console.log("Print - Feature coming soon");
-  };
 
   // Calculate completion rate for action plans
-  const actionPlanCompletionRate = kpis.actionPlan.data?.action
+  const actionPlanCompletionRate = kpis.actionPlan.data?.action && kpis.actionPlan.data.action.total > 0
     ? (kpis.actionPlan.data.action.completed / kpis.actionPlan.data.action.total) * 100
     : 0;
 
@@ -210,16 +195,8 @@ export const Dashboard = () => {
             subtitle="Monitor anomalies, track KPIs, and manage system performance"
             action={
               <div className="flex items-center gap-3">
-                <TimeframeSelect
-                  fromYear={new Date().getFullYear() - 5}
-                  toYear={new Date().getFullYear()}
-                />
-                <ExportMenu
-                  onExportXLSX={handleExportXLSX}
-                  onExportJSON={handleExportJSON}
-                  onExportCSV={handleExportCSV}
-                  onPrint={handlePrint}
-                />
+                <TimeframeSelect />
+                <ExportMenu />
               </div>
             }
           />
@@ -313,7 +290,7 @@ export const Dashboard = () => {
               </div>
               <div className="text-right">
                 <p className="text-xl font-semibold text-slate-900">
-                  {kpis.isLoading ? "..." : `${Math.round(actionPlanCompletionRate)}%`}
+                  {kpis.isLoading ? "..." : `${Math.round(actionPlanCompletionRate) || 0}%`}
                 </p>
                 <p className="text-xs text-slate-500">
                   {kpis.isLoading ? "..." : `${kpis.actionPlan.data?.action.completed || 0} / ${kpis.actionPlan.data?.action.total || 0}`}
@@ -392,36 +369,34 @@ export const Dashboard = () => {
 
           {/* Quick Actions Card - 3 columns */}
           <Card className="lg:col-span-3 p-6 border border-slate-200 bg-white min-h-[300px]">
-            <div className="space-y-4 h-full flex flex-col">
-              <h3 className="text-lg font-medium text-slate-900 flex items-center gap-2">
-                <Settings className="h-5 w-5 text-blue-600" />
-                Quick Actions
-              </h3>
-              <div className="grid grid-cols-1 gap-3 flex-1">
-                <Link href="/dashboard/anomalies">
-                  <button className="w-full flex items-center justify-between px-4 py-3 text-left text-sm text-slate-700 bg-slate-50 hover:bg-blue-50 border border-slate-200 hover:border-blue-200 rounded-md transition-colors group">
-                    <div className="flex items-center gap-3">
-                      <BarChart3 className="h-5 w-5 text-blue-600" />
-                      <span>View Anomalies</span>
-                    </div>
-                    <ArrowRight className="h-4 w-4 text-slate-400 group-hover:text-blue-600" />
-                  </button>
-                </Link>
-                <Link href="/dashboard/anomalies?action=create">
-                  <button className="w-full flex items-center justify-between px-4 py-3 text-left text-sm text-slate-700 bg-slate-50 hover:bg-blue-50 border border-slate-200 hover:border-blue-200 rounded-md transition-colors group">
-                    <div className="flex items-center gap-3">
-                      <Plus className="h-5 w-5 text-blue-600" />
-                      <span>Report Anomaly</span>
-                    </div>
-                    <ArrowRight className="h-4 w-4 text-slate-400 group-hover:text-blue-600" />
-                  </button>
-                </Link>
-                <button className="w-full flex items-center justify-between px-4 py-3 text-left text-sm text-slate-700 bg-slate-50 hover:bg-blue-50 border border-slate-200 hover:border-blue-200 rounded-md transition-colors group">
-                  <div className="flex items-center gap-3">
-                    <AlertCircle className="h-5 w-5 text-blue-600" />
-                    <span>System Reports</span>
+            <div className="h-full flex flex-col">
+              <div className="flex items-center gap-2 pb-4 border-b border-slate-100">
+                <div className="p-1.5 bg-blue-50 rounded border border-blue-100">
+                  <Settings className="h-4 w-4 text-blue-600" />
+                </div>
+                <h3 className="text-lg font-medium text-slate-900">Quick Actions</h3>
+              </div>
+              
+              <div className="flex-1 py-4 space-y-1">
+                <Link href="/dashboard/anomalies" className="block">
+                  <div className="flex items-center gap-3 px-3 py-4 text-slate-700 hover:bg-blue-50 hover:text-blue-700 border-l-2 border-transparent hover:border-blue-600 transition-all duration-200 cursor-pointer">
+                    <BarChart3 className="h-5 w-5 text-blue-600" />
+                    <span className="font-medium">View Anomalies</span>
                   </div>
-                  <ArrowRight className="h-4 w-4 text-slate-400 group-hover:text-blue-600" />
+                </Link>
+                
+                <Link href="/dashboard/anomalies/new" className="block">
+                  <div className="flex items-center gap-3 px-3 py-4 text-slate-700 hover:bg-blue-50 hover:text-blue-700 border-l-2 border-transparent hover:border-blue-600 transition-all duration-200 cursor-pointer">
+                    <Plus className="h-5 w-5 text-blue-600" />
+                    <span className="font-medium">Report Anomaly</span>
+                  </div>
+                </Link>
+                
+                <button className="w-full">
+                  <div className="flex items-center gap-3 px-3 py-4 text-slate-700 hover:bg-blue-50 hover:text-blue-700 border-l-2 border-transparent hover:border-blue-600 transition-all duration-200 cursor-pointer">
+                    <AlertCircle className="h-5 w-5 text-blue-600" />
+                    <span className="font-medium">System Reports</span>
+                  </div>
                 </button>
               </div>
             </div>

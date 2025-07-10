@@ -1,139 +1,83 @@
 "use client"
 
 import * as React from "react"
-import { startOfMonth, endOfMonth, format } from "date-fns"
+import { subDays, startOfDay, endOfDay } from "date-fns"
 import { CalendarIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { useTimeFrame } from "@/context/TimeFrameContext"
 
 interface TimeframeSelectProps {
   className?: string;
-  fromYear?: number;
-  toYear?: number;
 }
 
-export const TimeframeSelect = ({
-  className,
-  fromYear = new Date().getFullYear() - 20,
-  toYear = new Date().getFullYear(),
-}: TimeframeSelectProps) => {
-  const { dateRange, setDateRange } = useTimeFrame();
-  const [open, setOpen] = React.useState(false);
+type TimeframePeriod = '1D' | '7D' | '30D';
 
-  // Generate year and month options
-  const years = Array.from({ length: toYear - fromYear + 1 }, (_, i) => fromYear + i);
-  const months = [
-    { value: 0, label: "Jan" }, { value: 1, label: "Feb" }, { value: 2, label: "Mar" },
-    { value: 3, label: "Apr" }, { value: 4, label: "May" }, { value: 5, label: "Jun" },
-    { value: 6, label: "Jul" }, { value: 7, label: "Aug" }, { value: 8, label: "Sep" },
-    { value: 9, label: "Oct" }, { value: 10, label: "Nov" }, { value: 11, label: "Dec" }
+export const TimeframeSelect = ({ className }: TimeframeSelectProps) => {
+  const { dateRange, setDateRange } = useTimeFrame();
+  const [selectedPeriod, setSelectedPeriod] = React.useState<TimeframePeriod>('30D');
+
+  const timeframePeriods: { value: TimeframePeriod; label: string; days: number }[] = [
+    { value: '1D', label: '1 Day', days: 1 },
+    { value: '7D', label: '7 Days', days: 7 },
+    { value: '30D', label: '30 Days', days: 30 },
   ];
 
-  // Current selected values
-  const fromMonth = dateRange.from?.getMonth() ?? new Date().getMonth();
-  const selectedFromYear = dateRange.from?.getFullYear() ?? new Date().getFullYear();
-  const toMonth = dateRange.to?.getMonth() ?? new Date().getMonth();
-  const selectedToYear = dateRange.to?.getFullYear() ?? new Date().getFullYear();
-
-  const handleDateChange = (type: 'from' | 'to', year: number, month: number) => {
-    const newDate = type === 'from' 
-      ? startOfMonth(new Date(year, month))
-      : endOfMonth(new Date(year, month));
+  const handleTimeframeChange = (period: TimeframePeriod, days: number) => {
+    setSelectedPeriod(period);
     
-    const newRange = {
-      from: type === 'from' ? newDate : dateRange.from,
-      to: type === 'to' ? newDate : dateRange.to
-    };
+    const now = new Date();
+    const from = startOfDay(subDays(now, days - 1)); // Include today
+    const to = endOfDay(now);
+    
+    setDateRange({ from, to });
+  };
 
-    // Ensure from date is not after to date
-    if (newRange.from && newRange.to && newRange.from > newRange.to) {
-      if (type === 'from') {
-        newRange.to = endOfMonth(new Date(year, month));
-      } else {
-        newRange.from = startOfMonth(new Date(year, month));
-      }
+  // Set default 30D on mount
+  React.useEffect(() => {
+    if (!dateRange.from || !dateRange.to) {
+      handleTimeframeChange('30D', 30);
     }
-
-    setDateRange(newRange);
-  };
-
-  const formatDateRange = () => {
-    if (!dateRange.from || !dateRange.to) return "Select period";
-    
-    const fromStr = format(dateRange.from, "MMM yyyy");
-    const toStr = format(dateRange.to, "MMM yyyy");
-    
-    return fromStr === toStr ? fromStr : `${fromStr} - ${toStr}`;
-  };
-
-  const DateSelector = ({ type, year, month }: { type: 'from' | 'to', year: number, month: number }) => (
-    <div className="space-y-3">
-      <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-        {type === 'from' ? 'From' : 'To'}
-      </div>
-      
-      <div className="space-y-2">
-        <select
-          value={year}
-          onChange={(e) => handleDateChange(type, parseInt(e.target.value), month)}
-          className="w-full px-3 py-2 text-sm border border-border rounded-md bg-background focus:outline-none focus:ring-2 focus:ring-primary/20"
-        >
-          {years.map((y) => (
-            <option key={y} value={y}>{y}</option>
-          ))}
-        </select>
-        
-        <select
-          value={month}
-          onChange={(e) => handleDateChange(type, year, parseInt(e.target.value))}
-          className="w-full px-3 py-2 text-sm border border-border rounded-md bg-background focus:outline-none focus:ring-2 focus:ring-primary/20"
-        >
-          {months.map((m) => (
-            <option key={m.value} value={m.value}>{m.label}</option>
-          ))}
-        </select>
-      </div>
-    </div>
-  );
+  }, []);
 
   return (
     <div className={cn("flex", className)}>
-      <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger asChild>
-          <Button
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button 
             variant="outline"
-            className={cn(
-              "w-[120px] justify-start text-left font-normal",
-              !dateRange.from && "text-muted-foreground",
-              "bg-background/50 backdrop-blur-sm border-border/50 hover:bg-accent/50 transition-all duration-200"
-            )}
+            className="bg-background/50 backdrop-blur-sm border-border/50 hover:bg-accent/50 transition-all duration-200"
           >
-            <CalendarIcon className="mr-2 h-4 w-4 opacity-50" />
-            <span className="truncate">{formatDateRange()}</span>
+            <CalendarIcon className="h-4 w-4 mr-2 opacity-50" />
+            {selectedPeriod}
           </Button>
-        </PopoverTrigger>
-        <PopoverContent 
-          className="w-80 p-4 bg-background/95 backdrop-blur-sm border-border/50" 
-          align="start"
+        </DropdownMenuTrigger>
+        <DropdownMenuContent 
+          align="start" 
+          className="w-32 p-1 bg-background/95 backdrop-blur-sm border-border/50"
         >
-          <div className="grid grid-cols-2 gap-4">
-            <DateSelector type="from" year={selectedFromYear} month={fromMonth} />
-            <DateSelector type="to" year={selectedToYear} month={toMonth} />
-          </div>
-          
-          <div className="mt-4 pt-3 border-t border-border/50">
-            <div className="text-xs text-muted-foreground text-center">
-              {format(dateRange.from || new Date(), "MMM yyyy")} to {format(dateRange.to || new Date(), "MMM yyyy")}
-            </div>
-          </div>
-        </PopoverContent>
-      </Popover>
+          {timeframePeriods.map((period) => (
+            <DropdownMenuItem
+              key={period.value}
+              onClick={() => handleTimeframeChange(period.value, period.days)}
+              className={cn(
+                "cursor-pointer px-3 py-2 rounded-sm transition-colors duration-150",
+                selectedPeriod === period.value 
+                  ? "bg-blue-50 text-blue-700 font-medium" 
+                  : "hover:bg-accent/50"
+              )}
+            >
+              <span className="text-sm">{period.label}</span>
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
     </div>
-  )
-} 
+  );
+}; 
