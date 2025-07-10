@@ -136,12 +136,11 @@ export class AnomalyService {
     if (!anomalie_entrie) {
       throw new Error('Anomaly not found');
     }
-
     const attachment = await this.Prisma.attachments.create({
       data: {
         anomaly_id: anomalyId,
-        file_path: file.path,
-        file_name: file.originalname,
+        file_path: file.filePath,
+        file_name: file.fileName,
       },
     });
     if (!attachment) {
@@ -835,6 +834,7 @@ export class AnomalyService {
       if (!attachment) {
         throw new Error('Attachment not found');
       }
+   
       await this.Prisma.attachments.update({
         where: { id: id },
         data: {
@@ -843,10 +843,11 @@ export class AnomalyService {
           },
         },
       });
-      // Optionally, delete the file from the server
-      const filePath = path.resolve(attachment.file_path);
-      if (fs.existsSync(filePath)) {
-        fs.unlinkSync(filePath);
+      if (attachment.file_path) {
+        const filePath = path.resolve(attachment.file_path);
+        if (fs.existsSync(filePath)) {
+          fs.unlinkSync(filePath);
+        }
       }
       await this.Prisma.attachments.delete({
         where: { id: id },
@@ -878,6 +879,29 @@ export class AnomalyService {
       return {
         success: true,
         message: 'Anomaly deleted successfully',
+      };
+    }
+
+
+    async deleteRexEntry(id: string) {
+      const rexEntry = await this.Prisma.rex_entrie.findUnique({
+        where: { id: id },
+      });
+      if (!rexEntry) {
+        throw new Error('REX entry not found');
+      }
+      await this.Prisma.rex_entrie.delete({
+        where: { id: id },
+      });
+      if (rexEntry.docment_path) {
+        const filePath = path.resolve(rexEntry.docment_path);
+        if (fs.existsSync(filePath)) {
+          fs.unlinkSync(filePath);
+        }
+      }
+      return {
+        success: true,
+        message: 'REX entry deleted successfully',
       };
     }
 

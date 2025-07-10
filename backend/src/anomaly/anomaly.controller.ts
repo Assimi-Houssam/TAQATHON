@@ -890,6 +890,16 @@ export class AnomalyController {
   }
 
 
+  @ApiOperation({ summary: 'Delete anomaly' })
+  @ApiParam({ name: 'id', description: 'Anomaly ID', type: 'string' })
+  @ApiResponse({
+    status: 200,
+    description: 'Anomaly deleted successfully',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Anomaly not found',
+  })
   @Delete('deleteanomaly/:id')
   async deleteAnomaly(@Param('id') id: string) {
     try {
@@ -900,5 +910,25 @@ export class AnomalyController {
     }
   }
 
-}
 
+  @ApiOperation({ summary: 'Delete REX entry' })
+  @ApiParam({ name: 'id', description: 'REX entry ID', type: 'string' })
+  @ApiResponse({
+    status: 200,
+    description: 'REX entry deleted successfully',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'REX entry not found',
+  })
+  @Delete('deleterex/:id')
+  async deleteRexEntry(@Param('id') id: string) {
+    try {
+      return await this.anomalyService.deleteRexEntry(id);
+    } catch (error) {
+      console.error('Error deleting REX entry:', error);
+      throw new BadRequestException('Failed to delete REX entry');
+    }
+  }
+
+}
