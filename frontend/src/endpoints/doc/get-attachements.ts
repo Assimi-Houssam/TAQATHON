@@ -19,14 +19,15 @@ export function useAttachments(
     queryFn: async () => {
       if (!attachments) return [];
 
-      const attachmentPromises = attachments.map(async (id) => {
+              const attachmentPromises = attachments.map(async (id) => {
         try {
-          const response = await apiClient.get(`/documents/${id}`);
+          // TODO: Backend needs to implement /documents/:id endpoint for file metadata
+          // For now, fallback to direct download URL
           return {
             id,
-            name: response.data.originalName,
-            size: formatFileSize(response.data.size),
-            url: `${process.env.NEXT_PUBLIC_API_URL}/documents/${id}/download`,
+            name: `Attachment ${id}`,
+            size: "Unknown",
+            url: `${process.env.NEXT_PUBLIC_API_URL}/anomaly/download-attachment/${id}`,
           };
         } catch (error) {
           console.error(`Error fetching attachment ${id}:`, error);

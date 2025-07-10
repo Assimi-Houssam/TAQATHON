@@ -1,40 +1,61 @@
-version: "3.8"
-
 services:
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    ports:
+      - "8080:8080"
+      - "8443:8443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - app-network
+
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
     container_name: frontend
-    ports:
-      - "3000:3000"
+    expose:
+      - "3000"
     environment:
       - NODE_ENV=development
-
     command: npm start
+    networks:
+      - app-network
 
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
     container_name: backend
+    expose:
+      - "7532"
     ports:
-      - "7532:7532"
-      - "5555:5555"
+      - "5555:5555"  # Keep Prisma Studio accessible for development
     environment:
       - NODE_ENV=development
     command: >
       sh -c "npm run start:dev & npx prisma studio"
+    networks:
+      - app-network
 
-  camembert-api:
-    build:
-      context: ./camembert-api
-      dockerfile: Dockerfile
-    container_name: camembert-api
-    ports:
-      - "7533:7533"
-    environment:
-      - HOST=localhost
-      - PORT=7533
-      - LOG_LEVEL=INFO
-      - MODEL_PATH=app/models/model.pth
+  # camembert-api:
+  #   build:
+  #     context: ./camembert-api
+  #     dockerfile: Dockerfile
+  #   container_name: camembert-api
+  #   ports:
+  #     - "7533:7533"
+  #   environment:
+  #     - HOST=localhost
+  #     - PORT=7533
+  #     - LOG_LEVEL=INFO
+  #     - MODEL_PATH=app/models/model.pth
+
+networks:
+  app-network:
+    driver: bridge

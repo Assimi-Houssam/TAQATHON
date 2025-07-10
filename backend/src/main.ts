@@ -18,6 +18,9 @@ async function bootstrap() {
   // Global validation pipe
   app.useGlobalPipes(new ValidationPipe());
 
+  // Set global API prefix
+  app.setGlobalPrefix('api');
+
   // Swagger configuration
   const config = new DocumentBuilder()
     .setTitle('TAQATHON API')
